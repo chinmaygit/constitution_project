@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.2.0   (self-hosted)
+framework: constitution@0.3.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -26,8 +26,13 @@ is*. Domain rules belong to the projects that adopt it.
 
 ## L1 — Articles (meta-invariants)
 
+Each Article carries two independent fields: **`status`** (legal force, the ratifier's
+decision: `PROPOSED → RATIFIED → SUPERSEDED`) and **`conformance`** (whether the framework
+itself satisfies the fitness signal now, the audit's finding: `HOLDS | VIOLATED |
+UNVERIFIED`). Ratification is agreement; conformance is reality.
+
 ### Article F-I — Discovery before codification
-`status: RATIFIED`
+`status: RATIFIED` · `conformance: HOLDS`
 
 - **Principle** — No rule is added to this framework until it has been proven in at
   least one live project. DSAMind is the founding instance.
@@ -38,7 +43,7 @@ is*. Domain rules belong to the projects that adopt it.
   from usage carries its evidence with it.
 
 ### Article F-II — One home per rule
-`status: RATIFIED`
+`status: RATIFIED` · `conformance: HOLDS`
 
 - **Principle** — Every governed rule lives in exactly one layer (L0–L4), and is never
   duplicated across layers, nor across the framework and an instance.
@@ -46,7 +51,7 @@ is*. Domain rules belong to the projects that adopt it.
 - **Fitness** — no rule's text appears verbatim in two layer documents (audit check).
 
 ### Article F-III — Experiments are pre-registered
-`status: RATIFIED`
+`status: RATIFIED` · `conformance: HOLDS`
 
 - **Principle** — Every candidate rule declares its hypothesis, metric, and decision
   rule **before** it runs. The decision rule is frozen for the experiment's duration.
@@ -55,7 +60,7 @@ is*. Domain rules belong to the projects that adopt it.
   and a `pre-registered:` timestamp earlier than its `RUNNING` status.
 
 ### Article F-IV — No self-ratification above the firewall
-`status: RATIFIED`
+`status: RATIFIED` · `conformance: HOLDS`
 
 - **Principle** — Changes to L0 or L1 — in the framework **or** any instance — require a
   human ratifier. Agents may propose, gather evidence, and author/enforce L4, but may
@@ -64,7 +69,7 @@ is*. Domain rules belong to the projects that adopt it.
 - **Fitness** — every L0/L1 amendment in the ledger below names a human ratifier.
 
 ### Article F-V — L0 is discovered, distilled, and human-held
-`status: PROVISIONAL`
+`status: RATIFIED` · `conformance: HOLDS`
 
 - **Principle** — A product's L0 (Preamble) is the *minimal* set of identity-defining
   statements, discovered from the product's reason to exist and distilled until removing
@@ -75,25 +80,26 @@ is*. Domain rules belong to the projects that adopt it.
   line; every L1 Article's `serves` resolves to an L0 line (the vision is fully covered).
 - **Why** — the vision encodes intent only the founder holds: an agent may help phrase it
   but cannot originate it, and a machine cannot check identity.
-- **Proving** — DSAMind's L0 (P1–P3) was defined by this process and ratified (2026-06-28);
-  the L0 half is proven and eligible to graduate to `RATIFIED` on ratifier sign-off. The L1
-  half awaits Step B. Process: [process/defining-l0-l1.md](process/defining-l0-l1.md);
-  questions: [process/l0-elicitation.md](process/l0-elicitation.md); skill: `define-preamble`.
+- **Proven** — DSAMind's L0 (P1–P3) was defined by this process and ratified (2026-06-28).
+  Process: [process/defining-l0-l1.md](process/defining-l0-l1.md); questions:
+  [process/l0-elicitation.md](process/l0-elicitation.md); skill: `define-preamble`.
 
 ### Article F-VI — L1 is harvested, tested, and reality-checked
-`status: PROVISIONAL`
+`status: RATIFIED` · `conformance: HOLDS`
 
 - **Principle** — L1 Articles are *harvested from observed practice* (past decisions,
   ADRs, incidents, existing rules), never invented. Each must pass the inclusion test,
-  trace to an L0 line, and declare principle / serves / fitness / status. Status is
-  assigned by running the fitness signal against the live codebase — an Article is never
-  marked `RATIFIED` while the code violates it.
+  trace to an L0 line, and declare `principle / serves / fitness / status / conformance`.
+  An Article's `status` (legal force) is the ratifier's decision; its `conformance` is set
+  by running the fitness signal against the live code. The two are independent — a
+  `RATIFIED` Article may be `VIOLATED` (tracked debt). **Never mark `conformance: HOLDS`
+  while the code violates the fitness signal.**
 - **Serves** — P1.
-- **Fitness** — every L1 Article carries all four fields; every `serves` resolves to a
-  real L0 line; every `RATIFIED` Article's fitness signal currently passes against the code.
-- **Why** — a constitution that asserts what the code does not do is fiction; harvesting
-  from practice rather than imagination is P1 applied to article-writing itself.
-- **Proving** — provisional until DSAMind's L1 is built by this process.
+- **Fitness** — every L1 Article carries the five fields; every `serves` resolves to a real
+  L0 line; no Article is marked `conformance: HOLDS` while its fitness signal fails.
+- **Why** — a constitution that *claims conformance* it doesn't have is fiction; separating
+  agreement (status) from reality (conformance) keeps it honest without hiding debt.
+- **Proven** — DSAMind's L1 was harvested and reality-checked by this process (2026-06-28).
 
 ---
 
@@ -115,6 +121,17 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.3.0] — 2026-06-28 — Two-axis status; F-V/F-VI ratified
+- Split Article `status` into two independent axes: `status` (legal force) and `conformance`
+  (does the code satisfy the fitness signal now). Reworded F-VI's honesty rule to attach to
+  `conformance`, not `status` — a `RATIFIED` Article may be `VIOLATED` (tracked debt). Retired
+  the `PROVISIONAL` status. Updated `templates/article.md`, `process/layers.md`,
+  `process/defining-l0-l1.md`.
+- **F-V and F-VI graduate to `RATIFIED`** (conformance `HOLDS`): both were proven by DSAMind
+  defining its L0 and L1 ground-up via the process (the founding live proof required by F-I).
+- Surfaced by a real DSAMind question ("does RATIFIED mean implemented?") — the framework
+  improving through use, which is P1.
 
 ### [0.2.0] — 2026-06-28 — Process of defining L0 and L1 (proposed)
 - Added Article F-V (L0 is discovered, distilled, human-held) and Article F-VI (L1 is

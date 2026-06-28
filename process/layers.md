@@ -31,7 +31,7 @@ Keep it small. If you can't fit the vision on a few lines, it isn't a vision yet
 
 The small set of **domain invariants** that enforce the vision, written so a machine can
 check them. Each Article carries: the principle, the L0 line it serves, a fitness signal,
-and a `status` (`RATIFIED` | `PROVISIONAL`).
+a `status` (legal force) and a `conformance` (code reality) — see below.
 
 **An Article is a domain invariant** — a constraint on what the product *means* that
 every feature must obey. The inclusion test (must pass all four):
@@ -44,6 +44,13 @@ every feature must obey. The inclusion test (must pass all four):
 An Article is **not** a feature (a thing you build), **not** a statute (L2 craft rule),
 and **not** a per-feature rule (those live in feature specs, below L2). When a future
 library could invalidate the rule, it's a statute, not an Article.
+
+Each Article carries two independent fields. **`status`** is its legal force, set by the
+ratifier (`PROPOSED → RATIFIED → SUPERSEDED`); **`conformance`** is whether the live code
+satisfies the fitness signal right now, set by the audit (`HOLDS | VIOLATED | UNVERIFIED`).
+Ratification is agreement; conformance is reality. A `RATIFIED` + `VIOLATED` Article is law
+the code currently breaks — tracked debt, surfaced not hidden. `RATIFIED` does **not** mean
+"implemented"; `conformance: HOLDS` does.
 
 ## L2 — Statutes
 

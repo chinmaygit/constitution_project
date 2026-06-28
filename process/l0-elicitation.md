@@ -64,7 +64,6 @@ Two signals worth watching for (both observed on the founding DSAMind run):
 
 ## Status
 
-`PROVISIONAL` — exercised on DSAMind (2026-06-28): its L0 (P1–P3) was produced by this
-protocol and ratified, and the run fed back the two refinements above (Q3 sharpened, Q8
-forced to an order, "reading the answers" added). The L0 portion of F-V is now proven and
-eligible to graduate to `RATIFIED` on the ratifier's sign-off.
+`RATIFIED` (with F-V, 2026-06-28) — exercised on DSAMind: its L0 (P1–P3) was produced by
+this protocol and ratified, and the run fed back the two refinements above (Q3 sharpened,
+Q8 forced to an order, "reading the answers" added).

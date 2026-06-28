@@ -1,7 +1,7 @@
 <!-- Copy into a product's CONSTITUTION.md under "L1 — Articles". One Article per invariant. -->
 
 ### Article <N> — <short imperative name>
-`status: PROVISIONAL | RATIFIED`
+`status: PROPOSED | RATIFIED | SUPERSEDED` · `conformance: HOLDS | VIOLATED | UNVERIFIED`
 
 - **Principle** — <the invariant, in one sentence; a constraint every feature must obey>.
 - **Serves** — <which L0 line, e.g. P1>.

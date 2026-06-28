@@ -38,14 +38,13 @@ then:
 3. **Trace** each survivor to an L0 line. A candidate that can't trace reveals either an
    incomplete L0 or a non-constitutional rule.
 4. **Write** each as principle / serves / fitness / status (`templates/article.md`).
-5. **Reality-check** — run the fitness signal against the live codebase:
-   - code already honors it → `RATIFIED`
-   - it's a target not yet met → `PROVISIONAL`, with the gap noted
-   - never mark `RATIFIED` what the code violates.
+5. **Set status, then reality-check conformance** — `status: RATIFIED` once the ratifier
+   agrees the Article is binding law (a human decision, independent of the code). Then run
+   the fitness signal and set `conformance`: `HOLDS` if the code satisfies it, `VIOLATED` if
+   not (with the gap noted). Never mark `conformance: HOLDS` what the code violates.
 6. **Order** any conflicting Articles in the priority hierarchy.
 7. **Keep L1 small.** An Article must be *contested* — a rule nobody would violate doesn't
    need constitutional protection. When in doubt, leave it out.
 
 The output of this procedure is a product's `CONSTITUTION.md` (L0 + L1). Going through it
-on a real product is the founding proof that graduates F-V and F-VI from `PROVISIONAL` to
-`RATIFIED`.
+on a real product is the founding proof for F-V and F-VI.
