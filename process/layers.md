@@ -27,6 +27,11 @@ cannot check — it is the thing the fitness functions exist to serve.
 
 Keep it small. If you can't fit the vision on a few lines, it isn't a vision yet.
 
+A product's Preamble has two halves: a **Mission** (Solution + Value — what the product is and
+the value it creates for users) and a **Mandate** (Grow + Monetize — how the platform grows and
+gets paid). It also names the **parties** the constitution governs (commonly the owner + its
+users), which become each Article's `party` tag. See [l0-elicitation.md](l0-elicitation.md).
+
 ## L1 — Articles
 
 The small set of **domain invariants** that enforce the vision, written so a machine can
@@ -45,7 +50,8 @@ An Article is **not** a feature (a thing you build), **not** a statute (L2 craft
 and **not** a per-feature rule (those live in feature specs, below L2). When a future
 library could invalidate the rule, it's a statute, not an Article.
 
-Each Article carries two independent fields. **`status`** is its legal force, set by the
+Each Article carries three fields. **`party`** is which governed party it protects (named in
+the Preamble — commonly User or Owner). **`status`** is its legal force, set by the
 ratifier (`PROPOSED → RATIFIED → SUPERSEDED`); **`conformance`** is whether the live code
 satisfies the fitness signal right now, set by the audit (`HOLDS | VIOLATED | UNVERIFIED`).
 Ratification is agreement; conformance is reality. A `RATIFIED` + `VIOLATED` Article is law

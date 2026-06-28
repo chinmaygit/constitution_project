@@ -22,25 +22,27 @@ explicit human ratification before anything is written as L0.
 
 ## Procedure
 
-1. **Elicit.** Ask the eight questions from the L0 elicitation protocol, in order. Ask them
-   conversationally; don't dump all eight at once if the user prefers to go one bucket at a
-   time (extract → bound → filter → apex).
+1. **Elicit.** Run the L0 elicitation protocol's questions in order — start by naming the
+   **parties** (commonly owner + users), then cover **Solution, Value, Grow, Monetize**. Ask
+   conversationally; don't dump them all at once.
 
 2. **Read the signals** while answers come in:
-   - If Q2 (core unit) and Q6 (durability) converge on the same answer, flag it — that
+   - If the core-unit and durability questions converge on the same answer, flag it — that
      claim is almost certainly L0.
-   - If Q8 names two values instead of an order, push for the order (means vs. end, and the
-     fallback when forced).
+   - If the tie-breaker answer names two values instead of an order, push for the order
+     (means vs. end, and the fallback when forced).
+   - Keep Grow/Monetize answers as the **Mandate** (owner-facing), distinct from the Mission.
 
 3. **Distill candidates.** Compose Q1–3 into candidate statements; sharpen each with Q4–5.
    Phrase them crisply and declaratively, founder's voice, not yours.
 
-4. **Filter to L0.** Apply the subtraction test (Q7) to every candidate: *"If you deleted
-   this, would it still be the same product?"* Keep only the claims that fail subtraction.
-   Distill to **≤3** statements. Prefer fewer.
+4. **Filter to L0.** Apply the subtraction test to every candidate: *"If you deleted this,
+   would it still be the same product (and the same business)?"* Keep only the claims that
+   fail subtraction. Distill to **≤3 Mission** statements + **≤1 Mandate** statement (Grow +
+   Monetize). Prefer fewer.
 
-5. **Set the apex.** Record Q8's resolved order as the top of the product's priority
-   hierarchy (it seeds conflict resolution, not just L0).
+5. **Set the apex.** Record the tie-breaker's resolved order as the top of the product's
+   priority hierarchy (it seeds conflict resolution, not just L0).
 
 6. **Get ratification.** Present the ≤3 statements + the apex and ask the human to ratify or
    edit. Do not proceed until they sign off in their own words.

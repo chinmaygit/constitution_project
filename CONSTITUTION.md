@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.3.0   (self-hosted)
+framework: constitution@0.4.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -121,6 +121,19 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.4.0] — 2026-06-28 — Parties, Mission/Mandate, Grow/Monetize elicitation
+- Product Preambles now have two halves: a **Mission** (Solution + Value, to the users) and a
+  **Mandate** (Grow + Monetize, of the owner). Articles gain a **`party:`** field tagging which
+  governed party they protect.
+- The L0 elicitation protocol now first asks **who the parties are** (commonly owner + users)
+  and covers all four dimensions — **Solution, Value, Grow, Monetize** — adding Grow and
+  Monetize questions. Updated `process/l0-elicitation.md`, `templates/article.md`,
+  `process/layers.md`, and the `define-preamble` skill.
+- Surfaced by DSAMind: its first preamble had a Mission but no Mandate; the founder flagged
+  "we make money." The framework improving through use (P1).
+- The framework's **own** Preamble stays single — it is a governance tool, not a commercial
+  product; Mission/Mandate + `party:` apply to product instances.
 
 ### [0.3.0] — 2026-06-28 — Two-axis status; F-V/F-VI ratified
 - Split Article `status` into two independent axes: `status` (legal force) and `conformance`
