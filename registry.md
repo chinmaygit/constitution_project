@@ -17,12 +17,11 @@ Governing mechanisms proven by a consumer project and generalized into this fram
 | Framework rule | Proven by | How | Reference |
 |----------------|-----------|-----|-----------|
 | F-V, F-VI — process of defining L0/L1 | DSAMind | L0 + L1 built ground-up via the process | DSAMind `CONSTITUTION.md` ledger `[0.2.0]`–`[0.3.0]` |
+| F-VII — L2 statute discipline | DSAMind | Existing `AGENTS.md` / `CLAUDE.md` rules harvested + annotated (`serves` · `enforced-by`); F-II duplicate consolidated; L1/L2 boundary confirmed clean | DSAMind `AGENTS.md` / `CLAUDE.md` L2 sections; framework ledger `[0.7.0]` |
 
-> F-I…F-IV are the founding bootstrap. F-V/F-VI are the first articles proven by a live
-> project (DSAMind) and ratified — see CONSTITUTION.md ledger `[0.3.0]`.
+> F-I…F-IV are the founding bootstrap. F-V/F-VI/F-VII are articles proven by a live project
+> (DSAMind) and ratified — see CONSTITUTION.md ledger `[0.3.0]` and `[0.7.0]`.
 
 ## In-flight proofs
 
-| Framework rule (candidate) | Proving project | Status |
-|----------------------------|-----------------|--------|
-| L2 statute discipline (trace-up · enforced-by-mechanism · promotion/demotion) — a future F-VII | DSAMind | Spec written (`process/statutes.md`, `templates/statute.md`, layers §L2). Awaiting a live DSAMind L2 harvest (annotate `CLAUDE.md` / `AGENTS.md` rules) as the proof before any Article is codified. |
+_(none — F-VII graduated 2026-06-29.)_

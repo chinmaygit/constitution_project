@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.6.0   (self-hosted)
+framework: constitution@0.7.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -103,6 +103,27 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
   Process: [process/defining-l0-l1.md](process/defining-l0-l1.md); the *recurring* reality-check
   (re-running the fitness signals after code changes) is the `audit-conformance` skill.
 
+### Article F-VII — Statutes implement the stack, traced and mechanized
+`status: RATIFIED` · `conformance: HOLDS`
+
+- **Principle** — L2 Statutes are operational/craft rules that *fail* L1's inclusion test (a
+  tech swap would rewrite them, *or* they don't trace to an L0 line). They live in the product's
+  existing `CLAUDE.md` / `AGENTS.md` — **named, not relocated** (F-II) — each **traces up** to
+  the L1 Article or L0 line it upholds (or is marked *general craft*), and is **enforced by a
+  mechanism** (lint / CI / hook), not a conformance ledger. They cross the firewall only by
+  promotion (L2→L1, ratified) or demotion (L1→L2).
+- **Serves** — P1.
+- **Fitness** — the framework ships an L2 spec (`process/statutes.md`, `templates/statute.md`,
+  layers §L2), and at least one consumer has harvested its L2 by it — every Statute annotated
+  `serves` + `enforced-by`, no rule duplicated across layers (F-II), and no Statute that passes
+  all four L1 tests (those promote, not file).
+- **Why** — without trace-up, L2 decays into an unaccountable junk drawer; without `enforced-by`,
+  statutes are wishes. Naming statutes where they already live (not relocating) preserves one home.
+- **Proven** — DSAMind's L2 was harvested from its `AGENTS.md` / `CLAUDE.md` by
+  `process/statutes.md` (2026-06-29): 15 engineering statutes annotated, an F-II duplicate
+  consolidated, stale statutes (Category/Mode) fixed, and the L1/L2 boundary confirmed clean.
+  See [registry.md](registry.md).
+
 ---
 
 ## Conflict resolution
@@ -123,6 +144,16 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.7.0] — 2026-06-29 — Article F-VII ratified (L2 statute discipline)
+- **F-VII graduates to `RATIFIED` (`conformance: HOLDS`).** The L2 statute model — fail L1's
+  inclusion test, live in CLAUDE.md/AGENTS.md (named not relocated), trace up, enforce by
+  mechanism, cross the firewall only by promotion/demotion — is now a ratified framework Article,
+  not just a process spec. Ratifier: Chinmay.
+- **Proven by a live DSAMind L2 harvest** (the F-I requirement): the existing `AGENTS.md` /
+  `CLAUDE.md` rules were annotated `serves` + `enforced-by`, an F-II duplicate was consolidated,
+  stale statutes (Category/Mode) fixed, and the L1/L2 boundary confirmed clean (no promotion or
+  demotion candidates). Moved from in-flight to a promoted mechanism in `registry.md`.
 
 ### [0.6.0] — 2026-06-29 — L2 (Statutes) process and template
 - Defined the L2 layer's operating model: Statutes are the operational/craft rules that **fail
