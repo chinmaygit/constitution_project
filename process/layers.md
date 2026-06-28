@@ -61,8 +61,24 @@ the code currently breaks — tracked debt, surfaced not hidden. `RATIFIED` does
 ## L2 — Statutes
 
 The operational hard rules — *how* you build, not *what* you are. Home of a product's
-`CLAUDE.md` / `AGENTS.md` rules. Agents may draft these; they change in weeks. A rule a
-new library could rewrite belongs here.
+`CLAUDE.md` / `AGENTS.md` rules (and nested / per-tool variants). A rule is a Statute when it
+**fails L1's inclusion test** — either a tech swap would rewrite it (a stack binding) *or* it
+doesn't trace to an L0 line (general craft). Both kinds are binding; neither is constitutional.
+
+- **Traces up.** L1 says *what must be true*; a Statute says *how we make it true in this
+  stack*. Every Statute names the L1 Article it operationalizes, or the L0 line it serves via
+  a tech choice. A Statute that traces to nothing is dead, or evidence of a missing Article.
+- **Lives where it already lives.** The constitution *names* the existing `CLAUDE.md` /
+  `AGENTS.md` rules as L2; it does not relocate them (F-II — one home per rule).
+- **Lighter governance.** Below the firewall: agents draft and propose; changes land as
+  ordinary reviewed commits, not ratified amendments — no `status` / `conformance` ledger.
+  Statutes change in weeks; Articles in quarters.
+- **Enforced by mechanism, not audit.** A Statute carries an `enforced-by` tag — a lint rule,
+  CI gate, or hook that runs continuously. Where it can't be mechanized, it is prompt-only
+  guidance compiled into L4. (Contrast L1, whose conformance is audited periodically.)
+- **The firewall is promotion/demotion.** A Statute that proves both tech-durable and
+  L0-tracing is *promoted* to L1 (amendment + human ratifier); an Article that turns out
+  tech-coupled is *demoted* to L2. See [statutes.md](statutes.md).
 
 ## L3 — Case law
 

@@ -23,4 +23,6 @@ Governing mechanisms proven by a consumer project and generalized into this fram
 
 ## In-flight proofs
 
-_(none — F-V/F-VI graduated 2026-06-28.)_
+| Framework rule (candidate) | Proving project | Status |
+|----------------------------|-----------------|--------|
+| L2 statute discipline (trace-up · enforced-by-mechanism · promotion/demotion) — a future F-VII | DSAMind | Spec written (`process/statutes.md`, `templates/statute.md`, layers §L2). Awaiting a live DSAMind L2 harvest (annotate `CLAUDE.md` / `AGENTS.md` rules) as the proof before any Article is codified. |

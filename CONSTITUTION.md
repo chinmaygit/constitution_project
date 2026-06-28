@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.5.0   (self-hosted)
+framework: constitution@0.6.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -123,6 +123,18 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.6.0] — 2026-06-29 — L2 (Statutes) process and template
+- Defined the L2 layer's operating model: Statutes are the operational/craft rules that **fail
+  L1's inclusion test** (a tech swap would rewrite them, *or* they don't trace to an L0 line).
+  They live in the product's existing `CLAUDE.md` / `AGENTS.md` (named, not relocated — F-II),
+  **trace up** to an Article or L0 line, are **enforced by mechanism** (lint / CI / hook) rather
+  than a conformance ledger, and cross the firewall only by **promotion/demotion** (F-IV).
+- Expanded `process/layers.md` §L2; added `process/statutes.md` (the harvest how-to) and
+  `templates/statute.md` (annotated shape: `rule · serves · enforced-by · why`).
+- **No framework Article added.** The governing meta-rule for L2 (an F-VII candidate) is
+  deferred until a live DSAMind L2 harvest proves it — honoring F-I (discovery before
+  codification), the same path F-V/F-VI took. Tracked as an in-flight proof in `registry.md`.
 
 ### [0.5.0] — 2026-06-29 — `audit-conformance` skill (recurring L1 reality-check)
 - Added the `audit-conformance` skill (`.claude/skills/`): runs each L1 Article's fitness
