@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.4.0   (self-hosted)
+framework: constitution@0.5.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -100,6 +100,8 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
 - **Why** — a constitution that *claims conformance* it doesn't have is fiction; separating
   agreement (status) from reality (conformance) keeps it honest without hiding debt.
 - **Proven** — DSAMind's L1 was harvested and reality-checked by this process (2026-06-28).
+  Process: [process/defining-l0-l1.md](process/defining-l0-l1.md); the *recurring* reality-check
+  (re-running the fitness signals after code changes) is the `audit-conformance` skill.
 
 ---
 
@@ -121,6 +123,19 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.5.0] — 2026-06-29 — `audit-conformance` skill (recurring L1 reality-check)
+- Added the `audit-conformance` skill (`.claude/skills/`): runs each L1 Article's fitness
+  signal against the live codebase and sets `conformance` (HOLDS / VIOLATED / UNVERIFIED) with
+  evidence — the **recurring** half of F-VI, complementing the one-time Step B harvest. It
+  writes only the conformance axis (below the firewall) and *proposes* anything touching
+  `status` or an Article's text (F-IV).
+- Surfaced by a real DSAMind re-audit: after #112 landed the patternId fixes, the audit caught
+  that 5 catalog patterns were unregistered in the canonical taxonomy — so A1 could not honestly
+  HOLD — and A1/A5 were flipped to HOLDS only once the code actually conformed. The framework
+  improving through use (P1).
+- No new Article and no status change: the skill operationalizes the already-ratified F-VI, and
+  is referenced from F-VI's "Proven" note.
 
 ### [0.4.0] — 2026-06-28 — Parties, Mission/Mandate, Grow/Monetize elicitation
 - Product Preambles now have two halves: a **Mission** (Solution + Value, to the users) and a
