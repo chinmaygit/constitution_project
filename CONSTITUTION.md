@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.1.0   (self-hosted)
+framework: constitution@0.2.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -63,6 +63,38 @@ is*. Domain rules belong to the projects that adopt it.
 - **Serves** — P1.
 - **Fitness** — every L0/L1 amendment in the ledger below names a human ratifier.
 
+### Article F-V — L0 is discovered, distilled, and human-held
+`status: PROVISIONAL`
+
+- **Principle** — A product's L0 (Preamble) is the *minimal* set of identity-defining
+  statements, discovered from the product's reason to exist and distilled until removing
+  any one would change what the product *is*. L0 is human-authored and human-ratified, and
+  is deliberately **not** bound to a fitness function.
+- **Serves** — P1.
+- **Fitness** — L0 holds ≤3 statements; no fitness signal is attached directly to an L0
+  line; every L1 Article's `serves` resolves to an L0 line (the vision is fully covered).
+- **Why** — the vision encodes intent only the founder holds: an agent may help phrase it
+  but cannot originate it, and a machine cannot check identity.
+- **Proving** — DSAMind's L0 (P1–P3) was defined by this process and ratified (2026-06-28);
+  the L0 half is proven and eligible to graduate to `RATIFIED` on ratifier sign-off. The L1
+  half awaits Step B. Process: [process/defining-l0-l1.md](process/defining-l0-l1.md);
+  questions: [process/l0-elicitation.md](process/l0-elicitation.md); skill: `define-preamble`.
+
+### Article F-VI — L1 is harvested, tested, and reality-checked
+`status: PROVISIONAL`
+
+- **Principle** — L1 Articles are *harvested from observed practice* (past decisions,
+  ADRs, incidents, existing rules), never invented. Each must pass the inclusion test,
+  trace to an L0 line, and declare principle / serves / fitness / status. Status is
+  assigned by running the fitness signal against the live codebase — an Article is never
+  marked `RATIFIED` while the code violates it.
+- **Serves** — P1.
+- **Fitness** — every L1 Article carries all four fields; every `serves` resolves to a
+  real L0 line; every `RATIFIED` Article's fitness signal currently passes against the code.
+- **Why** — a constitution that asserts what the code does not do is fiction; harvesting
+  from practice rather than imagination is P1 applied to article-writing itself.
+- **Proving** — provisional until DSAMind's L1 is built by this process.
+
 ---
 
 ## Conflict resolution
@@ -83,6 +115,20 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.2.0] — 2026-06-28 — Process of defining L0 and L1 (proposed)
+- Added Article F-V (L0 is discovered, distilled, human-held) and Article F-VI (L1 is
+  harvested, tested, reality-checked), both `PROVISIONAL`.
+- These are the framework's first articles to enter through the amendment lifecycle rather
+  than the bootstrap exemption: they are being proven *now* by defining DSAMind's L0 and L1
+  from the ground up (branch `docs/dsamind-constitution`). They graduate to `RATIFIED` when
+  that build completes and the process holds. This honors F-I going forward.
+- Operational how-to: [process/defining-l0-l1.md](process/defining-l0-l1.md).
+- Added the L0 elicitation protocol ([process/l0-elicitation.md](process/l0-elicitation.md))
+  and the `define-preamble` skill (`.claude/skills/`).
+- **L0 half proven:** DSAMind's Preamble (P1–P3) was produced by the protocol and ratified;
+  the run fed back two protocol refinements (Q3 sharpened, Q8 forced to an order). F-V's L0
+  half is eligible to graduate; F-VI stays `PROVISIONAL` pending the L1 harvest (Step B).
 
 ### [0.1.0] — 2026-06-28 — Founding draft (proposed)
 - Bootstrapped the framework from the DSAMind governance discussion.
