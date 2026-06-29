@@ -7,7 +7,7 @@ mechanism must trace back to the live project that proved it.
 
 | Project | Pinned version | Role | Constitution |
 |---------|----------------|------|--------------|
-| DSAMind (`dsa_project`) | `constitution@0.4.0` | founding instance + live lab | `decisions/CONSTITUTION.md` |
+| DSAMind (`dsa_project`) | `constitution@0.9.0` | founding instance + live lab | `decisions/CONSTITUTION.md` |
 
 ## Promoted mechanisms
 
