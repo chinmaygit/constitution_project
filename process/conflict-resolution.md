@@ -42,8 +42,10 @@ ADRs all interpreting one Article — that pile of ADRs is the evidence packet a
 Article itself is incomplete and should be amended. Repeated case law becomes a
 constitutional amendment, the way repeated rulings eventually prompt new legislation.
 
-> Worked example (DSAMind): Article I says "one pattern per problem," but *Course
+> Worked example (DSAMind): Article **A1** says "one pattern per problem," but *Course
 > Schedule* is genuinely taught two ways (BFS topo-sort vs DFS cycle detection). The agent
 > escalates rather than guessing; the human rules "split into two Problem records"; that
-> ruling, recorded as an ADR and seen repeatedly, is exactly how DSAMind's sub-clause
-> "Article I.2 — no multi-pattern ambiguity" came to exist.
+> ruling is recorded as an ADR — `serves: [A1]`, `trigger: certiorari` — and when the same
+> escalation recurs, the pile of ADRs is the evidence packet that A1 should be amended
+> (`amends: [A1]`). That is how a sub-clause like "A1 — no multi-pattern ambiguity" comes to
+> exist. ADR structure: [../templates/adr.md](../templates/adr.md).

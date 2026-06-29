@@ -83,9 +83,12 @@ doesn't trace to an L0 line (general craft). Both kinds are binding; neither is 
 ## L3 — Case law
 
 ADRs: dated decisions that *interpret* the layers above for a specific situation. They
-accrete forever and are never deleted, only superseded with a forward link. A resolved
-conflict-escalation becomes an ADR; a stack of ADRs on one Article is the evidence that
-the Article itself needs amending (see `conflict-resolution.md`).
+accrete forever and are never deleted, only superseded with a forward link. Each ADR **cites
+the law it interprets** (`serves: [L0/L1/L2 ids]`) and records why it exists (`trigger:`
+architectural · stack-invariant · migration · **certiorari**). A resolved conflict-escalation
+(the certiorari move) becomes an ADR; if the ruling extends an Article it names the amendment
+(`amends:`); a stack of ADRs on one Article is the evidence that the Article itself needs
+amending. See `conflict-resolution.md` and `templates/adr.md`.
 
 ## L4 — Compiled prompt
 

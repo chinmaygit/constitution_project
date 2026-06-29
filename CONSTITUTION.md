@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.8.0   (self-hosted)
+framework: constitution@0.9.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -146,6 +146,19 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.9.0] — 2026-06-29 — L3 case-law structure and triggers
+- Refined the ADR into **case law**: `templates/adr.md` now carries `serves` (the L0/L1/L2 ids it
+  interprets), `superseded_by` (forward link — never delete, supersede), `amends` (the PROMOTE
+  hook), and `trigger` (architectural · stack-invariant · migration · **certiorari**); body gains
+  **Question of law → Ruling → Constitutional impact**.
+- Named the **certiorari trigger** explicitly: a collision between Articles or a gap the law
+  doesn't cover → the agent STOPS and escalates; the ruling becomes an ADR; recurring ADRs on one
+  Article climb to an amendment. Refreshed the `conflict-resolution.md` worked example (A1) and the
+  `layers.md` §L3 definition.
+- Surfaced by DSAMind: its 10 ADRs predate the constitution and cite no Article — they were
+  architecture notes, not case law. The structure change + a serves-backfill is the live proof; a
+  governing Article (F-VIII candidate) is deferred until that proof holds (F-I).
 
 ### [0.8.0] — 2026-06-29 — `derive-statutes` skill (top-down L1 → L2)
 - Added the `derive-statutes` skill (`.claude/skills/`): for each L1 Article, derives the L2
