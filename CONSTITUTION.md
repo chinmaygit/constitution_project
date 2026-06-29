@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.9.0   (self-hosted)
+framework: constitution@0.10.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -48,7 +48,9 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
 - **Principle** — Every governed rule lives in exactly one layer (L0–L4), and is never
   duplicated across layers, nor across the framework and an instance.
 - **Serves** — P1.
-- **Fitness** — no rule's text appears verbatim in two layer documents (audit check).
+- **Fitness** — no rule's text appears verbatim in two layer documents; every cross-layer
+  reference (`serves` / `amends` / `supersedes` / `party`) resolves and every layer traces up;
+  no rule lives outside a layer. Verified by the `audit-structure` skill.
 
 ### Article F-III — Experiments are pre-registered
 `status: RATIFIED` · `conformance: HOLDS`
@@ -146,6 +148,17 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.10.0] — 2026-06-29 — `audit-structure` skill (constitution integrity)
+- Added the `audit-structure` skill (`.claude/skills/`): a read-only structural audit of the whole
+  L0–L4 governance graph — every cross-layer reference resolves (`serves`/`amends`/`supersedes`/
+  `party`), every layer traces up, nothing is orphaned, duplicated, or living **outside** a layer
+  (ungoverned), the firewall + two-axis fields are intact, and the pin/version/ledger are
+  consistent. It audits the *constitution*, not the code — the complement to `audit-conformance`.
+- This is the audit check **F-II** already named in its fitness; F-II's fitness is reworded to
+  reference the skill and broadened to referential integrity + the no-rule-outside-a-layer check.
+- Completes the audit set: `audit-conformance` (L1↔code), `derive-statutes` (L1→L2),
+  `audit-structure` (the constitution's own integrity). No new Article; no status change.
 
 ### [0.9.0] — 2026-06-29 — L3 case-law structure and triggers
 - Refined the ADR into **case law**: `templates/adr.md` now carries `serves` (the L0/L1/L2 ids it
