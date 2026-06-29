@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.7.0   (self-hosted)
+framework: constitution@0.8.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -122,7 +122,9 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
 - **Proven** — DSAMind's L2 was harvested from its `AGENTS.md` / `CLAUDE.md` by
   `process/statutes.md` (2026-06-29): 15 engineering statutes annotated, an F-II duplicate
   consolidated, stale statutes (Category/Mode) fixed, and the L1/L2 boundary confirmed clean.
-  See [registry.md](registry.md).
+  See [registry.md](registry.md). Harvest how-to: `process/statutes.md`; the top-down counterpart
+  (deriving the statutes each Article needs, and finding under-enforced Articles) is the
+  `derive-statutes` skill.
 
 ---
 
@@ -144,6 +146,16 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.8.0] — 2026-06-29 — `derive-statutes` skill (top-down L1 → L2)
+- Added the `derive-statutes` skill (`.claude/skills/`): for each L1 Article, derives the L2
+  Statutes needed to make its fitness signal enforceable in the actual stack, reuses existing
+  statutes (F-II), proposes only the gaps, and surfaces **under-enforced Articles** (fitness with
+  no operationalizing statute). The top-down complement to `process/statutes.md`'s bottom-up
+  harvest; both serve F-VII. Referenced from F-VII's "Proven" note.
+- Grounded by F-I: a candidate must fall out of an Article's `fitness` applied to real code — it
+  derives, never invents. L2 is below the firewall, so the skill drafts/proposes; a human nod
+  precedes writing into the product's CLAUDE.md/AGENTS.md. No new Article; no status change.
 
 ### [0.7.0] — 2026-06-29 — Article F-VII ratified (L2 statute discipline)
 - **F-VII graduates to `RATIFIED` (`conformance: HOLDS`).** The L2 statute model — fail L1's
