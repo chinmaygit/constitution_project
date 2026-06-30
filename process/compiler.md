@@ -25,6 +25,16 @@ The compile step is implemented as the **`compile-prompt`** skill
   ratifier (F-IV). The compiler never fabricates governance to make a task fit; that gap is
   the signal the constitution must grow.
 - **Selection = strategy 2** (below): L0 always, all `RATIFIED` L1, plus task-matched L2/L3.
+- **Deterministic discovery.** The compiler never relies on being *told* which files hold L2. It
+  bootstraps from the product's root `CLAUDE.md` (the **governance map**: constitution path, ADR
+  dir, L2 convention) and **globs all `CLAUDE.md` / `AGENTS.md`** for statute homes — the glob is
+  the floor (never miss a nested home), the map is the index (navigable + audit-anchored). A
+  statute home not reachable from the map is FRICTION. *(Surfaced by the first headless compile
+  test, where a strict reader nearly missed a nested statute home.)*
+- **Negative invariants + no invented conventions.** The compiler tags not just the Articles a task
+  *implements* but every `RATIFIED` Article its write path could *break* (reachability, not
+  relevance); and a definition-of-done assertion may never instruct the actor to invent an unpinned
+  convention — that is a FRICTION gap for the ratifier.
 
 ## Open design question — selection strategy (F-III experiment)
 

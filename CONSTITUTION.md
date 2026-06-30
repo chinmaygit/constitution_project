@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.11.0   (self-hosted)
+framework: constitution@0.12.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -148,6 +148,25 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.12.0] — 2026-06-30 — `compile-prompt` hardened: deterministic discovery + negative invariants
+- Hardened the `compile-prompt` skill (→ v1.1.0) after the first headless compile tests (Haiku 4.5
+  and Sonnet 4.6 run **cold** against a consumer, no operator context). Three procedural fixes:
+  - **Deterministic L2 discovery.** Replaced "read root + nested `CLAUDE.md`/`AGENTS.md`" (a
+    *description* an agent can't act on) with a protocol: bootstrap from the product's root
+    `CLAUDE.md` **governance map** (constitution path, ADR dir, L2 convention), then **glob all
+    `CLAUDE.md`/`AGENTS.md`** for statute homes. Glob is the floor; the map is the index. The test
+    caught a strict reader nearly skipping a nested statute home.
+  - **Negative-invariants step.** The compiler now scans every `RATIFIED` Article for ones the task
+    could *break* (not just implement) and tags them MUST NOT BREAK — relevance is not the test,
+    **reachability** is. (A cheaper model had dropped a must-not-break invariant by reasoning it
+    wasn't "about" the feature.)
+  - **No invented conventions.** A definition-of-done assertion may never tell the actor to invent
+    an unspecified convention; an unpinned convention is a FRICTION gap for the ratifier.
+- **Consumer-blind machinery.** Purged all consumer-specific names/paths/examples from the skill
+  doc — executable machinery names no consumer; worked examples are placeholder-shaped. Design/
+  process docs and `registry.md` may still name the live lab (the coupling is one-directional).
+- Recorded the discovery decision in `process/compiler.md`. No new Article; no status change.
 
 ### [0.11.0] — 2026-06-30 — `compile-prompt` skill (the L4 compile step)
 - Built the **`compile-prompt`** skill (`.claude/skills/`): the L4 compile step — `L4 =

@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: L4
   enforces: process/compiler.md
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Compile a task into the L4 actor briefing
@@ -23,7 +23,7 @@ through L0→L3 and hands the actor exactly the law that governs it. Spec:
 [process/compiler.md](../../../process/compiler.md). Template:
 [templates/compiled-prompt.md](../../../templates/compiled-prompt.md).
 
-## The two grounding rules (read first)
+## Grounding rules (read first)
 
 1. **Compile, don't implement.** The output is the briefing artifact, full stop. A *separate*
    actor session runs it. This skill never writes product code — keeping the compile step and the
@@ -34,6 +34,12 @@ through L0→L3 and hands the actor exactly the law that governs it. Spec:
    move). The compiler *reads* governance; it never invents an Article or statute to make a task
    fit. That gap is not a compiler failure — it is the signal the constitution must grow, and it is
    above the firewall (F-IV): the ratifier's call, not the agent's.
+3. **Discover, don't assume (project-agnostic).** This skill compiles for *any* product and names
+   none — every path and id below is a `<placeholder>`. Find every layer with the discovery protocol
+   in the Procedure (bootstrap from the root `CLAUDE.md` governance map, then **glob all
+   `CLAUDE.md` / `AGENTS.md`** for L2 homes). A path you were handed is a convenience; the glob is
+   the source of truth. Never hardcode or assume a path, and never trust that the files you were
+   named are the complete set.
 
 ## Selection strategy (v1 default)
 
@@ -44,8 +50,9 @@ relevant**, safe over clever:
 - **L1** — include every `RATIFIED` Article whose `serves` or product surface touches the task.
   When unsure, **include**: a spurious invariant costs one line in the briefing; a missing one
   costs a violation in production.
-- **L2** — include statutes matched to the task's surface (the files / stack it touches), found via
-  their `serves` back-links and their home (root vs. nested `CLAUDE.md` / `AGENTS.md`).
+- **L2** — from the statute homes **discovered** in the Procedure (the glob of every
+  `CLAUDE.md` / `AGENTS.md`), include those whose statutes' `serves` back-links or surface touch the
+  task. Discover the full set first, then match — never match against only the homes you were handed.
 - **L3** — include ADRs whose `serves` overlaps the selected L0/L1/L2 ids. Always cite the **live**
   ruling, never a superseded one (cite its successor).
 
@@ -57,67 +64,89 @@ pre-registered metric (invariant-violations-per-PR vs. briefing length) — not 
 
 1. **Read the task.** Restate the owner's intent in one line. If it is really several tasks,
    compile the smallest shippable one and say which slice you took.
-2. **Locate the product constitution.** Read its L0 (Preamble P-lines), L1 (Articles + `status` /
-   `conformance` / `serves` / `fitness` / `party`), L2 (root + nested `CLAUDE.md` / `AGENTS.md`
-   statutes + their `serves`), L3 (the `decisions/` ADRs + `serves` / `superseded_by`). *(DSAMind:
-   `decisions/CONSTITUTION.md`; root + nested `CLAUDE.md` / `AGENTS.md`; `decisions/*.md`.)*
-3. **Place the task — the certiorari check.** Map it to ≥1 L0 line and ≥1 `RATIFIED` Article.
-   - **Clean placement** → proceed to step 4.
+2. **Bootstrap from the product's entry point.** Read the product's **root `CLAUDE.md`** first — it
+   is the single entry point and should declare a **governance map**: where L0/L1 live (the
+   constitution doc), where L3 lives (the ADR directory), and the L2 convention. Paths vary per
+   product — **never assume one**; the map tells you. If there is no governance map, fall back to
+   discovery (next step) and **record the missing map as FRICTION** (the product should add one).
+3. **Discover every L2 home deterministically — never rely on being named the files.** From the repo
+   root, **glob all `CLAUDE.md` and `AGENTS.md`** files (root *and* nested), excluding
+   `node_modules/`, `.git/`, and generated/vendored output. Read each; those carrying
+   `serves`-annotated statutes are L2 homes. This is the floor that prevents silently skipping a
+   nested statute home several directories deep. A statute home found on disk but **absent from the
+   root map** → FRICTION.
+4. **Load L0 / L1 / L3 from the declared locations.** L0 (Preamble P-lines) + L1 (Articles +
+   `status` / `conformance` / `serves` / `fitness` / `party`) from the constitution doc; L3 ADRs
+   (+ `serves` / `superseded_by`) from the ADR directory the map names.
+5. **Place the task — the certiorari check.** Map it to ≥1 L0 line and ≥1 `RATIFIED` Article.
+   - **Clean placement** → proceed.
    - **No enforcing Article** (serves an L0 line nothing governs) **or collision** (two Articles in
      tension) → **STOP. Do not compile.** Report the gap/collision and escalate to the ratifier —
-     this is the certiorari trigger (→ an ADR, possibly an amendment). See the certiorari output
-     example below.
-   - Note conformance: if a governing Article is `VIOLATED`, you may still compile, but the
-     briefing must say the actor is building on **known debt** (don't hide it).
-4. **Select the slices** per the strategy above.
-5. **Write the definition of done.** Turn each governing Article's `fitness` and each relevant
-   statute's `enforced-by` into concrete pass/fail assertions for **this** task. These are what CI
-   runs — they must be checkable (a test, a query, a lint), not prose.
-6. **Compile.** Fill [templates/compiled-prompt.md](../../../templates/compiled-prompt.md):
-   `WHY` (L0) → `INVARIANTS` (L1) → `HOW TO BUILD` (L2) → `PRECEDENT` (L3) → `DEFINITION OF DONE`.
-   Every line carries a provenance tag — `[L0·Pn]`, `[L1·An]`, `[L2·<statute>]`, `[L3·ADR-NNNN]`.
-   The header names the product and its pinned framework + doc version.
-7. **Emit the artifact and stop.** Print the compiled briefing as the deliverable. Offer to write
-   it to a handoff file in the product's gitignored ephemeral area (e.g. DSAMind `.claude/`) for a
-   separate actor session to pick up. **Do not implement it here.**
+     the certiorari trigger (→ an ADR, possibly an amendment). See the certiorari output example.
+   - Note conformance: if a governing Article is `VIOLATED`, you may still compile, but the briefing
+     must say the actor is building on **known debt** (don't hide it).
+6. **Scan for negative invariants — what the task must NOT break.** Beyond the Articles the task
+   *implements*, scan every `RATIFIED` Article for ones the task could *violate* even though it
+   doesn't implement them — typically because the task's write path touches a field, table, or flow
+   another Article freezes (e.g. a row-reorder that must not mutate a frozen identity column).
+   Include each as a **MUST NOT BREAK** invariant, tagged to its Article. When unsure, include
+   (strategy 2). *This is the guardrail a cheaper model skips when it reasons "that Article isn't
+   about my feature" — relevance is not the test; **reachability** is.*
+7. **Select the slices** per the strategy above — spanning both the governing and the
+   must-not-break Articles, their statutes, and the precedent ADRs.
+8. **Write the definition of done.** Turn each governing/must-not-break Article's `fitness` and each
+   relevant statute's `enforced-by` into concrete pass/fail assertions for **this** task — checkable
+   (a test, a query, a lint), not prose. **Never emit an assertion that tells the actor to invent an
+   unspecified convention** (an ordering base, an id format, a response shape). If the task needs a
+   convention L0–L3 doesn't pin, that is a **gap to surface as FRICTION** — an L2 detail for the
+   ratifier, not a "pick one and document it" punt. An invented convention is ungoverned and can't
+   be CI-checked.
+9. **Compile.** Fill [templates/compiled-prompt.md](../../../templates/compiled-prompt.md):
+   `WHY` (L0) → `INVARIANTS` (L1 — governing *and* must-not-break) → `HOW TO BUILD` (L2) →
+   `PRECEDENT` (L3) → `DEFINITION OF DONE`. Every line carries a provenance tag — `[L0·Pn]`,
+   `[L1·An]`, `[L2·<statute>]`, `[L3·ADR-NNNN]`. The header names the product and its pinned version.
+10. **Emit the artifact and stop.** Print the compiled briefing as the deliverable, and report what
+    you **discovered** — the L2 homes found, and any home not declared in the root map. Offer to
+    write it to a handoff file in the product's gitignored ephemeral area for a separate actor
+    session. **Do not implement it here.**
 
 ## Output shape
 
 **A — clean compile** (task places cleanly under existing law):
 
 ```
-### Compiled instruction — task: reorder items within a playlist
-# generated from DSAMind constitution @ v0.7.0 (constitution@0.9.0) · DO NOT EDIT (edit L0–L3 instead)
+### Compiled instruction — task: <task name>
+# generated from <product> constitution @ v<X.Y.Z> (constitution@<pin>) · DO NOT EDIT (edit L0–L3 instead)
 
 WHY THIS EXISTS
-  [L0·P1]    fluency-not-coverage — a playlist curates a focused practice set, not a backlog dump
+  [L0·<Pn>]        <the vision line this task serves, in one clause>
 
 INVARIANTS YOU MUST HOLD
-  [L1·D2]    <playlist-ordering Article, verbatim or tightened to this task>
-  [L1·A1]    every problem keeps its single canonical patternId — reordering must not touch it
+  [L1·<Art-gov>]   <governing Article — the invariant this task implements, tightened to the task>
+  [L1·<Art-neg>]   <must-not-break Article — a frozen field or flow the task's write path could touch>
 
 HOW TO BUILD (current stack)
-  [L2·db-singleton]   all DB access via the lib/db.ts singleton · enforced-by: prompt-only
-  [L2·api-zod]        validate the reorder payload with zod at the route boundary · enforced-by: prompt-only
+  [L2·<statute-a>]   <stack-binding statute, e.g. the DB-access rule> · enforced-by: <mechanism>
+  [L2·<statute-b>]   <boundary-validation statute>                    · enforced-by: <mechanism>
 
 PRECEDENT
-  [L3·ADR-0010]  Playlist is the canonical grouping primitive; modes were removed — do not reintroduce a mode-shaped path
+  [L3·ADR-<NNNN>]  <the live ruling that constrains this task; cite the successor if superseded>
 
 DEFINITION OF DONE (these run in CI — your code must pass)
-  ✓ reordering N items yields a contiguous 0..N-1 position sequence (no gaps, no dupes)
-  ✓ no PlaylistItem.patternId is mutated by a reorder
-  ✓ the API route rejects malformed input via a zod schema
+  ✓ <assertion from Art-gov's fitness — checkable by test / query / lint>
+  ✓ <assertion from Art-neg — the must-not-break invariant, e.g. "field X is unchanged by this op">
+  ✓ <assertion from a statute's enforced-by — e.g. boundary input is schema-validated>
 ```
 
 **B — certiorari STOP** (task cannot be compiled; escalate instead):
 
 ```
 CERTIORARI — task cannot be compiled
-  task:    add a per-question interview countdown timer
-  serves:  [L0·P2 in-service-of-the-interview]
-  blocker: P2 has NO enforcing L1 Article — "interview-relevance" is vision-only.
+  task:    <task name>
+  serves:  [L0·<Pn> <vision line>]
+  blocker: <Pn> has NO enforcing L1 Article — this vision line is unimplemented in L1.
   → STOP. Above the firewall (F-IV). Escalate to the ratifier:
-       (a) ratify a P2 interview-relevance Article, then re-compile against it, or
+       (a) ratify an Article that enforces <Pn>, then re-compile against it, or
        (b) the owner accepts this as ungoverned vision work and says so on the record.
   Do not invent an Article to fill the slot — that gap is exactly what the certiorari move surfaces.
 ```
