@@ -102,5 +102,11 @@ L0–L3 are source; L4 is the emitted binary the implementing agent runs. The co
 selects only the slices of each layer that touch the task and emits a focused briefing,
 ending with a **definition of done** = the fitness assertions the output must pass. Those
 same assertions also run independently in CI: prompt-time guidance, commit-time
-enforcement. See `compiler.md` (selection logic is still being designed). Template:
+enforcement. The compile step is the **`compile-prompt`** skill (compile-only — it emits
+the artifact and stops; a separate actor session implements it). It is the front door for
+day-to-day work: the owner states a task, the compiler reaches down through L0→L3 for the
+governing slice. When a task can't be placed — it serves an L0 line no Article enforces, or
+two Articles collide — the compiler STOPS and escalates to the ratifier (the certiorari
+move): that is how routine work surfaces the constitution's gaps. See `compiler.md` (v1
+selects strategy 2; strategy 3 is a pre-registered F-III experiment). Template:
 [../templates/compiled-prompt.md](../templates/compiled-prompt.md).

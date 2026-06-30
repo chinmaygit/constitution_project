@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.10.0   (self-hosted)
+framework: constitution@0.11.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -148,6 +148,23 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.11.0] — 2026-06-30 — `compile-prompt` skill (the L4 compile step)
+- Built the **`compile-prompt`** skill (`.claude/skills/`): the L4 compile step — `L4 =
+  compile(task, L0..L3)`. Given an owner's task it locates the governing slice (the L0 line it
+  serves, the `RATIFIED` Articles, the matched L2 statutes, the precedent ADRs) and emits one
+  provenance-tagged briefing ending in a definition of done = the fitness assertions CI runs. This
+  is the **front door for day-to-day work**: the owner states a task; the compiler reaches down for
+  the law; the audits and amendments are maintenance of the machine the compiler runs on.
+- Two v1 decisions, recorded in `process/compiler.md`: **compile-only handoff** (emit the artifact,
+  stop — a separate actor session implements it) and the **certiorari STOP** (a task that serves an
+  L0 line no Article enforces, or collides with two Articles, is not compiled — the skill stops and
+  escalates to the ratifier, F-IV). Selection defaults to **strategy 2** (L0 always + all RATIFIED
+  L1 + task-matched L2/L3); strategy 3 stays a pre-registered F-III experiment.
+- Updated `layers.md` §L4 (selection no longer "being designed") and `compiler.md` (open question
+  narrowed to the selection-strategy experiment). **No new Article**: an L4-governing Article is
+  deferred until a live task proves the loop (F-I — discovery before codification), mirroring how
+  F-VIII (govern L3) is deferred. No status change.
 
 ### [0.10.0] — 2026-06-29 — `audit-structure` skill (constitution integrity)
 - Added the `audit-structure` skill (`.claude/skills/`): a read-only structural audit of the whole

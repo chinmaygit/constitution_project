@@ -12,10 +12,24 @@ output   one compiled prompt (templates/compiled-prompt.md), every line provenan
 The compiled prompt ends with a **definition of done** = the fitness assertions the output
 must pass. Those same assertions run independently in CI.
 
-## Open design question (deciding as we go)
+## Decided (v1) — the `compile-prompt` skill
 
-The compiler is the one governed component whose internals are not yet settled, because
-*which* slices of L0–L3 to pull for a given task is a judgment call:
+The compile step is implemented as the **`compile-prompt`** skill
+(`.claude/skills/compile-prompt/`). Two settled choices:
+
+- **Compile-only handoff.** The skill emits the briefing artifact and stops; a *separate*
+  actor session implements it. Keeping compile and build apart keeps the provenance trail
+  clean and the briefing auditable.
+- **Certiorari STOP.** A task that serves an L0 line **no Article enforces**, or that
+  collides with two Articles, is not compiled — the skill STOPS and escalates to the
+  ratifier (F-IV). The compiler never fabricates governance to make a task fit; that gap is
+  the signal the constitution must grow.
+- **Selection = strategy 2** (below): L0 always, all `RATIFIED` L1, plus task-matched L2/L3.
+
+## Open design question — selection strategy (F-III experiment)
+
+*Which* slices of L0–L3 to pull for a given task is the one judgment call still open as an
+experiment:
 
 - pull too little → the actor violates an invariant nobody mentioned.
 - pull too much → you've shipped the whole constitution again, and relevance is lost.
