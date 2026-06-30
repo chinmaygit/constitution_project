@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.12.0   (self-hosted)
+framework: constitution@0.13.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -148,6 +148,18 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.13.0] — 2026-06-30 — `audit-structure` enforces the governance map (discoverability)
+- Extended the `audit-structure` skill (→ v1.1.0) with a **governance-map check** (new check 6): the
+  product's root `CLAUDE.md` must declare an entry-point **governance map** (where L0/L1 live, where
+  L3 lives, the L2 convention); the audit verifies it **resolves** (`map-drift` if an entry points at
+  nothing) and **lists every discovered statute home** — the glob of all `*/CLAUDE.md` + `AGENTS.md`
+  — flagging any nested home absent from the map as `map-gap` (a silent home). This is the structural
+  counterpart to the `compile-prompt` discovery fix [0.12.0]: the compiler discovers by glob, the
+  audit guarantees the human-facing index stays complete. No map at all → one finding, not one-per-home.
+- The glob is the source of truth for L2 homes; the map is the index, checked against it.
+- Genericized the one consumer name left in the skill's description (machinery names no consumer).
+  No new Article; F-II's discoverability fitness now has an explicit map check; no status change.
 
 ### [0.12.0] — 2026-06-30 — `compile-prompt` hardened: deterministic discovery + negative invariants
 - Hardened the `compile-prompt` skill (→ v1.1.0) after the first headless compile tests (Haiku 4.5

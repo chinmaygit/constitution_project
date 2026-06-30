@@ -1,11 +1,11 @@
 ---
 name: audit-structure
-description: Audits the internal/referential integrity of the whole L0–L4 governance system — the constitution itself, not the code. Checks every cross-layer reference resolves (serves/amends/supersedes/party), every layer traces up (Articles→L0, statutes→Article/L0, ADRs→law), nothing is orphaned or duplicated across layers (F-II), the firewall and two-axis fields are intact, the framework pin/version/ledger are consistent, and — the headline — flags any rule living OUTSIDE the layers (ungoverned). Read-only: reports + proposes, never auto-fixes. Use when a user wants to audit/lint/health-check the constitution, find drift between layers, find orphaned or ungoverned rules, check that everything traces up, or verify the governance graph is connected. Triggers - "audit the constitution", "check for drift", "is the constitution consistent", "find orphaned/ungoverned rules", "anything outside the layers", "does everything trace up", "lint the governance". Do NOT use for - auditing whether code satisfies L1 fitness (use audit-conformance), deriving missing statutes (use derive-statutes), or a project's doc-bloat/staleness sweep (that's a project-level skill, e.g. DSAMind's dsa-audit-governance).
+description: Audits the internal/referential integrity of the whole L0–L4 governance system — the constitution itself, not the code. Checks every cross-layer reference resolves (serves/amends/supersedes/party), every layer traces up (Articles→L0, statutes→Article/L0, ADRs→law), nothing is orphaned or duplicated across layers (F-II), the firewall and two-axis fields are intact, the framework pin/version/ledger are consistent, and — the headline — flags any rule living OUTSIDE the layers (ungoverned); and verifies the product's **governance map** — the root-`CLAUDE.md` entry-point index — resolves and lists every discovered statute home (no silent nested home). Read-only: reports + proposes, never auto-fixes. Use when a user wants to audit/lint/health-check the constitution, find drift between layers, find orphaned or ungoverned rules, check that everything traces up, or verify the governance graph is connected. Triggers - "audit the constitution", "check for drift", "is the constitution consistent", "find orphaned/ungoverned rules", "anything outside the layers", "does everything trace up", "lint the governance", "audit the governance map", "is the index complete", "any nested CLAUDE.md missing from the map". Do NOT use for - auditing whether code satisfies L1 fitness (use audit-conformance), deriving missing statutes (use derive-statutes), or a consumer's own doc-bloat/staleness sweep (that's a project-level skill the consumer owns, not this framework audit).
 metadata:
   scope: project
   layer: cross-cutting
   enforces: F-II
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Audit the constitution's structural integrity (L0–L4)
@@ -46,7 +46,12 @@ statutes (`derive-statutes`).
 **5. Anything OUTSIDE the layers (the headline):**
 - A rule in `CLAUDE.md` / `AGENTS.md` that no layer claims — not tagged L2, no `serves`, not an Article, not an ADR. **Ungoverned rule** → either annotate it as a statute or delete it.
 
-**6. Promotion / demotion signals (informational, not errors):**
+**6. Governance map — the entry-point index resolves (discoverability):**
+- The product's **root `CLAUDE.md`** declares a **governance map** naming where L0/L1 live (the constitution doc), where L3 lives (the ADR directory), and the L2 convention. **No map at all** → one finding (the product should add one), not one-per-home.
+- Every location the map names **resolves** — the constitution doc and the ADR directory exist. A map entry pointing at nothing → `map-drift` (stale).
+- Every **discovered** statute home — the glob of all `*/CLAUDE.md` + `AGENTS.md` carrying `serves`-tagged statutes — is **acknowledged in the map**. A home on disk but absent from the map → `map-gap` (a silent nested home — the exact failure the L4 compiler hit).
+
+**7. Promotion / demotion signals (informational, not errors):**
 - A pile of ADRs all `serves`-ing one Article → **amendment candidate** (case law climbing to L1).
 - A statute that passes all four L1 tests → **promotion candidate**.
 - An Article that is tech-coupled (would die in a tech swap) → **demotion candidate**.
@@ -55,9 +60,11 @@ statutes (`derive-statutes`).
 
 1. **Build the graph.** Parse L0 (P-lines), L1 (Articles + fields), L2 (statutes + `serves`), L3
    (ADRs + `serves`/`supersedes`), the Preamble parties, the registry pin, the version + tag.
+   **Discover the L2 homes by glob** (every `*/CLAUDE.md` + `AGENTS.md`, minus `node_modules`/
+   generated) and **parse the root `CLAUDE.md` governance map** — you need both to run check 6.
 2. **Run the checks** above. For each finding, record the exact location and what's broken.
-3. **Classify** each: `broken-ref` · `orphan` · `duplication` · `ungoverned` · `field-gap` ·
-   `pin/version drift` · `promotion/demotion signal`.
+3. **Classify** each: `broken-ref` · `orphan` · `duplication` · `ungoverned` · `map-gap` ·
+   `map-drift` · `field-gap` · `pin/version drift` · `promotion/demotion signal`.
 4. **Report.** A grouped list; each finding gets a one-line proposed fix and which side of the
    firewall it sits on (conformance/L2 fixes an agent may apply on a nod; L0/L1/status fixes are
    proposed to the ratifier and run the amendment lifecycle).
@@ -73,6 +80,8 @@ ORPHANS (1)
 ONE-HOME (0)              ✓
 UNGOVERNED (1)
   AGENTS.md "<rule>"       not tagged L2, no serves → claim or cut
+MAP (1)
+  <nested>/CLAUDE.md       statute home not listed in root governance map → map-gap
 FIELD/FIREWALL (0)        ✓
 DRIFT (1)
   registry pin @0.4.0  vs  instance header @0.5.0 → reconcile
@@ -86,3 +95,4 @@ SIGNALS
 - **Every finding cites an exact location** — `file:line` or an id. No verdict from memory.
 - **Distinguish a real break from a healthy signal** — a broken `serves` is an error; "3 ADRs on A1" is an amendment signal, not a bug.
 - **`serves: []` is valid** for a pure-infra ADR or a general-craft statute — not an orphan. An orphan is a *non-empty* `serves` that resolves to nothing.
+- **The glob is the source of truth for L2 homes; the map is the index.** Verify the map against the discovered set, never the reverse. A missing map is **one** finding, not one-per-home.
