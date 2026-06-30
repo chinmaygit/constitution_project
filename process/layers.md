@@ -50,13 +50,26 @@ An Article is **not** a feature (a thing you build), **not** a statute (L2 craft
 and **not** a per-feature rule (those live in feature specs, below L2). When a future
 library could invalidate the rule, it's a statute, not an Article.
 
-Each Article carries three fields. **`party`** is which governed party it protects (named in
+Each Article carries four fields. **`party`** is which governed party it protects (named in
 the Preamble — commonly User or Owner). **`status`** is its legal force, set by the
 ratifier (`PROPOSED → RATIFIED → SUPERSEDED`); **`conformance`** is whether the live code
-satisfies the fitness signal right now, set by the audit (`HOLDS | VIOLATED | UNVERIFIED`).
-Ratification is agreement; conformance is reality. A `RATIFIED` + `VIOLATED` Article is law
-the code currently breaks — tracked debt, surfaced not hidden. `RATIFIED` does **not** mean
-"implemented"; `conformance: HOLDS` does.
+satisfies the fitness signal right now, set by the audit (`HOLDS | VIOLATED | UNVERIFIED`);
+**`enforcement`** is *how the invariant is kept true* — the durability of that conformance,
+also set by the audit (`UNGUARDED | AUDITED | GATED | STRUCTURAL`, weakest → strongest).
+Ratification is agreement; conformance is reality; **enforcement is reality's half-life.**
+A `RATIFIED` + `VIOLATED` Article is law the code currently breaks — tracked debt, surfaced
+not hidden. `RATIFIED` does **not** mean "implemented"; `conformance: HOLDS` does — but
+**`HOLDS` + `UNGUARDED` is the trap**: true today, protected by nothing, one careless commit
+from `VIOLATED` and invisible until the next audit.
+
+Enforcement is *derived, not declared*: the audit rolls it up from the `enforced-by` of the
+L2 statutes that serve the Article, taking the **weakest rung over the fitness's sub-claims**
+— an invariant is only as strong as its softest guard. `UNGUARDED` = author diligence only
+(`prompt-only`); `AUDITED` = a periodic check *detects* after the fact; `GATED` = a lint/CI/
+hook *prevents* at a build step; `STRUCTURAL` = a type/schema constraint makes violation
+unexpressible. It tells you how far to trust `HOLDS` and how often to re-audit — `STRUCTURAL`
+needs none; `UNGUARDED` needs constant vigilance, or **promotion up the ladder** (a new statute
++ a gate). Every `RATIFIED` + non-`STRUCTURAL` Article is the mechanization backlog.
 
 ## L2 — Statutes
 

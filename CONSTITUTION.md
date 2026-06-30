@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.13.0   (self-hosted)
+framework: constitution@0.14.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -26,13 +26,16 @@ is*. Domain rules belong to the projects that adopt it.
 
 ## L1 — Articles (meta-invariants)
 
-Each Article carries two independent fields: **`status`** (legal force, the ratifier's
-decision: `PROPOSED → RATIFIED → SUPERSEDED`) and **`conformance`** (whether the framework
+Each Article carries three independent fields: **`status`** (legal force, the ratifier's
+decision: `PROPOSED → RATIFIED → SUPERSEDED`), **`conformance`** (whether the framework
 itself satisfies the fitness signal now, the audit's finding: `HOLDS | VIOLATED |
-UNVERIFIED`). Ratification is agreement; conformance is reality.
+UNVERIFIED`), and **`enforcement`** (how durably that conformance is held, derived by the audit
+from the serving guards: `UNGUARDED | AUDITED | GATED | STRUCTURAL`, weakest → strongest).
+Ratification is agreement; conformance is reality; enforcement is reality's half-life —
+`HOLDS + UNGUARDED` is true-but-fragile, flagged as mechanization debt.
 
 ### Article F-I — Discovery before codification
-`status: RATIFIED` · `conformance: HOLDS`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
 
 - **Principle** — No rule is added to this framework until it has been proven in at
   least one live project. DSAMind is the founding instance.
@@ -43,7 +46,7 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
   from usage carries its evidence with it.
 
 ### Article F-II — One home per rule
-`status: RATIFIED` · `conformance: HOLDS`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
 
 - **Principle** — Every governed rule lives in exactly one layer (L0–L4), and is never
   duplicated across layers, nor across the framework and an instance.
@@ -53,7 +56,7 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
   no rule lives outside a layer. Verified by the `audit-structure` skill.
 
 ### Article F-III — Experiments are pre-registered
-`status: RATIFIED` · `conformance: HOLDS`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: UNGUARDED`
 
 - **Principle** — Every candidate rule declares its hypothesis, metric, and decision
   rule **before** it runs. The decision rule is frozen for the experiment's duration.
@@ -62,7 +65,7 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
   and a `pre-registered:` timestamp earlier than its `RUNNING` status.
 
 ### Article F-IV — No self-ratification above the firewall
-`status: RATIFIED` · `conformance: HOLDS`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
 
 - **Principle** — Changes to L0 or L1 — in the framework **or** any instance — require a
   human ratifier. Agents may propose, gather evidence, and author/enforce L4, but may
@@ -71,7 +74,7 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
 - **Fitness** — every L0/L1 amendment in the ledger below names a human ratifier.
 
 ### Article F-V — L0 is discovered, distilled, and human-held
-`status: RATIFIED` · `conformance: HOLDS`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
 
 - **Principle** — A product's L0 (Preamble) is the *minimal* set of identity-defining
   statements, discovered from the product's reason to exist and distilled until removing
@@ -87,17 +90,19 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
   [process/l0-elicitation.md](process/l0-elicitation.md); skill: `define-preamble`.
 
 ### Article F-VI — L1 is harvested, tested, and reality-checked
-`status: RATIFIED` · `conformance: HOLDS`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
 
 - **Principle** — L1 Articles are *harvested from observed practice* (past decisions,
   ADRs, incidents, existing rules), never invented. Each must pass the inclusion test,
-  trace to an L0 line, and declare `principle / serves / fitness / status / conformance`.
-  An Article's `status` (legal force) is the ratifier's decision; its `conformance` is set
-  by running the fitness signal against the live code. The two are independent — a
-  `RATIFIED` Article may be `VIOLATED` (tracked debt). **Never mark `conformance: HOLDS`
-  while the code violates the fitness signal.**
+  trace to an L0 line, and declare `principle / serves / fitness / status / conformance /
+  enforcement`. An Article's `status` (legal force) is the ratifier's decision; its
+  `conformance` is set by running the fitness signal against the live code, and its
+  `enforcement` (how durably that conformance is held) is derived from the guards that serve it.
+  Status and conformance are independent — a `RATIFIED` Article may be `VIOLATED` (tracked debt).
+  **Never mark `conformance: HOLDS` while the code violates the fitness signal**, and never let
+  `HOLDS + UNGUARDED` pass as durable health.
 - **Serves** — P1.
-- **Fitness** — every L1 Article carries the five fields; every `serves` resolves to a real
+- **Fitness** — every L1 Article carries the six fields; every `serves` resolves to a real
   L0 line; no Article is marked `conformance: HOLDS` while its fitness signal fails.
 - **Why** — a constitution that *claims conformance* it doesn't have is fiction; separating
   agreement (status) from reality (conformance) keeps it honest without hiding debt.
@@ -106,7 +111,7 @@ UNVERIFIED`). Ratification is agreement; conformance is reality.
   (re-running the fitness signals after code changes) is the `audit-conformance` skill.
 
 ### Article F-VII — Statutes implement the stack, traced and mechanized
-`status: RATIFIED` · `conformance: HOLDS`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
 
 - **Principle** — L2 Statutes are operational/craft rules that *fail* L1's inclusion test (a
   tech swap would rewrite them, *or* they don't trace to an L0 line). They live in the product's
@@ -148,6 +153,26 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.14.0] — 2026-06-30 — Third axis: `enforcement` (how durably an invariant is kept)
+- Added a **third Article axis, `enforcement`** (`UNGUARDED | AUDITED | GATED | STRUCTURAL`,
+  weakest → strongest), alongside `status` (is it law?) and `conformance` (is it true now?). It
+  answers *how is it kept true?* — the durability of the conformance. **Derived, not declared:** the
+  audit rolls it up from the `enforced-by` of the serving L2 statutes, taking the **weakest rung
+  over the fitness's sub-claims** (an invariant is only as strong as its softest guard).
+- **Why it earned an axis:** the #116/#112 case (DSAMind) exposed the trap — A1 was
+  `RATIFIED + HOLDS` yet nothing *prevented* a bad `patternId`; the green `HOLDS` hid the fragility.
+  `HOLDS + UNGUARDED` is true-but-fragile and is now flagged as **mechanization debt**; the
+  `RATIFIED` + non-`STRUCTURAL` set is the **mechanization backlog**. Enforcement also bounds how far
+  to trust `HOLDS` and how often to re-audit (`STRUCTURAL` needs none; `UNGUARDED` needs vigilance).
+- **Wired through:** the Article template (`templates/article.md`) and `layers.md` §L1 carry the
+  field + the ladder + the weakest-link rule; **`audit-conformance` v1.1.0** now derives + writes
+  `enforcement` and gained a companion honesty rule (never let `HOLDS + UNGUARDED` read as durable
+  health); **`audit-structure` v1.2.0** requires the field and emits the mechanization backlog.
+- **Self-hosted:** the framework's own F-Articles are backfilled — F-I/F-II/F-IV/F-V/F-VI/F-VII are
+  `AUDITED` (a skill checks them when run), F-III is `UNGUARDED` (no experiment tooling exists yet —
+  the framework's own backlog item). Extends F-VI's reality-check and F-VII's mechanization to L1.
+  No new Article; an L1-schema amendment ratified by Chinmay.
 
 ### [0.13.0] — 2026-06-30 — `audit-structure` enforces the governance map (discoverability)
 - Extended the `audit-structure` skill (→ v1.1.0) with a **governance-map check** (new check 6): the

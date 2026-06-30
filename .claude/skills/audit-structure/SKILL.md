@@ -1,11 +1,11 @@
 ---
 name: audit-structure
-description: Audits the internal/referential integrity of the whole L0–L4 governance system — the constitution itself, not the code. Checks every cross-layer reference resolves (serves/amends/supersedes/party), every layer traces up (Articles→L0, statutes→Article/L0, ADRs→law), nothing is orphaned or duplicated across layers (F-II), the firewall and two-axis fields are intact, the framework pin/version/ledger are consistent, and — the headline — flags any rule living OUTSIDE the layers (ungoverned); and verifies the product's **governance map** — the root-`CLAUDE.md` entry-point index — resolves and lists every discovered statute home (no silent nested home). Read-only: reports + proposes, never auto-fixes. Use when a user wants to audit/lint/health-check the constitution, find drift between layers, find orphaned or ungoverned rules, check that everything traces up, or verify the governance graph is connected. Triggers - "audit the constitution", "check for drift", "is the constitution consistent", "find orphaned/ungoverned rules", "anything outside the layers", "does everything trace up", "lint the governance", "audit the governance map", "is the index complete", "any nested CLAUDE.md missing from the map". Do NOT use for - auditing whether code satisfies L1 fitness (use audit-conformance), deriving missing statutes (use derive-statutes), or a consumer's own doc-bloat/staleness sweep (that's a project-level skill the consumer owns, not this framework audit).
+description: Audits the internal/referential integrity of the whole L0–L4 governance system — the constitution itself, not the code. Checks every cross-layer reference resolves (serves/amends/supersedes/party), every layer traces up (Articles→L0, statutes→Article/L0, ADRs→law), nothing is orphaned or duplicated across layers (F-II), the firewall and the status/conformance/enforcement fields are intact, the framework pin/version/ledger are consistent, and — the headline — flags any rule living OUTSIDE the layers (ungoverned); and verifies the product's **governance map** — the root-`CLAUDE.md` entry-point index — resolves and lists every discovered statute home (no silent nested home). Read-only: reports + proposes, never auto-fixes. Use when a user wants to audit/lint/health-check the constitution, find drift between layers, find orphaned or ungoverned rules, check that everything traces up, or verify the governance graph is connected. Triggers - "audit the constitution", "check for drift", "is the constitution consistent", "find orphaned/ungoverned rules", "anything outside the layers", "does everything trace up", "lint the governance", "audit the governance map", "is the index complete", "any nested CLAUDE.md missing from the map". Do NOT use for - auditing whether code satisfies L1 fitness (use audit-conformance), deriving missing statutes (use derive-statutes), or a consumer's own doc-bloat/staleness sweep (that's a project-level skill the consumer owns, not this framework audit).
 metadata:
   scope: project
   layer: cross-cutting
   enforces: F-II
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Audit the constitution's structural integrity (L0–L4)
@@ -39,7 +39,7 @@ statutes (`derive-statutes`).
 - No rule's text appears verbatim in two layer documents (an Article restated as a statute; the same rule in two `CLAUDE.md`/`AGENTS.md` files).
 
 **4. Field & firewall integrity:**
-- Every Article carries all required fields: `status`, `conformance`, `party`, `serves`, `fitness`.
+- Every Article carries all required fields: `status`, `conformance`, `enforcement`, `party`, `serves`, `fitness`.
 - Every L0/L1 amendment in the ledger names a human ratifier (F-IV).
 - The instance's framework pin (`constitution@X`) matches `registry.md`; the header version matches the latest ledger entry and the latest tag.
 
@@ -55,6 +55,7 @@ statutes (`derive-statutes`).
 - A pile of ADRs all `serves`-ing one Article → **amendment candidate** (case law climbing to L1).
 - A statute that passes all four L1 tests → **promotion candidate**.
 - An Article that is tech-coupled (would die in a tech swap) → **demotion candidate**.
+- A `RATIFIED` Article that is non-`STRUCTURAL` — especially `HOLDS` + `UNGUARDED` — → **mechanization candidate** (the invariant holds, but nothing guards it; needs a statute + a gate to climb the enforcement ladder). The set of these is the **mechanization backlog**.
 
 ## Procedure
 
@@ -86,7 +87,7 @@ FIELD/FIREWALL (0)        ✓
 DRIFT (1)
   registry pin @0.4.0  vs  instance header @0.5.0 → reconcile
 SIGNALS
-  amend: A1 (3 ADRs) · promote: none · demote: none
+  amend: A1 (3 ADRs) · promote: none · demote: none · mechanize: A3, A4, B1, B2 (HOLDS+UNGUARDED)
 ```
 
 ## Hard rules
