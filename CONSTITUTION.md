@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.10   (self-hosted)
+framework: constitution@0.16.11   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,46 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.11] — 2026-07-01 — First real cross-repo install (DSAMind) found two live bugs; fixed
+- `0.16.10` installed and ran, but **compiled zero skills into any target repo** — confirmed
+  by the first real install into a repo that wasn't this one (DSAMind). Exactly the F-I
+  discovery loop: a bug invisible in self-hosted testing, caught the moment a live project
+  used it.
+- **Root cause**: `agents.ts`/`scaffold.ts` read `skills/`/`templates`/`process/` as
+  siblings of `cli/` — true in this git checkout, false in any installed package, since
+  `files: ["dist"]` never packaged them (npm can't reach outside the package root).
+  `scaffold.ts` printed a `console.warn` for it; `agents.ts` failed silently.
+- **Second bug found while fixing the first**: `agents.ts`'s link-rewriter for compiled
+  skill copies still matched the old broken `../../../process/` pattern this ledger's own
+  `[0.16.5]` entry had already corrected to `../../process/` — would have silently stopped
+  rewriting any cross-links even after the packaging fix landed.
+- **Fix**: `cli/scripts/vendor.js` (new) copies `skills/`/`templates/`/`process/` into
+  `cli/` at build time (`prebuild`/`prepack`); `agents.ts`/`scaffold.ts` now read from that
+  vendored copy; the link-rewriter regex corrected to match current link depth; `files`
+  updated to include the vendored dirs; `cli/.gitignore` ignores them (build artifact,
+  same status as `dist/` — source stays at the repo root).
+- **`constitution init`, a real subcommand** (was: any invocation, including `--version`,
+  unconditionally launched the interactive scaffold — confirmed the hard way, it launched
+  against DSAMind's real root when checking the bin resolved). Bare `constitution`,
+  `--help`, or an unrecognized command now print usage; only `init` scaffolds;
+  `--version`/`-v` actually prints the version.
+- **Verification tightened**: `npm pack --dry-run` alone had already passed for `0.16.9`/
+  `0.16.10` and still missed this — a clean tarball listing isn't proof the tool *works*.
+  This fix was verified by installing the packed tarball into a scratch directory and
+  running the real scaffold + compile functions against an empty target, confirming every
+  agent format actually populated. That's now the standard pre-publish check, not
+  `npm pack --dry-run` alone.
+- **Known gap, not fixed here**: `init` still unconditionally writes a fresh
+  `CONSTITUTION.md`/`AGENT.md` at the target root — it produced confusing duplicate stub
+  files in DSAMind (real constitution: `decisions/CONSTITUTION.md`; real governance map:
+  inside root `CLAUDE.md`). Documented in `cli/README.md` as a known limitation; DSAMind's
+  own stray files are the operator's to clean up (in progress, outside this session).
+  Making `init` detect an existing constitution in a non-default location is real future
+  work, scoped separately — this entry fixes the reported bug (skills not copying), not
+  the scaffold-assumption gap.
+- `cli/package.json` → `0.16.11`, matching this header (the sync statute from `[0.16.10]`
+  holding). No new Article; below the firewall. Ratifier: Chinmay.
 
 ### [0.16.10] — 2026-07-01 — CLI package version synced to the framework version
 - Caught before anything left this machine: `cli/package.json` was still `1.0.0` while

@@ -2,7 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export async function scaffoldFramework(targetDir: string, ratifierName: string) {
-  const packageRoot = path.resolve(__dirname, '..', '..');
+  // The package's own vendored copy (cli/{templates,process}/, written by
+  // scripts/vendor.js) -- not a sibling of cli/ (npm can't package outside cli/).
+  const packageRoot = path.resolve(__dirname, '..');
 
   // Folders to copy from the package root to the target dir's .constitution namespace
   const foldersToCopy = ['templates', 'process'];

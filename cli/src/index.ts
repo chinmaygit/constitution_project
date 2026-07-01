@@ -2,10 +2,22 @@
 
 import { scaffoldFramework } from './scaffold';
 import { setupAgents } from './agents';
-import * as path from 'path';
 import prompts from 'prompts';
 
-async function main() {
+const VERSION: string = require('../package.json').version;
+
+const HELP_TEXT = `
+constitution — scaffold the constitution governance framework into a project
+
+Usage:
+  constitution init        Interactively scaffold the framework into this repo
+  constitution --version   Print the installed version
+  constitution --help      Show this help
+
+Run from the target project's root — it uses the current working directory.
+`;
+
+async function runInit() {
   const targetDir = process.cwd();
   console.log(`\nInitializing Constitution Framework in ${targetDir}...\n`);
 
@@ -44,6 +56,29 @@ async function main() {
   } catch (error) {
     console.error('Failed to initialize constitution:', error);
     process.exit(1);
+  }
+}
+
+async function main() {
+  const command = process.argv[2];
+
+  switch (command) {
+    case 'init':
+      await runInit();
+      break;
+    case '--version':
+    case '-v':
+      console.log(VERSION);
+      break;
+    case '--help':
+    case '-h':
+    case undefined:
+      console.log(HELP_TEXT);
+      break;
+    default:
+      console.error(`Unknown command: ${command}\n`);
+      console.log(HELP_TEXT);
+      process.exit(1);
   }
 }
 

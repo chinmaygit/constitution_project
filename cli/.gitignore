@@ -1,2 +1,8 @@
 # Framework namespace
 .constitution/
+
+# Vendored copies for packaging (scripts/vendor.js) -- build artifacts, not source.
+# Source is the framework repo root's skills/, templates/, process/.
+/skills/
+/templates/
+/process/

@@ -29,10 +29,12 @@ export async function setupAgents(targetDir: string, selectedAgents: string[]) {
   }
 
   // 2. Compile skills into agent-specific formats
-  // Read skills from the framework package itself, not the consumer's target dir
-  const packageRoot = path.resolve(__dirname, '..', '..');
+  // Read skills from the package's own vendored copy (cli/skills/, written by
+  // scripts/vendor.js at build/pack time) -- not the consumer's target dir, and
+  // not a sibling of cli/ (npm can't package outside the package root).
+  const packageRoot = path.resolve(__dirname, '..');
   const skillsDir = path.join(packageRoot, 'skills');
-  
+
   if (fs.existsSync(skillsDir)) {
     console.log('Compiling framework skills into agent-specific artifacts...');
     const skills = fs.readdirSync(skillsDir, { withFileTypes: true })
@@ -46,11 +48,13 @@ export async function setupAgents(targetDir: string, selectedAgents: string[]) {
 
       const content = fs.readFileSync(skillMdPath, 'utf-8');
 
-      // Helper to rewrite internal markdown links based on target folder depth
+      // Helper to rewrite internal markdown links based on target folder depth.
+      // Source skill files link as ../../process/... and ../../templates/...
+      // (two levels up from skills/<name>/SKILL.md to the framework repo root).
       const rewriteLinks = (text: string, depth: number) => {
         const up = '../'.repeat(depth);
-        let rewritten = text.replace(/\.\.\/\.\.\/\.\.\/process\//g, `${up}.constitution/process/`);
-        rewritten = rewritten.replace(/\.\.\/\.\.\/\.\.\/templates\//g, `${up}.constitution/templates/`);
+        let rewritten = text.replace(/\.\.\/\.\.\/process\//g, `${up}.constitution/process/`);
+        rewritten = rewritten.replace(/\.\.\/\.\.\/templates\//g, `${up}.constitution/templates/`);
         return rewritten;
       };
 

@@ -22,25 +22,34 @@ installs at GitHub's registry:
 //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 ```
 
-Then:
+Then, from the target product repo:
 
 ```bash
 npm install -g @chinmaygit/constitution-cli
-constitution   # the bin command, run from the target product repo
+constitution init
 ```
+
+`constitution` with no command, `--help`, or an unrecognized command prints usage and does
+**not** launch the interactive scaffold — only `init` does. `--version` prints the
+installed version.
 
 ## Building from source (this repo)
 
 ```bash
 cd cli/
 npm install
-npm run build        # once, or again after pulling framework changes
+npm run build        # vendors skills/, templates/, process/ into cli/, then compiles
 ```
+
+`npm run build` runs `scripts/vendor.js` first (via `prebuild`) — it copies
+`skills/`, `templates/`, `process/` from the framework repo root into `cli/`, since a
+published package can only contain files inside `cli/` itself, not sibling directories.
+The vendored copies are gitignored build artifacts, same as `dist/` — never hand-edited.
 
 Then, from the target product repo (the CLI reads `process.cwd()`):
 
 ```bash
-node <path-to-this-framework-repo>/cli/dist/index.js
+node <path-to-this-framework-repo>/cli/dist/index.js init
 ```
 
 It prompts for a ratifier name and target agents (Cursor / Claude / Antigravity /
@@ -48,8 +57,15 @@ Copilot), then writes `CONSTITUTION.md` (skipped if one already exists), `AGENT.
 (safe-appends a governance-map block if one isn't there yet), and per-agent skill
 copies: `.claude/skills/`, `.agents/skills/`, `.cursor/rules/`.
 
-There is no distinct "upgrade" mode yet — re-running it re-prompts and overwrites the
+There is no distinct "upgrade" mode yet — re-running `init` re-prompts and overwrites the
 skill copies with the current source. That's a known gap, not a hidden feature.
+
+**Known gap**: `init` always writes a fresh `CONSTITUTION.md`/`AGENT.md` at the target
+root — it doesn't yet detect an existing constitution living somewhere else (e.g.
+`decisions/CONSTITUTION.md`) or a governance map already living inside a `CLAUDE.md`
+instead of `AGENT.md`. Running `init` against a repo shaped that way produces confusing
+duplicate stub files; check for an existing constitution before running it, and clean up
+manually if it writes the wrong thing.
 
 ## What this is not
 
