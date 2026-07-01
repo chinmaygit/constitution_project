@@ -1,7 +1,7 @@
 ---
 id: 0001
 title: Allow package-managed installation of skills to satisfy F-II
-status: proposed
+status: accepted
 date: 2026-07-01
 supersedes: []
 superseded_by: []

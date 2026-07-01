@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.0   (self-hosted)
+framework: constitution@0.16.1   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -73,7 +73,10 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   human ratifier. Agents may propose, gather evidence, and author/enforce L4, but may
   not promote a rule across the firewall alone.
 - **Serves** — P1.
-- **Fitness** — every L0/L1 amendment in the ledger below names a human ratifier.
+- **Fitness** — every L0/L1 amendment traces to a human ratifier. The document's standing
+  header `ratifier:` line satisfies this for the whole ledger; an individual entry may restate
+  it inline (several do, for emphasis) but is not required to. What the check actually verifies
+  is that the header names a real person — an unset or placeholder ratifier is the violation.
 
 ### Article F-V — L0 is discovered, distilled, and human-held
 `status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
@@ -153,6 +156,31 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.1] — 2026-07-01 — audit-structure findings, reconciled
+- Ran `audit-structure` against this repo (self-hosted) and worked the findings:
+  - **`AGENT.md`** now documents this repo's own source-vs-installed-artifact split — `skills/`,
+    `process/`, `templates/` are edited here; `.claude/`, `.agents/`, `.cursor/` are CLI-generated,
+    gitignored, never hand-edited. This is specific to this repo dogfooding its own CLI; a normal
+    consumer project has no such split (it never has its own `skills/` to confuse with the install).
+  - **`compile-prompt`** step 2/3 no longer claim a disk-scan guarantee the map-only design (0.16.0)
+    doesn't provide. It now says plainly: no fallback scan, the map is the sole source, an
+    incidentally-noticed undeclared home is FRICTION to report, not silently include or drop.
+  - **`constitution-upgrade`** no longer states "symlinks, never copies" as an absolute F-II rule
+    (it directly contradicted ADR-0001's ruling, which the ADR itself said supersedes this skill's
+    enforcement). Rescoped: this skill serves the *operator's* own global environment (symlinks are
+    right there — you're working against the live source); installing into a *product repo* is the
+    CLI's job (`cli/`), using package-managed copies per ADR-0001. Different consumers, both correct.
+  - **Tags**: `v0.16.0` now points at the commit that carried it (0.15.0/0.15.1/0.16.0 had shipped
+    with no tag since v0.14.0; not re-tagging the two intermediate versions separately since they
+    were never independently the tip).
+  - **ADR-0001**: `status: proposed` → `accepted` (its ruling was already fully implemented and
+    treated as settled — the record now matches).
+  - **F-IV fitness tightened**: the document's standing header `ratifier:` line satisfies "names a
+    human ratifier" for the whole ledger; an entry may restate it inline but isn't required to.
+    Resolves an ambiguity the audit surfaced — `[0.16.0]` (and historically `[0.3.0]`) never
+    violated F-IV under this now-explicit reading. Ratifier: Chinmay.
+- No new Article; no status change beyond the F-IV wording clarification above.
 
 ### [0.16.0] — 2026-07-01 — Agent-Agnostic Architecture
 - **Amended Article F-VII** to clarify that L2 Statutes live wherever the product's Governance Map specifies (typically `AGENT.md`, `CLAUDE.md`, or nested files). The framework itself no longer hardcodes any L2 discovery globs, reading the convention dynamically from the map. This maintains F-II compliance while natively supporting any agent.

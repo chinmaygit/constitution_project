@@ -5,3 +5,6 @@ build/
 .agents/
 .cursor/
 cli/test-run/
+
+# Framework namespace
+.constitution/

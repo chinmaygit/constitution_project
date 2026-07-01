@@ -65,12 +65,18 @@ pre-registered metric (invariant-violations-per-PR vs. briefing length) — not 
 2. **Bootstrap from the product's entry point.** Read the product's **root `AGENT.md`** first — it
    is the single entry point and should declare a **governance map**: where L0/L1 live (the
    constitution doc), where L3 lives (the ADR directory), and the L2 convention. Paths vary per
-   product — **never assume one**; the map tells you. If there is no governance map, fall back to
-   discovery (next step) and **record the missing map as FRICTION** (the product should add one).
-3. **Discover every L2 home deterministically — never rely on being named the files.** Read the governance map you found in step 2. Identify the declared location(s) for L2 statutes (e.g. `AGENT.md`, `CLAUDE.md`, or a specific directory). Parse those locations; those carrying
-   `serves`-annotated statutes are the L2 homes. This is the floor that prevents silently skipping a
-   nested statute home several directories deep. A statute home found on disk but **absent from the
-   root map** → FRICTION.
+   product — **never assume one**; the map tells you. **There is no fallback disk scan** — if there
+   is no governance map, record it as **blocking FRICTION** and say so plainly in the output: L2
+   homes cannot be reliably determined without one. Compile what you can from L0/L1/L3 and flag the
+   gap rather than guessing at L2.
+3. **Trust the governance map — it is the sole source of L2 homes.** Read the map found in step 2.
+   Identify the declared location(s) for L2 statutes (e.g. `AGENT.md`, `CLAUDE.md`, or a specific
+   directory). Parse those locations; those carrying `serves`-annotated statutes are the L2 homes.
+   This skill does **not** independently scan the filesystem for undeclared homes — a statute home
+   that exists on disk but isn't listed in the map is invisible to this step, by design (the map,
+   not a glob, is the source of truth as of framework `0.16.0`). If, while reading task-relevant
+   code, you *incidentally* notice a plausible statute home the map doesn't list, don't silently
+   fold it in or silently ignore it — surface it as FRICTION so the map can be corrected.
 4. **Load L0 / L1 / L3 from the declared locations.** L0 (Preamble P-lines) + L1 (Articles +
    `status` / `conformance` / `serves` / `fitness` / `party`) from the constitution doc; L3 ADRs
    (+ `serves` / `superseded_by`) from the ADR directory the map names.

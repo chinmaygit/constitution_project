@@ -1,26 +1,36 @@
 ---
 name: constitution-upgrade
-description: Installs and updates the constitution framework for day-to-day use — the one-command keystone (mirrors gstack's /gstack-upgrade). It pulls the latest framework, (re)links every framework skill into the user's global skills dir so they are invocable (`/compile-prompt`, `/audit-conformance`, …), then runs the pin-drift check to tell the consumer which newer spec features to adopt and proposes the pin bump. Idempotent — the first run installs, every later run updates; safe to run repeatedly. Use when a user wants to install/set up the constitution framework, update it, re-link its skills, check whether their instance is on the latest spec, or after pulling framework changes. Triggers - "upgrade the constitution framework", "update constitution skills", "install the constitution framework", "is my constitution up to date", "relink constitution skills", "check framework drift", "constitution-upgrade". Do NOT use for - auditing a constitution's internal integrity (use audit-structure), auditing code vs L1 (use audit-conformance), or compiling a task (use compile-prompt). This skill is the *distribution + update* mechanism, not a governance audit.
+description: Gives the OPERATOR (a person working across many repos on one machine) live, always-current access to the framework's own skills (`/compile-prompt`, `/audit-conformance`, …) by symlinking them into their global skills dir, then checks a project they're working in for spec drift against the framework and proposes the pin bump. This is distinct from installing the framework INTO a product repo — that is the CLI's job (`cli/`), which writes portable, package-managed copies per ADR-0001, not symlinks. Idempotent — the first run installs, every later run updates; safe to run repeatedly. Use when the operator wants their own global constitution skills set up or refreshed, wants to check whether a project they're in is on the latest spec, or just pulled framework changes and wants them live. Triggers - "upgrade the constitution framework", "update my constitution skills", "set up the constitution framework for me", "is my constitution up to date", "relink constitution skills", "check framework drift", "constitution-upgrade". Do NOT use for - installing the framework into a product repo for other contributors/CI (use the CLI in `cli/`), auditing a constitution's internal integrity (use audit-structure), auditing code vs L1 (use audit-conformance), or compiling a task (use compile-prompt).
 metadata:
   scope: global
   layer: tooling
   enforces: registry.md (the version pin)
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
-# Install / upgrade the constitution framework
+# Give the operator live access to the framework's skills, and check drift
 
-The framework lives in one repo (default `~/Workspace/constitution`) and is consumed by products
-(DSAMind is the founding instance). This skill is how a machine **gets** the framework and **keeps
-it current** — the same role `/gstack-upgrade` plays for gstack. It does three things, in order:
-**pull → (re)link skills → drift-check + adopt**. It is *idempotent*: the first run installs, every
-later run updates.
+The framework lives in one repo (default `~/Workspace/constitution`). This skill serves **the
+operator** — a person working across many repos on one machine, who wants the framework's own
+skills (`/compile-prompt`, `/audit-conformance`, …) invocable in *any* session without reinstalling
+per project. It does two things: **link the operator's global skills to the live source → drift-check
+whatever project they're currently in**. It is *idempotent*: the first run installs, every later run
+updates.
+
+**This is not how a product repo gets the framework.** That is a separate concern with a separate
+consumer (other contributors, CI, machines that aren't yours) and a separate mechanism — the CLI in
+`cli/`, which writes portable, package-managed copies into the target repo per ADR-0001 / ledger
+`[0.15.0]`. See "Installing into a product repo" below. This skill and the CLI are not two
+implementations of the same job — they serve different consumers, so both can be right at once.
 
 ## The model (read first)
 
-- **Skills are symlinked, always current.** Each framework skill is linked from the global skills
-  dir into the one repo — never copied (F-II, one home). Pulling the framework updates every linked
-  skill at once; no re-install.
+- **The operator's own skills are symlinked, always current.** Each framework skill is linked from
+  *your* global skills dir into the one framework repo. You are working directly against the live
+  source, on your own machine — a symlink is the natural fit here, and pulling the framework updates
+  every linked skill at once. This is scoped to your global environment; it is **not** a general claim
+  that all framework distribution must be symlinks (ADR-0001 settled that a *product repo* is served
+  better by package-managed copies — see below).
 - **The spec is pinned, deliberately adopted.** A consumer's `constitution@X.Y.Z` pin (in its
   `CONSTITUTION.md` header + the framework `registry.md`) is *which spec it conforms to* — e.g.
   whether it has adopted the `enforcement` axis. The pin is a **conformance claim**, not a version
@@ -71,6 +81,19 @@ later run updates.
    consumer's pin, and the drift list with adopt/ratify actions. End with the one next command if
    anything remains (e.g. "adopt the enforcement axis, then bump the pin to 0.14.0").
 
+## Installing into a product repo (not this skill's job)
+
+If the actual task is "get the framework's skills into this product's repo" (for other
+contributors, CI, or any machine that isn't yours) — that's the CLI, not this skill. Today the CLI
+is **local-only, not yet published**: run `node <framework>/cli/dist/index.js` with the target
+repo as the working directory (it uses `process.cwd()`), after `npm run build` in `<framework>/cli/`
+if `dist/` is stale. It prompts for a ratifier name and target agents, then writes `CONSTITUTION.md`,
+`AGENT.md`, and per-agent skill copies (`.claude/skills/`, `.agents/skills/`, `.cursor/rules/`) —
+gitignored, generated, never hand-edited (see the target repo's own `AGENT.md`). It has no distinct
+"upgrade" mode yet — re-running it re-prompts for setup and overwrites the skill copies with the
+current source; that's a known gap, not a hidden feature. Do not reimplement any of this in prose
+here — if it needs improving, that's a `cli/src/` change.
+
 ## Bootstrap (first time only)
 
 This skill links *itself*, but on a brand-new machine it isn't discoverable until linked once:
@@ -82,8 +105,12 @@ After that one line, `/constitution-upgrade` is available and self-maintaining.
 ## Hard rules
 
 - **Idempotent.** Safe to run repeatedly; create-or-fix links, never duplicate or clobber.
-- **Symlinks, never copies.** Skills stay single-source in the framework repo (F-II — one home).
-  A copy would drift; a link can't.
+- **Symlinks for the operator's global skills, always.** That is this skill's one job and its
+  mechanism is not up for debate here — a copy in your own `~/.claude/skills/` would drift from the
+  source you're actively editing; a link can't.
+- **Don't reimplement product-repo installation.** That's the CLI's job (ADR-0001 / `[0.15.0]`),
+  which uses package-managed copies for good reason (portability across contributors/CI/machines).
+  Point to it; don't hand-roll a competing copy mechanism here — that would be the real F-II violation.
 - **Never bump a consumer's pin past what it has adopted.** The pin is a conformance claim. Drift is
   surfaced, adoption is deliberate.
 - **Above-firewall spec adoption is the ratifier's** (F-IV) — propose, don't enact. New *skills* are
