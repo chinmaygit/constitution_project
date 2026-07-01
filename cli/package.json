@@ -1,10 +1,27 @@
 {
-  "name": "constitution-cli",
+  "name": "@chinmaygit/constitution-cli",
   "version": "1.0.0",
   "description": "CLI to scaffold the constitution framework",
+  "license": "MIT",
+  "author": "Chinmay",
   "main": "dist/index.js",
   "bin": {
     "constitution": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chinmaygit/constitution_project.git",
+    "directory": "cli"
+  },
+  "homepage": "https://github.com/chinmaygit/constitution_project/tree/main/cli#readme",
+  "bugs": {
+    "url": "https://github.com/chinmaygit/constitution_project/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "build": "tsc",

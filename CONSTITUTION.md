@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.8   (self-hosted)
+framework: constitution@0.16.9   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,34 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.9] — 2026-07-01 — `constitution-cli` released to GitHub Packages
+- Ran `compile-prompt` on this repo with the task "make `constitution-cli` release-ready" —
+  the first real end-to-end use of the framework's own L4 compiler on itself, not on DSAMind.
+  It placed cleanly under **F-II** (already ratified: "a versioned package manager
+  installation... satisfies this rule") with **ADR-0001** as precedent, and correctly
+  surfaced three unpinned conventions as FRICTION rather than guessing: registry choice,
+  package name vs. ADR-0001's own `create-constitution` precedent text, and license.
+  Ratifier resolved all three: **GitHub Packages**, **keep `constitution-cli`** (as
+  `@chinmaygit/constitution-cli` — the scope is GitHub Packages' mandatory requirement, not
+  a naming choice), **MIT**.
+- **This repo now has a GitHub remote** (`chinmaygit/constitution_project`) — the first time
+  since founding. `cli/AGENT.md`'s "not published to npm" statute is rewritten to describe
+  the real published state instead of a standing prohibition; `cli/README.md`'s install
+  instructions are now real, not aspirational.
+- `cli/package.json` gained the metadata a registry actually needs (`license`, `repository`,
+  `homepage`, `bugs`, `author`, `files` allowlist, `publishConfig` pointed at
+  `npm.pkg.github.com`) — verified via a clean `npm run build` and `npm pack --dry-run`
+  (6 files, 5.5kB, no `src/`/`node_modules`/`test-run` leakage) before publishing.
+- Added `LICENSE` (MIT) at the repo root and inside `cli/` (npm only auto-includes a LICENSE
+  found in the package root, which is `cli/`, not the git repo root).
+- **Motivation, on the record**: this is explicit groundwork for DSAMind to adopt the
+  framework as a real package dependency instead of the manual cross-repo workflow this
+  session used throughout (symlinked skills, hand-copied AGENT.md sections) — reducing
+  cross-project friction was the stated reason for doing this now rather than later.
+- No new Article; below the firewall (infra/release decision, same weight as ADR-0001's own
+  original ruling — no new ADR filed, this is an instance of it, not a new question of law).
+  Ratifier: Chinmay.
 
 ### [0.16.8] — 2026-07-01 — Two new skills: `propose-amendment` + `ratify-amendment` — the amendment lifecycle, operationalized
 - Last two of the five new skills from the skills-rehaul brainstorm — the redirected "Bill

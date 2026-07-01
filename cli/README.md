@@ -7,10 +7,29 @@ conventions for this package's own code are in [AGENT.md](AGENT.md), not here.
 
 ## Status
 
-Local-only. Not published to any registry — `npm view constitution-cli version` returns
-404. There is no `npx constitution ...` yet; don't write docs elsewhere that assume there is.
+Published to **GitHub Packages** as `@chinmaygit/constitution-cli` (repo:
+[chinmaygit/constitution_project](https://github.com/chinmaygit/constitution_project)).
+GitHub Packages requires a GitHub token (`read:packages` scope) to install — even for a
+public package, that's a GitHub platform limitation, not a visibility choice here.
 
-## Usage (today)
+## Usage
+
+Add a `.npmrc` in the consuming repo (or `~/.npmrc` for a global install) pointing scoped
+installs at GitHub's registry:
+
+```
+@chinmaygit:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+Then:
+
+```bash
+npm install -g @chinmaygit/constitution-cli
+constitution   # the bin command, run from the target product repo
+```
+
+## Building from source (this repo)
 
 ```bash
 cd cli/

@@ -21,10 +21,13 @@ package-managed distribution mechanism, per
     distribution-mechanism change (another ADR-0001-style ruling) doesn't require
     touching prompt UX and vice versa.
 
-- **Not published to npm.** `constitution-cli` has no registry listing today — do not
-  add publish steps, a README claiming `npx constitution ...` works, or docs elsewhere
-  in this repo that assume it does, until publishing is a deliberate, separate decision.
+- **Published to GitHub Packages as `@chinmaygit/constitution-cli`** (not public npm — the
+  scope is mandatory for GitHub's npm registry, not a naming choice). A version bump in
+  `package.json` with no matching `npm publish` is a lie the registry can catch — don't
+  bump without publishing, and don't publish without bumping past what's already live.
   · serves: general craft (documentation must not outrun reality)
-  · enforced-by: prompt-only
-  · why: confirmed via `npm view constitution-cli version` → 404; anything implying
-    otherwise is false advertising to the next person who reads this repo.
+  · enforced-by: prompt-only (a mechanization candidate — a CI publish-on-tag workflow
+    would make this GATED instead of relying on the publisher's memory)
+  · why: this statute existed to keep docs honest before publishing was real (see
+    `CONSTITUTION.md` ledger — the decision that flipped it); now it keeps the published
+    version and the repo's `package.json` from drifting apart instead.
