@@ -5,7 +5,7 @@ metadata:
   scope: global
   layer: tooling
   enforces: registry.md (the version pin)
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Give the operator live access to the framework's skills, and check drift
@@ -84,15 +84,10 @@ implementations of the same job — they serve different consumers, so both can 
 ## Installing into a product repo (not this skill's job)
 
 If the actual task is "get the framework's skills into this product's repo" (for other
-contributors, CI, or any machine that isn't yours) — that's the CLI, not this skill. Today the CLI
-is **local-only, not yet published**: run `node <framework>/cli/dist/index.js` with the target
-repo as the working directory (it uses `process.cwd()`), after `npm run build` in `<framework>/cli/`
-if `dist/` is stale. It prompts for a ratifier name and target agents, then writes `CONSTITUTION.md`,
-`AGENT.md`, and per-agent skill copies (`.claude/skills/`, `.agents/skills/`, `.cursor/rules/`) —
-gitignored, generated, never hand-edited (see the target repo's own `AGENT.md`). It has no distinct
-"upgrade" mode yet — re-running it re-prompts for setup and overwrites the skill copies with the
-current source; that's a known gap, not a hidden feature. Do not reimplement any of this in prose
-here — if it needs improving, that's a `cli/src/` change.
+contributors, CI, or any machine that isn't yours) — that's the CLI, not this skill. See
+[`cli/README.md`](../../cli/README.md) for the exact invocation; don't restate it here (F-II —
+one home for "how to run the installer"). Do not reimplement any of this in prose here — if it
+needs improving, that's a `cli/src/` change.
 
 ## Bootstrap (first time only)
 

@@ -49,10 +49,21 @@ If the framework can't govern itself, it can't govern anything.
 - `process/` — the spec: layer definitions, amendment + experiment lifecycles, conflict resolution, the L4 compiler
 - `templates/` — copy-me templates: Article, Experiment, ADR, compiled prompt
 - `decisions/` — the framework's own ADRs (its L3 case law)
+- `skills/` — the operational skills (`compile-prompt`, `audit-structure`, `audit-conformance`, `define-preamble`, `derive-statutes`, `constitution-upgrade`) — how day-to-day work actually happens
+- `cli/` — `constitution-cli`, the package-managed installer that scaffolds this framework into a product repo (see `cli/README.md`)
 - `registry.md` — which projects use the framework, and which mechanisms were promoted from where
+
+Each of `skills/`, `templates/`, `decisions/`, `process/`, and `cli/` declares its own L2
+authoring statutes in a nested `AGENT.md` — see the root [AGENT.md](AGENT.md) governance map.
 
 ## Consuming the framework (from a product repo)
 
-1. Pin a version in your product's `CONSTITUTION.md` header: `framework: constitution@0.1.0`.
-2. Vendor the templates you use into your repo (no submodules — keep it a loose dependency).
-3. When this repo bumps, pull the new templates in a normal PR.
+The framework installs via its CLI (`cli/`), per
+[ADR-0001](decisions/0001-package-managed-distribution.md) — never by hand-vendoring
+templates. See [`cli/README.md`](cli/README.md) for the exact steps (it's local-only
+today, not yet published to a registry).
+
+Pin the version you've adopted in your product's `CONSTITUTION.md` header
+(`framework: constitution@X.Y.Z`) and track it in [registry.md](registry.md). Bump the
+pin only once you've actually adopted the newer spec — never ahead of adoption (see
+`skills/constitution-upgrade`).

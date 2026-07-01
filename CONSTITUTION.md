@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.2   (self-hosted)
+framework: constitution@0.16.3   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,27 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.3] — 2026-07-01 — CLI representation: verdict is docs, not promotion
+- **Brainstorm item 3**: is the CLI "underrepresented" in the constitution? Checked the
+  constitutional layer first — F-II's principle already names package-managed installation as
+  a valid single home, ADR-0001 is the ruling, `cli/AGENT.md` (`[0.16.2]`) is its L2. That
+  layer was already adequate. **Not promoting the CLI to its own Article** — one ADR is not
+  the "pile of ADRs on one rule" signal `audit-structure` looks for (F-I, discovery before
+  codification: not enough live mileage yet to codify).
+- The actual gap was human-facing: `README.md`'s "Repo map" never listed `skills/` or `cli/` at
+  all, and its "Consuming the framework" section still described the pre-ADR-0001 world —
+  manually vendoring templates, no mention the CLI exists. Fixed:
+  - **New `cli/README.md`** — the package's own front door (usage, status: unpublished, what
+    it is *not* — the operator path is `constitution-upgrade`, not this).
+  - **Root `README.md`** — Repo map now lists `skills/` and `cli/`; "Consuming the framework"
+    now points at the CLI + ADR-0001 instead of the stale manual-vendor steps.
+  - **`constitution-upgrade`** (`1.1.0` → `1.1.1`) — its "Installing into a product repo"
+    section no longer restates the CLI's invocation; points at `cli/README.md` instead
+    (tightens F-II — one home for "how to run the installer" was starting to drift to two).
+- No new Article; below the firewall (documentation + one skill's own pointer). Ratifier:
+  Chinmay.
+- Still open: `registry.md`'s stale DSAMind pin (unrelated to this item, not touched).
 
 ### [0.16.2] — 2026-07-01 — L2 homes declared per folder; audit-structure's map cross-check restored
 - **L2 discovery blocker (brainstorm items 1+2 on the framework's own backlog):** the map-only
