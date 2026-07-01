@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.6   (self-hosted)
+framework: constitution@0.16.7   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,28 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.7] — 2026-07-01 — New skill: `reconcile-findings` (closes what an audit reports)
+- Third of five new skills from the skills-rehaul brainstorm — the one with the strongest F-I
+  evidence of all of them: `[0.16.1]` through `[0.16.6]` in this ledger **are** six hand-run
+  instances of exactly this procedure. This skill codifies an already-repeated practice.
+- `skills/reconcile-findings/SKILL.md` (new, `1.0.0`): consumes `audit-structure`'s (always
+  read-only) and `audit-conformance`'s findings and actually closes them. Its core discipline —
+  and the sharpest thing any of the five new skills does — is classifying **by what the fix
+  touches, not by the finding's category**: the same finding type (`broken-ref`, `orphan`,
+  `duplication`, `field-gap`) can be below the firewall (a dead link, a map gap, a stale
+  version number — fix and batch) or above it (anything editing an Article's `principle` /
+  `serves` / `fitness` / `status` / `party`, or a Preamble line — draft it, ask the ratifier,
+  never write). Gets this wrong in the permissive direction and it silently amends the
+  constitution without ratification — named explicitly as the worst failure mode it can have.
+- Routes what isn't its job: spec-adoption pin drift → `sync-operator`; an ungoverned rule
+  that's really a domain invariant → `harvest-articles`; craft-rule annotation → reuses
+  `harvest-statutes`'s method rather than reinventing it. Explicitly never touches product code
+  — a `VIOLATED` Article's remediation stays separate, human-authorized work, same boundary
+  `audit-conformance` already draws for itself.
+- Cross-wired: `audit-structure` (`1.3.0` → `1.3.1`) now points to it as "how to actually close
+  a finding I reported."
+- No new Article; below the firewall. Ratifier: Chinmay.
 
 ### [0.16.6] — 2026-07-01 — New skill: `harvest-statutes` (the L2 harvest, operationalized)
 - Second of five new skills from the skills-rehaul brainstorm. Closes the last "referenced but

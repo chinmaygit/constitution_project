@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: cross-cutting
   enforces: F-II
-  version: "1.3.0"
+  version: "1.3.1"
 ---
 
 # Audit the constitution's structural integrity (L0–L4)
@@ -20,7 +20,8 @@ layer traces up, nothing is orphaned, duplicated, or living *outside* a layer. I
 
 Read-only. It reports findings and proposes fixes; it never edits the constitution — L0/L1 fixes
 are above the firewall (F-IV). It does not check code-vs-fitness (`audit-conformance`) or derive
-statutes (`derive-statutes`).
+statutes (`derive-statutes`). To actually close a finding this audit reports, use
+`reconcile-findings` — it consumes this skill's output and applies what's below the firewall.
 
 ## The checks
 
