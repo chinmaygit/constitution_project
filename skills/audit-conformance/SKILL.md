@@ -1,20 +1,20 @@
 ---
 name: audit-conformance
-description: Audits a product's L1 Articles against its live codebase and sets each Article's `conformance` field honestly (HOLDS / VIOLATED / UNVERIFIED) AND derives its `enforcement` (UNGUARDED / AUDITED / GATED / STRUCTURAL — how durably the invariant is kept true) with evidence — the recurring reality-check half of F-VI. Use when a user wants to re-audit, reality-check, or reconcile a constitution against the code after changes land; when asked "does the code still satisfy the constitution", "are the Articles still holding", "re-audit conformance", "L1 codebase audit", "check the constitution against the code", "which Articles are violated"; or after a feature/refactor that may have moved code toward or away from an Article. Do NOT use for - authoring new Articles or the first harvest (that is Step B, a separate flow), changing an Article's `status`/principle/`serves` or adding/removing Articles (above the firewall — propose via the amendment lifecycle), defining L0 (use `define-preamble`), or fixing product code (the audit reports; remediation is separate work a human authorizes).
+description: Audits a product's L1 Articles against its live codebase and sets each Article's `conformance` field honestly (HOLDS / VIOLATED / UNVERIFIED) AND derives its `enforcement` (UNGUARDED / AUDITED / GATED / STRUCTURAL — how durably the invariant is kept true) with evidence — the recurring reality-check half of F-VI. Use when a user wants to re-audit, reality-check, or reconcile a constitution against the code after changes land; when asked "does the code still satisfy the constitution", "are the Articles still holding", "re-audit conformance", "L1 codebase audit", "check the constitution against the code", "which Articles are violated"; or after a feature/refactor that may have moved code toward or away from an Article. Do NOT use for - authoring new Articles or the first harvest (use `harvest-articles`), changing an Article's `status`/principle/`serves` or adding/removing Articles (above the firewall — propose via the amendment lifecycle), defining L0 (use `define-preamble`), or fixing product code (the audit reports; remediation is separate work a human authorizes).
 metadata:
   scope: project
   layer: L1
   enforces: F-VI
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Audit L1 conformance against the codebase
 
 Run each L1 Article's **fitness signal** against the live code and set its `conformance`
 honestly. This is the *recurring* reality-check of Article **F-VI** — the same discipline as
-Step B step 5 of [process/defining-l0-l1.md](../../../process/defining-l0-l1.md), run again
-whenever code may have drifted. The harvest (Step B) authors Articles; this skill keeps their
-conformance axis true over time.
+step 5 of `harvest-articles` (which does it once, at authoring time), run again whenever code
+may have drifted. `harvest-articles` authors Articles; this skill keeps their conformance axis
+true over time. See [process/defining-l0-l1.md](../../process/defining-l0-l1.md).
 
 ## The firewall rule (read first)
 
@@ -77,7 +77,7 @@ a status change, a reworded principle, or a new Article; you may **never** enact
 7. **Sort findings by owner before acting:**
    - **conformance flips** (HOLDS↔VIOLATED↔UNVERIFIED) → write them.
    - **status / principle / new-or-retired Articles** → escalate to the ratifier (F-IV);
-     route through [amendment-lifecycle.md](../../../process/amendment-lifecycle.md).
+     route through [amendment-lifecycle.md](../../process/amendment-lifecycle.md).
    - **issues that aren't L1 at all** (a craft rule, a one-off bug) → route to L2 or the
      project's issue tracker, not the constitution.
 

@@ -1,16 +1,16 @@
 ---
 name: derive-statutes
-description: Derives the L2 Statutes each L1 Article needs to be enforceable in the product's actual stack — reusing existing statutes, proposing only the gaps, and surfacing Articles that have no operationalizing rule. Grounded in each Article's fitness signal and the live code, never invented. Use when a user wants to generate/derive the L2 ruleset from L1, check that every Article is operationalized, find under-enforced Articles, or scaffold rules from the constitution. Triggers - "generate L2 from L1", "derive the statutes for these articles", "which articles have no statutes", "what craft rules does this article need", "build the L2 ruleset". Do NOT use for - harvesting/naming existing rules as L2 (that is the bottom-up harvest in process/statutes.md), auditing L1 conformance against code (use audit-conformance), authoring L1 Articles (Step B), changing an Article's status/text (above the firewall), or inventing rules with no Article/L0 trace.
+description: Derives the L2 Statutes each L1 Article needs to be enforceable in the product's actual stack — reusing existing statutes, proposing only the gaps, and surfacing Articles that have no operationalizing rule. Grounded in each Article's fitness signal and the live code, never invented. Use when a user wants to generate/derive the L2 ruleset from L1, check that every Article is operationalized, find under-enforced Articles, or scaffold rules from the constitution. Triggers - "generate L2 from L1", "derive the statutes for these articles", "which articles have no statutes", "what craft rules does this article need", "build the L2 ruleset". Do NOT use for - harvesting/naming existing rules as L2 (that is the bottom-up harvest in process/statutes.md — use `harvest-statutes`), auditing L1 conformance against code (use audit-conformance), authoring L1 Articles (use `harvest-articles`), changing an Article's status/text (above the firewall), or inventing rules with no Article/L0 trace.
 metadata:
   scope: project
   layer: L2
   enforces: F-VII
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Derive L2 Statutes from L1 Articles (top-down)
 
-The complement to the L2 harvest ([process/statutes.md](../../../process/statutes.md)). The
+The complement to the L2 harvest ([process/statutes.md](../../process/statutes.md)). The
 harvest names *existing* rules as statutes (bottom-up); this derives the statutes each **Article**
 needs to be enforceable (top-down) and surfaces Articles that have none. Both serve Article
 **F-VII**.
@@ -36,7 +36,7 @@ speculation. **Reuse an existing statute before proposing a new one** (F-II — 
    - **Already covered** → record (or fix) the existing statute's `serves` back-link to this
      Article. Do not duplicate.
    - **Gap** → draft a new statute `rule · serves: <Article> · enforced-by: <mechanism>` per
-     [templates/statute.md](../../../templates/statute.md). Prefer a real mechanism; mark
+     [templates/statute.md](../../templates/statute.md). Prefer a real mechanism; mark
      `prompt-only` and flag it as future tooling when none is feasible.
 5. **Surface under-enforced Articles.** An Article whose `fitness` has **no** operationalizing
    statute and no mechanism is under-enforced — list it explicitly. (A prose-only, judgment-call

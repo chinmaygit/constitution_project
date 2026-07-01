@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.4   (self-hosted)
+framework: constitution@0.16.5   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,35 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.5] — 2026-07-01 — New skill: `harvest-articles` (Step B, operationalized)
+- First of five new skills from the skills-rehaul brainstorm. Closes the gap flagged during
+  that brainstorm: `process/defining-l0-l1.md`'s Step B (author L1 Articles) was referenced
+  by name in two other skills' "Do NOT use for" lists but had no skill of its own — a product
+  could define L0 and derive L2-from-ratified-L1, but could not author L1 for the first time
+  without hand-executing prose.
+- `skills/harvest-articles/SKILL.md` (new, `1.0.0`): harvests candidate Articles from real
+  sources only (ADRs, a pattern repeated across features, an incident, or the domain-invariant
+  subset of an existing `AGENT.md`/`CLAUDE.md`) — never invents to fill a quota; a project
+  with no real decision history yet gets zero candidates, honestly. Filters through the L1
+  inclusion test, drafts survivors per `templates/article.md`, reality-checks conformance by
+  reusing `audit-conformance`'s method, and proposes `status: PROPOSED` only — it can never
+  write `RATIFIED` (F-IV; mirrors `audit-conformance`'s own status/conformance split).
+- **F-I evidence for this skill already exists**: DSAMind's own L1 was built ground-up by
+  hand-executing this exact procedure (`registry.md`'s "Promoted mechanisms" row for F-V/F-VI,
+  ledger `[0.2.0]`–`[0.3.0]`). This skill codifies a process already proven once, not a
+  speculative one.
+- **Cross-wired the other five skills** that reference this step: `audit-conformance`,
+  `define-preamble`, `derive-statutes` now point at `harvest-articles` by name instead of the
+  vague "Step B, a separate flow." `derive-statutes` still points at `process/statutes.md`'s
+  prose for the L2 harvest — that gap closes next (`harvest-statutes`).
+- **Found and fixed an unrelated, pre-existing bug while wiring this up**: `audit-conformance`,
+  `compile-prompt`, `define-preamble`, and `derive-statutes` all linked to `process/`/`templates/`
+  with one extra `../` (e.g. `../../../process/compiler.md` from a file two levels deep, not
+  three) — six broken relative links, resolving to nothing, that `audit-structure`'s own
+  reference-integrity check should have caught and never did. Fixed all six; verified every
+  cross-link in `skills/` now resolves on disk.
+- No new Article; below the firewall (a new skill + reference fixes). Ratifier: Chinmay.
 
 ### [0.16.4] — 2026-07-01 — `constitution-upgrade` renamed to `sync-operator`
 - Ahead of adding five new skills (`harvest-articles`, `harvest-statutes`,

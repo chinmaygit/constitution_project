@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: L4
   enforces: process/compiler.md
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Compile a task into the L4 actor briefing
@@ -20,8 +20,8 @@ This skill *is* that compile step. It reads the product's constitution, selects 
 that touch **this** task, and emits one provenance-tagged briefing ending in a definition of done.
 It is the front door for day-to-day work: the owner states a task, the compiler reaches down
 through L0→L3 and hands the actor exactly the law that governs it. Spec:
-[process/compiler.md](../../../process/compiler.md). Template:
-[templates/compiled-prompt.md](../../../templates/compiled-prompt.md).
+[process/compiler.md](../../process/compiler.md). Template:
+[templates/compiled-prompt.md](../../templates/compiled-prompt.md).
 
 ## Grounding rules (read first)
 
@@ -103,7 +103,7 @@ pre-registered metric (invariant-violations-per-PR vs. briefing length) — not 
    convention L0–L3 doesn't pin, that is a **gap to surface as FRICTION** — an L2 detail for the
    ratifier, not a "pick one and document it" punt. An invented convention is ungoverned and can't
    be CI-checked.
-9. **Compile.** Fill [templates/compiled-prompt.md](../../../templates/compiled-prompt.md):
+9. **Compile.** Fill [templates/compiled-prompt.md](../../templates/compiled-prompt.md):
    `WHY` (L0) → `INVARIANTS` (L1 — governing *and* must-not-break) → `HOW TO BUILD` (L2) →
    `PRECEDENT` (L3) → `DEFINITION OF DONE`. Every line carries a provenance tag — `[L0·Pn]`,
    `[L1·An]`, `[L2·<statute>]`, `[L3·ADR-NNNN]`. The header names the product and its pinned version.
