@@ -2,6 +2,7 @@
 
 import { scaffoldFramework } from './scaffold';
 import { setupAgents } from './agents';
+import * as path from 'path';
 import prompts from 'prompts';
 
 const VERSION: string = require('../package.json').version;
@@ -24,6 +25,12 @@ async function runInit() {
   const response = await prompts([
     {
       type: 'text',
+      name: 'projectName',
+      message: 'What is the name of this project?',
+      initial: path.basename(targetDir)
+    },
+    {
+      type: 'text',
       name: 'ratifier',
       message: 'Who is the ratifier for this constitution? (e.g. Engineering Team)',
       initial: '<Your Name>'
@@ -42,13 +49,13 @@ async function runInit() {
   ]);
 
   // If user cancels the prompt (Ctrl+C), exit gracefully
-  if (response.ratifier === undefined || response.agents === undefined) {
+  if (response.projectName === undefined || response.ratifier === undefined || response.agents === undefined) {
     console.log('\nInitialization cancelled.');
     process.exit(0);
   }
 
   try {
-    await scaffoldFramework(targetDir, response.ratifier);
+    await scaffoldFramework(targetDir, response.projectName, response.ratifier);
     await setupAgents(targetDir, response.agents);
 
     console.log('\nSuccess! The constitution framework is now active in your project.');

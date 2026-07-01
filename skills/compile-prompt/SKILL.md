@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: L4
   enforces: process/compiler.md
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # Compile a task into the L4 actor briefing
@@ -36,7 +36,7 @@ through L0→L3 and hands the actor exactly the law that governs it. Spec:
    above the firewall (F-IV): the ratifier's call, not the agent's.
 3. **Discover, don't assume (project-agnostic).** This skill compiles for *any* product and names
    none — every path and id below is a `<placeholder>`. Find every layer with the discovery protocol
-   in the Procedure (bootstrap from the root `AGENT.md` governance map to find the declared L2 homes). A path you were handed is a convenience; the map is
+   in the Procedure (bootstrap from the root `AGENTS.md` governance map to find the declared L2 homes). A path you were handed is a convenience; the map is
    the source of truth. Never hardcode or assume a path, and never trust that the files you were
    named are the complete set.
 
@@ -62,7 +62,7 @@ pre-registered metric (invariant-violations-per-PR vs. briefing length) — not 
 
 1. **Read the task.** Restate the owner's intent in one line. If it is really several tasks,
    compile the smallest shippable one and say which slice you took.
-2. **Bootstrap from the product's entry point.** Read the product's **root `AGENT.md`** first — it
+2. **Bootstrap from the product's entry point.** Read the product's **root `AGENTS.md`** first — it
    is the single entry point and should declare a **governance map**: where L0/L1 live (the
    constitution doc), where L3 lives (the ADR directory), and the L2 convention. Paths vary per
    product — **never assume one**; the map tells you. **There is no fallback disk scan** — if there
@@ -70,7 +70,7 @@ pre-registered metric (invariant-violations-per-PR vs. briefing length) — not 
    homes cannot be reliably determined without one. Compile what you can from L0/L1/L3 and flag the
    gap rather than guessing at L2.
 3. **Trust the governance map — it is the sole source of L2 homes.** Read the map found in step 2.
-   Identify the declared location(s) for L2 statutes (e.g. `AGENT.md`, `CLAUDE.md`, or a specific
+   Identify the declared location(s) for L2 statutes (e.g. `AGENTS.md`, `CLAUDE.md`, or a specific
    directory). Parse those locations; those carrying `serves`-annotated statutes are the L2 homes.
    This skill does **not** independently scan the filesystem for undeclared homes — a statute home
    that exists on disk but isn't listed in the map is invisible to this step, by design (the map,

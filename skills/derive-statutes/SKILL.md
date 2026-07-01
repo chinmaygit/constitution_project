@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: L2
   enforces: F-VII
-  version: "1.0.2"
+  version: "1.0.3"
 ---
 
 # Derive L2 Statutes from L1 Articles (top-down)
@@ -26,7 +26,7 @@ speculation. **Reuse an existing statute before proposing a new one** (F-II — 
 ## Procedure
 
 1. **Load the Articles.** Read each L1 Article: `principle`, `serves`, `fitness`, `conformance`.
-2. **Load the existing L2.** Read the product's root `AGENT.md` governance map to find where L2 statutes live. Read those declared L2 homes and their `serves` back-links.
+2. **Load the existing L2.** Read the product's root `AGENTS.md` governance map to find where L2 statutes live. Read those declared L2 homes and their `serves` back-links.
 3. **For each Article, trace down.** Ask: *in this stack, what operational rules must hold for the
    `fitness` signal to be true?* Derive candidates from the fitness, not from scratch —
    - the stack bindings it depends on (which singleton, which service, which column),

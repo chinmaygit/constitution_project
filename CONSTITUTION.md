@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.11   (self-hosted)
+framework: constitution@0.16.12   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -119,7 +119,7 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
 `status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — L2 Statutes are operational/craft rules that *fail* L1's inclusion test (a
-  tech swap would rewrite them, *or* they don't trace to an L0 line). They live wherever the product's Governance Map specifies (typically `AGENT.md`, `CLAUDE.md`, or nested files) — **named, not relocated** (F-II). Each **traces up** to
+  tech swap would rewrite them, *or* they don't trace to an L0 line). They live wherever the product's Governance Map specifies (typically `AGENTS.md`, `CLAUDE.md`, or nested files) — **named, not relocated** (F-II). Each **traces up** to
   the L1 Article it operationalizes (or explicitly states it is a general craft standard), and is **enforced by a mechanism** (lint / CI / hook), not a conformance ledger. They cross the firewall only by
   promotion (L2→L1, ratified) or demotion (L1→L2).
 - **Serves** — P1.
@@ -156,6 +156,43 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.12] — 2026-07-01 — `AGENT.md` → `AGENTS.md` (amends F-VII); scaffold reads real templates
+- **`AGENT.md` renamed to `AGENTS.md` everywhere** — singular was wrong. `AGENTS.md` (plural)
+  is the actual cross-tool convention; DSAMind itself already has a real one (its own
+  `CLAUDE.md` references "this file + `AGENTS.md`"), and every other place in this framework
+  already said "agents" plural (`.agents/skills/`, the audience itself) — only this one file
+  name broke from that. Confirmed the hard way: the CLI would have written a third,
+  colliding governance file into DSAMind alongside its real `CLAUDE.md` and `AGENTS.md`.
+- **This is an amendment, not a free rename**: F-VII's own Principle text named `AGENT.md`
+  directly ("typically `AGENT.md`, `CLAUDE.md`, or nested files") — fixed to `AGENTS.md`.
+  Tellingly, F-VII's own **Proven** note two lines below had *already* been saying
+  `AGENTS.md` correctly (quoting DSAMind's real file) — the Article was internally
+  inconsistent with its own evidence before this fix.
+- Renamed all 6 files (root + `skills/`, `templates/`, `decisions/`, `process/`, `cli/`) and
+  every live cross-reference across `README.md`, `cli/README.md`, `decisions/INDEX.md`,
+  `process/{statutes,layers,compiler,defining-l0-l1}.md`, and 6 skill files
+  (`harvest-articles` `1.0.1→1.0.2`, `audit-structure` `1.3.1→1.3.2`, `compile-prompt`
+  `1.1.1→1.1.2`, `reconcile-findings` `1.0.0→1.0.1`, `derive-statutes` `1.0.2→1.0.3`,
+  `harvest-statutes` `1.0.0→1.0.1`). Historical ledger entries before this one are left
+  saying `AGENT.md` deliberately — dated record of what was true when written, same
+  discipline as the `sync-operator` rename in `[0.16.4]`.
+- **Second, unrelated fix bundled in**: `cli/src/scaffold.ts` hardcoded the shape of
+  `CONSTITUTION.md` and `AGENTS.md`'s governance-map block as inline template literals — a
+  second, silently-drifting home for what `templates/article.md` and this Article already
+  define. Added `templates/constitution.md` and `templates/governance-map.md` (real
+  templates, `<PLACEHOLDER>` substitution, the same HTML-comment convention every other
+  template uses); `scaffold.ts` now reads and fills them instead of hand-writing the
+  content. New statute in `cli/AGENTS.md`: never hardcode a file's shape in `scaffold.ts`
+  when a template can own it.
+- **CLI now asks for a project name** (`constitution init`'s first prompt, defaults to the
+  target directory's name) and uses it in the generated `CONSTITUTION.md` title — was
+  previously always the generic "# Constitution".
+- Verified via the same standard from `[0.16.11]`: called `scaffoldFramework` directly
+  against empty and pre-existing-`AGENTS.md` scratch targets, confirmed both the
+  fresh-write and safe-append paths produce correct, placeholder-substituted output.
+- No new Article; F-VII amended (a wording fix, not a new invariant — status/conformance
+  unchanged). Ratifier: Chinmay.
 
 ### [0.16.11] — 2026-07-01 — First real cross-repo install (DSAMind) found two live bugs; fixed
 - `0.16.10` installed and ran, but **compiled zero skills into any target repo** — confirmed

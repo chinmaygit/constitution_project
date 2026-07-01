@@ -54,7 +54,7 @@ If the framework can't govern itself, it can't govern anything.
 - `registry.md` — which projects use the framework, and which mechanisms were promoted from where
 
 Each of `skills/`, `templates/`, `decisions/`, `process/`, and `cli/` declares its own L2
-authoring statutes in a nested `AGENT.md` — see the root [AGENT.md](AGENT.md) governance map.
+authoring statutes in a nested `AGENTS.md` — see the root [AGENTS.md](AGENTS.md) governance map.
 
 ## Consuming the framework (from a product repo)
 

@@ -26,7 +26,7 @@ The compile step is implemented as the **`compile-prompt`** skill
   the signal the constitution must grow.
 - **Selection = strategy 2** (below): L0 always, all `RATIFIED` L1, plus task-matched L2/L3.
 - **Deterministic discovery.** The compiler never relies on being *told* which files hold L2. It
-  bootstraps from the product's root `AGENT.md` (the **governance map**: constitution path, ADR
+  bootstraps from the product's root `AGENTS.md` (the **governance map**: constitution path, ADR
   dir, L2 convention) to dynamically discover statute homes — the map is
   the source of truth, not a hardcoded glob. A
   statute home not reachable from the map is FRICTION. *(Surfaced by the first headless compile

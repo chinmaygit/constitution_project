@@ -62,3 +62,16 @@ package-managed distribution mechanism, per
     because the code assumed a sibling directory that only exists in the git checkout, never
     in an installed package. Caught by the first real install into a repo that wasn't this
     one (DSAMind) — exactly the live-practice discovery F-I asks for.
+
+- **`scaffold.ts` never hardcodes the shape of a file it writes into a consumer repo.**
+  `CONSTITUTION.md` is generated from `templates/constitution.md`; `AGENTS.md`'s governance
+  map block is generated from `templates/governance-map.md`. Placeholders (`<PROJECT_NAME>`,
+  `<FRAMEWORK_VERSION>`, `<RATIFIER_NAME>`) are substituted at write time; the leading
+  copy-instructions HTML comment every template carries is stripped before writing (it's
+  for whoever edits the template, not for the consumer's file).
+  · serves: F-II (one home for "what does a fresh CONSTITUTION.md/AGENTS.md look like")
+  · enforced-by: prompt-only (mechanization candidate — a lint rule could reject a template
+    literal in `scaffold.ts` that duplicates a `templates/*.md` file's shape)
+  · why: a hardcoded string in `scaffold.ts` and the real `templates/article.md`/
+    `templates/statute.md` shape are two homes for the same thing — the CLI silently drifts
+    from its own template the moment either one changes, and nothing would catch it.

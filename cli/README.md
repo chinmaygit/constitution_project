@@ -3,7 +3,7 @@
 Scaffolds this framework into a product repo — package-managed distribution per
 [ADR-0001](../decisions/0001-package-managed-distribution.md). The files it writes into
 the target repo are read-only build artifacts, not hand-vendored copies. Engineering
-conventions for this package's own code are in [AGENT.md](AGENT.md), not here.
+conventions for this package's own code are in [AGENTS.md](AGENTS.md), not here.
 
 ## Status
 
@@ -52,18 +52,21 @@ Then, from the target product repo (the CLI reads `process.cwd()`):
 node <path-to-this-framework-repo>/cli/dist/index.js init
 ```
 
-It prompts for a ratifier name and target agents (Cursor / Claude / Antigravity /
-Copilot), then writes `CONSTITUTION.md` (skipped if one already exists), `AGENT.md`
-(safe-appends a governance-map block if one isn't there yet), and per-agent skill
-copies: `.claude/skills/`, `.agents/skills/`, `.cursor/rules/`.
+It prompts for a project name, a ratifier name, and target agents (Cursor / Claude /
+Antigravity / Copilot), then writes `CONSTITUTION.md` (skipped if one already exists,
+generated from [`templates/constitution.md`](../templates/constitution.md) — never
+hand-written inline, so it can't drift from the template) and `AGENTS.md` (safe-appends
+a governance-map block from
+[`templates/governance-map.md`](../templates/governance-map.md) if one isn't there yet),
+and per-agent skill copies: `.claude/skills/`, `.agents/skills/`, `.cursor/rules/`.
 
 There is no distinct "upgrade" mode yet — re-running `init` re-prompts and overwrites the
 skill copies with the current source. That's a known gap, not a hidden feature.
 
-**Known gap**: `init` always writes a fresh `CONSTITUTION.md`/`AGENT.md` at the target
+**Known gap**: `init` always writes a fresh `CONSTITUTION.md`/`AGENTS.md` at the target
 root — it doesn't yet detect an existing constitution living somewhere else (e.g.
 `decisions/CONSTITUTION.md`) or a governance map already living inside a `CLAUDE.md`
-instead of `AGENT.md`. Running `init` against a repo shaped that way produces confusing
+instead of `AGENTS.md`. Running `init` against a repo shaped that way produces confusing
 duplicate stub files; check for an existing constitution before running it, and clean up
 manually if it writes the wrong thing.
 

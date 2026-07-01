@@ -1,11 +1,11 @@
 ---
 name: audit-structure
-description: Audits the internal/referential integrity of the whole L0–L4 governance system — the constitution itself, not the code. Checks every cross-layer reference resolves (serves/amends/supersedes/party), every layer traces up (Articles→L0, statutes→Article/L0, ADRs→law), nothing is orphaned or duplicated across layers (F-II), the firewall and the status/conformance/enforcement fields are intact, the framework pin/version/ledger are consistent, and — the headline — flags any rule living OUTSIDE the layers (ungoverned); and verifies the product's **governance map** — the root `AGENT.md` entry-point index — resolves its declared L2 statute homes. Read-only: reports + proposes, never auto-fixes. Use when a user wants to audit/lint/health-check the constitution, find drift between layers, find orphaned or ungoverned rules, check that everything traces up, or verify the governance graph is connected. Triggers - "audit the constitution", "check for drift", "is the constitution consistent", "find orphaned/ungoverned rules", "anything outside the layers", "does everything trace up", "lint the governance", "audit the governance map", "is the index complete". Do NOT use for - auditing whether code satisfies L1 fitness (use audit-conformance), deriving missing statutes (use derive-statutes), or a consumer's own doc-bloat/staleness sweep (that's a project-level skill the consumer owns, not this framework audit).
+description: Audits the internal/referential integrity of the whole L0–L4 governance system — the constitution itself, not the code. Checks every cross-layer reference resolves (serves/amends/supersedes/party), every layer traces up (Articles→L0, statutes→Article/L0, ADRs→law), nothing is orphaned or duplicated across layers (F-II), the firewall and the status/conformance/enforcement fields are intact, the framework pin/version/ledger are consistent, and — the headline — flags any rule living OUTSIDE the layers (ungoverned); and verifies the product's **governance map** — the root `AGENTS.md` entry-point index — resolves its declared L2 statute homes. Read-only: reports + proposes, never auto-fixes. Use when a user wants to audit/lint/health-check the constitution, find drift between layers, find orphaned or ungoverned rules, check that everything traces up, or verify the governance graph is connected. Triggers - "audit the constitution", "check for drift", "is the constitution consistent", "find orphaned/ungoverned rules", "anything outside the layers", "does everything trace up", "lint the governance", "audit the governance map", "is the index complete". Do NOT use for - auditing whether code satisfies L1 fitness (use audit-conformance), deriving missing statutes (use derive-statutes), or a consumer's own doc-bloat/staleness sweep (that's a project-level skill the consumer owns, not this framework audit).
 metadata:
   scope: project
   layer: cross-cutting
   enforces: F-II
-  version: "1.3.1"
+  version: "1.3.2"
 ---
 
 # Audit the constitution's structural integrity (L0–L4)
@@ -48,7 +48,7 @@ statutes (`derive-statutes`). To actually close a finding this audit reports, us
 - A rule in the declared L2 statute homes that no layer claims — not tagged L2, no `serves`, not an Article, not an ADR. **Ungoverned rule** → either annotate it as a statute or delete it.
 
 **6. Governance map — the entry-point index resolves (discoverability):**
-- The product's **root `AGENT.md`** declares a **governance map** naming where L0/L1 live (the constitution doc), where L3 lives (the ADR directory), and the L2 convention. **No map at all** → one finding (the product should add one), not one-per-home.
+- The product's **root `AGENTS.md`** declares a **governance map** naming where L0/L1 live (the constitution doc), where L3 lives (the ADR directory), and the L2 convention. **No map at all** → one finding (the product should add one), not one-per-home.
 - Every location the map names **resolves** — the constitution doc, the ADR directory, and the declared L2 statute homes exist. A map entry pointing at nothing → `map-drift` (stale).
 - **This audit's own cross-check** (not compile-prompt's job — see Procedure step 1): an independent disk scan finds a `{AGENT,CLAUDE,AGENTS}.md` the map does **not** declare, excluding generated/installed-artifact dirs (`.claude/`, `.agents/`, `.cursor/`, `node_modules/`, `dist/`, `.git/`) → **map-gap** (an undeclared L2 home — invisible to compile-prompt and every skill that trusts the map, until this audit catches it).
 
@@ -62,9 +62,9 @@ statutes (`derive-statutes`). To actually close a finding this audit reports, us
 
 1. **Build the graph.** Parse L0 (P-lines), L1 (Articles + fields), L2 (statutes + `serves`), L3
    (ADRs + `serves`/`supersedes`), the Preamble parties, the registry pin, the version + tag.
-   **Start from the root `AGENT.md` governance map** — this is what `compile-prompt` and every
+   **Start from the root `AGENTS.md` governance map** — this is what `compile-prompt` and every
    other skill trust at day-to-day speed, with no scanning. **Then, only in this audit, cross-check
-   it against an independent scan** of the tree (e.g. `find . -iname 'AGENT.md' -o -iname
+   it against an independent scan** of the tree (e.g. `find . -iname 'AGENTS.md' -o -iname
    'CLAUDE.md' -o -iname 'AGENTS.md'`, excluding `.claude/`, `.agents/`, `.cursor/`,
    `node_modules/`, `dist/`, `.git/`) to catch a home that exists on disk but isn't declared. This
    scan is this skill's job alone — the periodic safety net, not a per-task cost every skill pays.
@@ -87,7 +87,7 @@ ONE-HOME (0)              ✓
 UNGOVERNED (1)
   AGENTS.md "<rule>"       not tagged L2, no serves → claim or cut
 MAP (1)
-  <nested>/AGENT.md       statute home declared in map but file not found → map-drift
+  <nested>/AGENTS.md       statute home declared in map but file not found → map-drift
 FIELD/FIREWALL (0)        ✓
 DRIFT (1)
   registry pin @0.4.0  vs  instance header @0.5.0 → reconcile

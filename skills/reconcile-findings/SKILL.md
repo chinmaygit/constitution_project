@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: cross-cutting
   enforces: F-II, F-IV
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Close what an audit found, without crossing the firewall
@@ -92,7 +92,7 @@ unsure which side a finding is on, treat it as above the firewall and ask.
 
 ```
 APPLIED — BELOW FIREWALL (N)
-  map-gap: <home> undeclared           → <home>/AGENT.md written, map updated; verified on disk
+  map-gap: <home> undeclared           → <home>/AGENTS.md written, map updated; verified on disk
   broken-ref: <file>:<line>            → path fixed; verified resolves
   duplication: <rule> in 2 places      → consolidated to <home>; other now points at it
 

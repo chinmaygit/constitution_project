@@ -3,7 +3,7 @@ import * as path from 'path';
 
 export async function setupAgents(targetDir: string, selectedAgents: string[]) {
   // 1. Generate pointer files
-  const pointerText = `# Constitution Framework\n\nYou are governed by the Constitution framework.\nALWAYS read \`AGENT.md\` in the root directory to find your instructions and governance map.\n`;
+  const pointerText = `# Constitution Framework\n\nYou are governed by the Constitution framework.\nALWAYS read \`AGENTS.md\` in the root directory to find your instructions and governance map.\n`;
 
   const pointers: { file: string; content: string }[] = [];
   

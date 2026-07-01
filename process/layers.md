@@ -73,11 +73,11 @@ needs none; `UNGUARDED` needs constant vigilance, or **promotion up the ladder**
 
 ## L2 — Statutes
 
-The operational hard rules — *how* you build, not *what* you are. Home of `AGENT.md` rules (and existing agent-specific configs). A rule is a Statute when it
+The operational hard rules — *how* you build, not *what* you are. Home of `AGENTS.md` rules (and existing agent-specific configs). A rule is a Statute when it
 operationalizes an Article but fails the inclusion test (i.e. a tech swap would force a rewrite).
 
 - **Who writes them.** Agents and engineers write them in PRs, often derived automatically from Articles.
-- **Where they live.** The constitution *names* the consumer's `AGENT.md` (or declared map target) as the L2 home, rather than relocating them (F-II — one home per rule).
+- **Where they live.** The constitution *names* the consumer's `AGENTS.md` (or declared map target) as the L2 home, rather than relocating them (F-II — one home per rule).
 - **Lighter governance.** Below the firewall: agents draft and propose; changes land as
   ordinary reviewed commits, not ratified amendments — no `status` / `conformance` ledger.
   Statutes change in weeks; Articles in quarters.

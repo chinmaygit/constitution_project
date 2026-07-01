@@ -1,10 +1,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export async function scaffoldFramework(targetDir: string, ratifierName: string) {
+// Strips the leading copy-instructions HTML comment every template carries
+// (see templates/AGENTS.md's own statute) -- that comment is for whoever
+// edits the template source, not for the file written into a consumer repo.
+function stripTemplateComment(text: string): string {
+  return text.replace(/^<!--[\s\S]*?-->\n+/, '');
+}
+
+export async function scaffoldFramework(targetDir: string, projectName: string, ratifierName: string) {
   // The package's own vendored copy (cli/{templates,process}/, written by
   // scripts/vendor.js) -- not a sibling of cli/ (npm can't package outside cli/).
   const packageRoot = path.resolve(__dirname, '..');
+  const templatesDir = path.join(packageRoot, 'templates');
 
   // Folders to copy from the package root to the target dir's .constitution namespace
   const foldersToCopy = ['templates', 'process'];
@@ -12,7 +20,7 @@ export async function scaffoldFramework(targetDir: string, ratifierName: string)
   for (const folder of foldersToCopy) {
     const src = path.join(packageRoot, folder);
     const dest = path.join(targetDir, '.constitution', folder);
-    
+
     if (fs.existsSync(src)) {
       console.log(`Copying ${folder} to .constitution/${folder}...`);
       copyRecursiveSync(src, dest);
@@ -32,50 +40,46 @@ export async function scaffoldFramework(targetDir: string, ratifierName: string)
     fs.writeFileSync(gitignorePath, '# Framework namespace\n.constitution/\n', 'utf-8');
   }
 
-  // Initialize CONSTITUTION.md
+  // Initialize CONSTITUTION.md from templates/constitution.md -- never hand-write the
+  // skeleton here, or it silently drifts from the template the moment either one changes.
   const constitutionPath = path.join(targetDir, 'CONSTITUTION.md');
   if (!fs.existsSync(constitutionPath)) {
-    console.log('Initializing CONSTITUTION.md...');
-    const packageVersion = require('../package.json').version;
-    const initialContent = `# Constitution
-
-\`\`\`
-framework: constitution@${packageVersion}
-ratifier:  ${ratifierName}
-\`\`\`
-
-## L0 — Preamble (vision)
-**P1.** Edit this file to add your product's vision.
-
-## L1 — Articles (meta-invariants)
-*(See templates/article.md to add articles)*
-`;
-    fs.writeFileSync(constitutionPath, initialContent, 'utf-8');
+    const constitutionTemplatePath = path.join(templatesDir, 'constitution.md');
+    if (!fs.existsSync(constitutionTemplatePath)) {
+      console.error(`Cannot initialize CONSTITUTION.md: missing template at ${constitutionTemplatePath}`);
+    } else {
+      console.log('Initializing CONSTITUTION.md...');
+      const packageVersion = require('../package.json').version;
+      const content = stripTemplateComment(fs.readFileSync(constitutionTemplatePath, 'utf-8'))
+        .replace(/<PROJECT_NAME>/g, projectName)
+        .replace(/<FRAMEWORK_VERSION>/g, packageVersion)
+        .replace(/<RATIFIER_NAME>/g, ratifierName);
+      fs.writeFileSync(constitutionPath, content, 'utf-8');
+    }
   } else {
     console.log('CONSTITUTION.md already exists, skipping initialization.');
   }
 
-  // Initialize or safe-append AGENT.md
-  const agentPath = path.join(targetDir, 'AGENT.md');
-  const agentMapBlock = `
-# Governance Map
+  // Initialize or safe-append AGENTS.md from templates/governance-map.md -- same reasoning.
+  const agentsPath = path.join(targetDir, 'AGENTS.md');
+  const mapTemplatePath = path.join(templatesDir, 'governance-map.md');
 
-- **Constitution (L0/L1)**: \`CONSTITUTION.md\`
-- **Case Law (L3)**: \`decisions/\`
-- **Statutes (L2)**: Managed in this \`AGENT.md\` file (or specify other files/globs here).
+  if (!fs.existsSync(mapTemplatePath)) {
+    console.error(`Cannot initialize AGENTS.md: missing template at ${mapTemplatePath}`);
+    return;
+  }
+  const agentMapBlock = stripTemplateComment(fs.readFileSync(mapTemplatePath, 'utf-8'));
 
-*This file serves as the entry-point index for the audit-structure and compile-prompt skills.*
-`;
-  if (!fs.existsSync(agentPath)) {
-    console.log('Initializing AGENT.md...');
-    fs.writeFileSync(agentPath, agentMapBlock, 'utf-8');
+  if (!fs.existsSync(agentsPath)) {
+    console.log('Initializing AGENTS.md...');
+    fs.writeFileSync(agentsPath, agentMapBlock, 'utf-8');
   } else {
-    console.log('AGENT.md already exists, safe-appending governance map block...');
-    const existingContent = fs.readFileSync(agentPath, 'utf-8');
+    console.log('AGENTS.md already exists, safe-appending governance map block...');
+    const existingContent = fs.readFileSync(agentsPath, 'utf-8');
     if (!existingContent.includes('Governance Map')) {
-      fs.appendFileSync(agentPath, `\n${agentMapBlock}`, 'utf-8');
+      fs.appendFileSync(agentsPath, `\n${agentMapBlock}`, 'utf-8');
     } else {
-      console.log('Governance map block already present in AGENT.md, skipping append.');
+      console.log('Governance map block already present in AGENTS.md, skipping append.');
     }
   }
 }
@@ -85,7 +89,7 @@ function copyRecursiveSync(src: string, dest: string) {
   const exists = fs.existsSync(src);
   const stats = exists && fs.statSync(src);
   const isDirectory = exists && stats && stats.isDirectory();
-  
+
   if (isDirectory) {
     fs.mkdirSync(dest, { recursive: true });
     fs.readdirSync(src).forEach((childItemName) => {

@@ -30,7 +30,7 @@ then:
    - existing ADRs and past decisions
    - choices made the same way across many features
    - incidents / bugs that traced to a missing rule
-   - existing `AGENT.md` / `CLAUDE.md` rules that are actually *domain* invariants
+   - existing `AGENTS.md` / `CLAUDE.md` rules that are actually *domain* invariants
      (separate these from craft/statute rules — those stay at L2)
 2. **Filter** each through the inclusion test (general · traces to L0 · falsifiable ·
    survives a tech swap). Route failures to their real home (L2, L0 prose, or a feature

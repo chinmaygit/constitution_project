@@ -1,11 +1,11 @@
 ---
 name: harvest-articles
-description: Authors a product's first L1 Articles — or adds to an existing set — by harvesting candidates from real sources (existing ADRs, a choice repeated across many features, an incident that traced to a missing rule, or the domain-invariant subset of an existing AGENT.md/CLAUDE.md), never from a blank page. Filters each through the L1 inclusion test (general · traces to L0 · falsifiable · survives a tech swap), drafts survivors as principle/serves/fitness/enforcement (`templates/article.md`), reality-checks their conformance against live code, and proposes `status: PROPOSED` for the ratifier. This is Step B of `process/defining-l0-l1.md` (Articles F-V/F-VI). Use when a product has a ratified L0 but no L1 yet (bootstrap), or has grown and wants to harvest new Article candidates from what's actually been decided (retrofit). Triggers - "define our Articles", "harvest L1", "what are our domain invariants", "bootstrap L1", "author the constitution's Articles", "find Articles in our existing rules", "Step B", "retrofit governance onto this codebase". Do NOT use for - defining L0 (use `define-preamble` — this skill requires a ratified L0 first and stops without one), the recurring conformance re-check of Articles that are already `RATIFIED` (use `audit-conformance`), deriving L2 statutes from already-ratified L1 (use `derive-statutes`, the top-down counterpart), harvesting L2 craft rules directly (use `harvest-statutes` — a candidate that fails this skill's inclusion test on "survives a tech swap" is routed there, not drafted here), or setting `status: RATIFIED` (above the firewall — this skill proposes, the ratifier decides).
+description: Authors a product's first L1 Articles — or adds to an existing set — by harvesting candidates from real sources (existing ADRs, a choice repeated across many features, an incident that traced to a missing rule, or the domain-invariant subset of an existing AGENTS.md/CLAUDE.md), never from a blank page. Filters each through the L1 inclusion test (general · traces to L0 · falsifiable · survives a tech swap), drafts survivors as principle/serves/fitness/enforcement (`templates/article.md`), reality-checks their conformance against live code, and proposes `status: PROPOSED` for the ratifier. This is Step B of `process/defining-l0-l1.md` (Articles F-V/F-VI). Use when a product has a ratified L0 but no L1 yet (bootstrap), or has grown and wants to harvest new Article candidates from what's actually been decided (retrofit). Triggers - "define our Articles", "harvest L1", "what are our domain invariants", "bootstrap L1", "author the constitution's Articles", "find Articles in our existing rules", "Step B", "retrofit governance onto this codebase". Do NOT use for - defining L0 (use `define-preamble` — this skill requires a ratified L0 first and stops without one), the recurring conformance re-check of Articles that are already `RATIFIED` (use `audit-conformance`), deriving L2 statutes from already-ratified L1 (use `derive-statutes`, the top-down counterpart), harvesting L2 craft rules directly (use `harvest-statutes` — a candidate that fails this skill's inclusion test on "survives a tech swap" is routed there, not drafted here), or setting `status: RATIFIED` (above the firewall — this skill proposes, the ratifier decides).
 metadata:
   scope: project
   layer: L1
   enforces: F-V, F-VI
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Harvest a product's L1 Articles from what's actually true
@@ -48,7 +48,7 @@ tracked debt once ratified; a candidate is allowed to be `PROPOSED + VIOLATED` b
    - **A choice made the same way across many features** — grep/read the code for a pattern
      enforced consistently (e.g. every DB call routes through one singleton); cite the files.
    - **An incident or bug whose postmortem traced to "no rule stopped this."**
-   - **Existing `AGENT.md` / `CLAUDE.md` rules that are domain invariants** — not craft. A rule
+   - **Existing `AGENTS.md` / `CLAUDE.md` rules that are domain invariants** — not craft. A rule
      that would survive swapping the framework/library but not swapping the product's *meaning*
      is the L1 candidate; a rule that's really about *how* you build (tech-coupled) is L2 —
      don't draft it here, note it for `harvest-statutes`.
@@ -97,7 +97,7 @@ tracked debt once ratified; a candidate is allowed to be `PROPOSED + VIOLATED` b
 ```
 DRAFTED (N)
   "<principle>"        harvested: <ADR-0003 / git: app/api/**/*.ts, 6 files, same pattern /
-                        AGENT.md:41>
+                        AGENTS.md:41>
                         inclusion: general ✓ · traces P2 ✓ · falsifiable ✓ · tech-swap-survives ✓
                         status: PROPOSED · conformance: HOLDS (evidence: <cmd or file:line>)
 

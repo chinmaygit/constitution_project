@@ -23,7 +23,7 @@ specs).
 
 ## Step — harvest the Statutes
 
-1. **Harvest from where they already live**, never a blank page: the product's `AGENT.md`,
+1. **Harvest from where they already live**, never a blank page: the product's `AGENTS.md`,
    `CLAUDE.md`, and agent-specific files. These rules already exist; the job is
    to *name them L2 and structure them*, not to invent or relocate (F-II).
 2. **Filter.** Confirm each fails the L1 inclusion test (tech-coupled, or no L0 trace). A rule
@@ -58,6 +58,6 @@ own tooling and governance-sweep skill (e.g. DSAMind's `dsa-audit-governance`) p
 `enforced-by` mechanisms running in CI — not a periodic constitutional audit. The framework
 ships no L2 audit skill; it points at this pattern.
 
-The output of this procedure is the product's existing `AGENT.md` (or declared map target), now named as
+The output of this procedure is the product's existing `AGENTS.md` (or declared map target), now named as
 L2 and annotated. Going through it on a real product is the live proof the deferred L2 Article
 needs before it can graduate.

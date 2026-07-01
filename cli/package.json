@@ -1,6 +1,6 @@
 {
   "name": "@chinmaygit/constitution-cli",
-  "version": "0.16.11",
+  "version": "0.16.12",
   "description": "CLI to scaffold the constitution framework",
   "license": "MIT",
   "author": "Chinmay",

@@ -1,18 +1,18 @@
 ---
 name: harvest-statutes
-description: Harvests L2 Statutes from where they already live — a product's `AGENT.md`, `CLAUDE.md`, and agent-specific config files — naming and structuring rules that already exist, never inventing or relocating them (F-II). This is the bottom-up harvest of `process/statutes.md`, the complement to `derive-statutes`'s top-down (from-ratified-L1) direction. For each existing rule: confirms it fails the L1 inclusion test, annotates it `rule · serves · enforced-by · why` per `templates/statute.md`, catches orphans (a statute serving nothing real is either dead or evidence of a missing Article), and writes it into the product's declared L2 statute home(s). Use when a product has real, working AGENT.md/CLAUDE.md rules that have never been named as L2, or wants to retrofit governance structure onto an existing, ungoverned codebase's conventions. Triggers - "harvest our statutes", "name our AGENT.md rules as L2", "structure our existing rules", "retrofit L2 onto this repo", "annotate our craft rules", "what L2 do we already have". Do NOT use for - deriving L2 top-down from already-ratified L1 (use `derive-statutes`), authoring L1 Articles (a candidate that passes all four inclusion-test criteria routes there — use `harvest-articles`), the ongoing/recurring audit of L2 for drift after the initial harvest (the framework ships no such skill on purpose — process/statutes.md's own Maintenance section names this as project-owned tooling, e.g. DSAMind's own governance-sweep skill), or writing the actual lint/CI mechanism behind an `enforced-by` tag (that's ordinary implementation work, not this skill).
+description: Harvests L2 Statutes from where they already live — a product's `AGENTS.md`, `CLAUDE.md`, and agent-specific config files — naming and structuring rules that already exist, never inventing or relocating them (F-II). This is the bottom-up harvest of `process/statutes.md`, the complement to `derive-statutes`'s top-down (from-ratified-L1) direction. For each existing rule: confirms it fails the L1 inclusion test, annotates it `rule · serves · enforced-by · why` per `templates/statute.md`, catches orphans (a statute serving nothing real is either dead or evidence of a missing Article), and writes it into the product's declared L2 statute home(s). Use when a product has real, working AGENTS.md/CLAUDE.md rules that have never been named as L2, or wants to retrofit governance structure onto an existing, ungoverned codebase's conventions. Triggers - "harvest our statutes", "name our AGENTS.md rules as L2", "structure our existing rules", "retrofit L2 onto this repo", "annotate our craft rules", "what L2 do we already have". Do NOT use for - deriving L2 top-down from already-ratified L1 (use `derive-statutes`), authoring L1 Articles (a candidate that passes all four inclusion-test criteria routes there — use `harvest-articles`), the ongoing/recurring audit of L2 for drift after the initial harvest (the framework ships no such skill on purpose — process/statutes.md's own Maintenance section names this as project-owned tooling, e.g. DSAMind's own governance-sweep skill), or writing the actual lint/CI mechanism behind an `enforced-by` tag (that's ordinary implementation work, not this skill).
 metadata:
   scope: project
   layer: L2
   enforces: F-VII
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Harvest a product's L2 Statutes from where they already live
 
 The bottom-up harvest of [process/statutes.md](../../process/statutes.md) — the complement to
 `derive-statutes`'s top-down direction (which starts from ratified L1 and asks what each
-Article needs; this starts from a product's existing `AGENT.md`/`CLAUDE.md`/agent-config rules
+Article needs; this starts from a product's existing `AGENTS.md`/`CLAUDE.md`/agent-config rules
 and names what's already true). Both serve Article **F-VII**. Already proven once: DSAMind's
 own L2 was harvested this way from its `AGENTS.md`/`CLAUDE.md` — 15 statutes annotated, an F-II
 duplicate consolidated, the L1/L2 boundary confirmed clean (`CONSTITUTION.md` ledger `[0.7.0]`).
@@ -40,7 +40,7 @@ criteria), that's not yours to file here — surface it as a promotion candidate
 ## Procedure
 
 1. **Harvest from where rules already live — never a blank page.** Read the product's
-   `AGENT.md`, `CLAUDE.md`, and any agent-specific config (`.cursorrules`,
+   `AGENTS.md`, `CLAUDE.md`, and any agent-specific config (`.cursorrules`,
    `copilot-instructions.md`, nested `CLAUDE.md`/`AGENTS.md` files per its governance map). The
    job is to *name* rules that already exist as L2 and structure them — not invent new ones, not
    relocate them to a different home (F-II). If none of these exist yet, or contain nothing but
@@ -69,7 +69,7 @@ criteria), that's not yours to file here — surface it as a promotion candidate
      violation — consolidate to one home, note which one and why.
 
 5. **Write.** Annotated statutes go into the product's **declared L2 statute home(s)** — read
-   its root `AGENT.md` governance map first; never guess a location or invent a new one. Get a
+   its root `AGENTS.md` governance map first; never guess a location or invent a new one. Get a
    human nod (ordinary review, not ratification), then write. Note every `prompt-only` statute
    explicitly as mechanization backlog in the report — don't silently leave it unflagged.
 
@@ -104,7 +104,7 @@ ZERO CANDIDATES
 
 ## Hard rules
 
-- **Never invent a statute with no real source.** Harvest from `AGENT.md`/`CLAUDE.md`/agent
+- **Never invent a statute with no real source.** Harvest from `AGENTS.md`/`CLAUDE.md`/agent
   configs that already exist — zero written-down rules means zero output, not filler ones.
 - **Never relocate a rule to a new home while naming it** (F-II) — annotate it where it already
   lives unless consolidating an actual duplicate.

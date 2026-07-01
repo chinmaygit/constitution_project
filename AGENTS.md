@@ -3,11 +3,11 @@
 - **Constitution (L0/L1)**: `CONSTITUTION.md`
 - **Case Law (L3)**: `decisions/`
 - **Statutes (L2)** — declared per folder, nearest the files they govern:
-  - [skills/AGENT.md](skills/AGENT.md) — how a `SKILL.md` is authored/versioned
-  - [templates/AGENT.md](templates/AGENT.md) — how a template file is authored
-  - [decisions/AGENT.md](decisions/AGENT.md) — how this repo's own case law is tracked
-  - [process/AGENT.md](process/AGENT.md) — how a process/ doc is authored
-  - [cli/AGENT.md](cli/AGENT.md) — TypeScript conventions for `constitution-cli`
+  - [skills/AGENTS.md](skills/AGENTS.md) — how a `SKILL.md` is authored/versioned
+  - [templates/AGENTS.md](templates/AGENTS.md) — how a template file is authored
+  - [decisions/AGENTS.md](decisions/AGENTS.md) — how this repo's own case law is tracked
+  - [process/AGENTS.md](process/AGENTS.md) — how a process/ doc is authored
+  - [cli/AGENTS.md](cli/AGENTS.md) — TypeScript conventions for `constitution-cli`
 - `skills/`, `process/`, `templates/`, `decisions/`, `cli/` at the repo root are the
   **source of truth** for this repo's own tooling — edit here, then release (version bump
   + tag).

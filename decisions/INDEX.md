@@ -1,7 +1,7 @@
 # Decisions (framework case law)
 
 The index. Authoring rules for this directory (what belongs here, how to add or supersede
-an ADR) are L2 statutes — see [AGENT.md](AGENT.md).
+an ADR) are L2 statutes — see [AGENTS.md](AGENTS.md).
 
 | id | title | status | date |
 |----|-------|--------|------|
