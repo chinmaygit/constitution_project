@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: L1
   enforces: F-V, F-VI
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Harvest a product's L1 Articles from what's actually true
@@ -87,9 +87,10 @@ tracked debt once ratified; a candidate is allowed to be `PROPOSED + VIOLATED` b
    it as L0-adjacent color instead.
 
 8. **Report.** One list: source harvested from → inclusion-test verdict per criterion → where
-   it landed (drafted Article / routed to L2 / routed to an L0 gap / cut, with why). Hand the
-   drafted Articles to the ratifier for the `PROPOSED → RATIFIED` decision — this skill's job
-   ends at the proposal.
+   it landed (drafted Article / routed to L2 / routed to an L0 gap / cut, with why). This skill's
+   job ends at the proposal. If a draft needs a formal evidence packet or a shadow period before
+   ratification, hand it to `propose-amendment`; if the ratifier is ready to decide now, they
+   decide, and `ratify-amendment` transcribes it — this skill sets neither in motion itself.
 
 ## Output shape
 

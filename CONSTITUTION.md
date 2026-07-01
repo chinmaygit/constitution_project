@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.7   (self-hosted)
+framework: constitution@0.16.8   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,37 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.8] — 2026-07-01 — Two new skills: `propose-amendment` + `ratify-amendment` — the amendment lifecycle, operationalized
+- Last two of the five new skills from the skills-rehaul brainstorm — the redirected "Bill
+  draft / Bill pass" idea, pointed at where that metaphor actually fits:
+  `process/amendment-lifecycle.md`'s `PROPOSE → WARN-ONLY → EVIDENCE → RATIFY` pipeline (and,
+  where real measurement is warranted, `process/experiment-lifecycle.md`'s
+  `DRAFT → PRE-REGISTERED → RUNNING → MEASURED → GRADUATED`), which had zero tooling despite
+  being fully specified prose with its own literal PROPOSE/RATIFY vocabulary.
+- **`propose-amendment`** (new, `1.0.0`): formalizes a candidate change to *already-ratified*
+  L0/L1 law — not a brand-new Article from scratch (`harvest-articles`'s job), but a promotion,
+  a demotion, stale Article text, a new L0 line, or a certiorari ruling. Drafts the before/after
+  text, authors the ADR every L1 change ships with, and judges whether the candidate needs a
+  pre-registered experiment (a real hypothesis about catch-rate/friction) or just the ratifier's
+  agreement — never writes `status: RATIFIED` either way.
+- **`ratify-amendment`** (new, `1.0.0`): the highest-consequence write in the framework, and
+  written to know it. Its precondition is not optional: an explicit, attributable human decision
+  already in hand — quoted, not inferred. Only after that does it mechanically flip
+  `status: RATIFIED`, mark superseded text (never deleted, always forward-linked), finalize the
+  ADR, archive the graduated experiment as evidence, and write the ledger entry naming the
+  ratifier (F-IV). It reports a pre-registered decision rule's actual verdict honestly — even a
+  `REJECT` the human overrides — rather than let the record imply cleaner evidence than existed.
+- **F-I evidence for this pair, too**: every entry in this ledger from `[0.16.1]` onward is a
+  small hand-run instance of propose-then-ratify (draft the change, say why, get a nod, write it
+  down) — this is a proven shape scaled to the formal L0/L1 case, not a speculative addition.
+- Cross-wired `harvest-articles`'s closing step (`1.0.0` → `1.0.1`) to hand its drafts to these
+  two rather than ending ambiguously at "the ratifier decides."
+- **This closes the five-skill rehaul** (`harvest-articles` `[0.16.5]`, `harvest-statutes`
+  `[0.16.6]`, `reconcile-findings` `[0.16.7]`, this pair `[0.16.8]`), alongside the
+  `sync-operator` rename (`[0.16.4]`) done ahead of it. Ten skills total, every one of them now
+  either newly proven-by-codification or already proven-by-history before it existed.
+- No new Article; below the firewall (two new skills + a cross-reference). Ratifier: Chinmay.
 
 ### [0.16.7] — 2026-07-01 — New skill: `reconcile-findings` (closes what an audit reports)
 - Third of five new skills from the skills-rehaul brainstorm — the one with the strongest F-I
