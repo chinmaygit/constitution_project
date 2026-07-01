@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.9   (self-hosted)
+framework: constitution@0.16.10   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,18 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.10] — 2026-07-01 — CLI package version synced to the framework version
+- Caught before anything left this machine: `cli/package.json` was still `1.0.0` while
+  `CONSTITUTION.md` was at `0.16.9` — two independently-numbered axes for one self-hosted
+  repo, exactly the confusion flagged (but not fixed) in `[0.16.9]`'s own compiled brief.
+  Ratifier corrected this directly, before the GitHub push completed.
+- **Policy, now a statute** (`cli/AGENT.md`): the CLI package's `version` always equals this
+  repo's `CONSTITUTION.md` header version. One number for the whole repo. A future version
+  bump that updates one without the other is the bug.
+- `cli/package.json` → `0.16.10`; rebuilt and re-verified via `npm pack --dry-run`
+  (tarball now correctly reads `@chinmaygit/constitution-cli@0.16.10`).
+- No new Article; below the firewall. Ratifier: Chinmay.
 
 ### [0.16.9] — 2026-07-01 — `constitution-cli` released to GitHub Packages
 - Ran `compile-prompt` on this repo with the task "make `constitution-cli` release-ready" —

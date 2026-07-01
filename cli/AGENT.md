@@ -31,3 +31,15 @@ package-managed distribution mechanism, per
   · why: this statute existed to keep docs honest before publishing was real (see
     `CONSTITUTION.md` ledger — the decision that flipped it); now it keeps the published
     version and the repo's `package.json` from drifting apart instead.
+
+- **`cli/package.json`'s `version` always equals this repo's `CONSTITUTION.md` header
+  version.** One number for the whole self-hosted repo — not a tool-version axis and a
+  spec-version axis drifting independently. Every `CONSTITUTION.md` version bump that
+  lands in the same change as a `cli/` publish updates both together; a bump to one
+  without the other is the bug, not a valid state.
+  · serves: F-II (one home for "what version is this")
+  · enforced-by: prompt-only (mechanization candidate — a CI check comparing the two
+    would make this GATED)
+  · why: two independently-numbered versions for one repo is exactly the confusion a
+    consumer hits first — "why does `constitution --version` say 1.0.0 when the spec
+    ledger is at 0.16.x." One axis removes the question.
