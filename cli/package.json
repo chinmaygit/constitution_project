@@ -6,7 +6,7 @@
   "author": "Chinmay",
   "main": "dist/index.js",
   "bin": {
-    "constitution": "./dist/index.js"
+    "constitution": "dist/index.js"
   },
   "files": [
     "dist"
