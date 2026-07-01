@@ -1,11 +1,11 @@
 ---
-name: constitution-upgrade
-description: Gives the OPERATOR (a person working across many repos on one machine) live, always-current access to the framework's own skills (`/compile-prompt`, `/audit-conformance`, …) by symlinking them into their global skills dir, then checks a project they're working in for spec drift against the framework and proposes the pin bump. This is distinct from installing the framework INTO a product repo — that is the CLI's job (`cli/`), which writes portable, package-managed copies per ADR-0001, not symlinks. Idempotent — the first run installs, every later run updates; safe to run repeatedly. Use when the operator wants their own global constitution skills set up or refreshed, wants to check whether a project they're in is on the latest spec, or just pulled framework changes and wants them live. Triggers - "upgrade the constitution framework", "update my constitution skills", "set up the constitution framework for me", "is my constitution up to date", "relink constitution skills", "check framework drift", "constitution-upgrade". Do NOT use for - installing the framework into a product repo for other contributors/CI (use the CLI in `cli/`), auditing a constitution's internal integrity (use audit-structure), auditing code vs L1 (use audit-conformance), or compiling a task (use compile-prompt).
+name: sync-operator
+description: Gives the OPERATOR (a person working across many repos on one machine) live, always-current access to the framework's own skills (`/compile-prompt`, `/audit-conformance`, …) by symlinking them into their global skills dir, then checks a project they're working in for spec drift against the framework and proposes the pin bump. This is distinct from installing the framework INTO a product repo — that is the CLI's job (`cli/`), which writes portable, package-managed copies per ADR-0001, not symlinks. Idempotent — the first run installs, every later run updates; safe to run repeatedly. Use when the operator wants their own global constitution skills set up or refreshed, wants to check whether a project they're in is on the latest spec, or just pulled framework changes and wants them live. Triggers - "upgrade the constitution framework", "update my constitution skills", "set up the constitution framework for me", "is my constitution up to date", "relink constitution skills", "check framework drift", "sync operator". Do NOT use for - installing the framework into a product repo for other contributors/CI (use the CLI in `cli/`), auditing a constitution's internal integrity (use audit-structure), auditing code vs L1 (use audit-conformance), or compiling a task (use compile-prompt).
 metadata:
   scope: global
   layer: tooling
   enforces: registry.md (the version pin)
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # Give the operator live access to the framework's skills, and check drift
@@ -93,9 +93,9 @@ needs improving, that's a `cli/src/` change.
 
 This skill links *itself*, but on a brand-new machine it isn't discoverable until linked once:
 ```bash
-ln -sfn ~/Workspace/constitution/skills/constitution-upgrade ~/.claude/skills/constitution-upgrade
+ln -sfn ~/Workspace/constitution/skills/sync-operator ~/.claude/skills/sync-operator
 ```
-After that one line, `/constitution-upgrade` is available and self-maintaining.
+After that one line, `/sync-operator` is available and self-maintaining.
 
 ## Hard rules
 

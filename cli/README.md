@@ -35,7 +35,7 @@ skill copies with the current source. That's a known gap, not a hidden feature.
 ## What this is not
 
 Not how *you*, the operator working across many repos on one machine, get live access
-to the framework's own skills — that's `skills/constitution-upgrade`, which symlinks
+to the framework's own skills — that's `skills/sync-operator`, which symlinks
 instead of copying because you're working directly against this repo's source. This CLI
 is for everyone else who needs the framework in a repo: other contributors, CI, any
 machine that isn't yours.

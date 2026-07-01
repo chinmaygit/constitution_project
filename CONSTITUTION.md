@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.3   (self-hosted)
+framework: constitution@0.16.4   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,29 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.4] — 2026-07-01 — `constitution-upgrade` renamed to `sync-operator`
+- Ahead of adding five new skills (`harvest-articles`, `harvest-statutes`,
+  `reconcile-findings`, `propose-amendment`, `ratify-amendment` — see the brainstorm below),
+  fixed the one existing skill name that broke the set's verb-noun convention:
+  `constitution-upgrade` (noun-verb) → `sync-operator` (verb-noun, and names its audience —
+  it serves the operator, not a product repo; the CLI does that).
+- **Checked first whether this was a below-the-firewall rename**: grepped every reference.
+  None are inside ratified L1 Article text (F-II/F-VI/F-VII name `audit-structure`,
+  `audit-conformance`, and `derive-statutes` this way, not this skill) — so this is craft,
+  not an amendment to the invariants those Articles name.
+- Updated: the skill's own frontmatter + bootstrap command, `README.md`, `cli/README.md`,
+  `skills/AGENT.md`, and the operator's global symlink (`~/.claude/skills/sync-operator`).
+  **Deliberately left unchanged**: this ledger's own `[0.16.1]`/`[0.16.3]` entries and
+  `decisions/0001-package-managed-distribution.md` — both are dated record of events that
+  happened while the skill was still named `constitution-upgrade`; rewriting them to say
+  `sync-operator` would misrepresent what was true at the time.
+- The other four existing skill names (`audit-structure`, `audit-conformance`,
+  `derive-statutes`, `define-preamble`, `compile-prompt`) are unchanged — already
+  verb-noun, already clear, and renaming them would mean amending the Articles that name
+  them for a label change alone. Deferred unless a real reason to touch those Articles
+  shows up on its own.
+- No new Article; below the firewall. Ratifier: Chinmay.
 
 ### [0.16.3] — 2026-07-01 — CLI representation: verdict is docs, not promotion
 - **Brainstorm item 3**: is the CLI "underrepresented" in the constitution? Checked the

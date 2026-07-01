@@ -32,8 +32,8 @@ individual skill's own procedure says (that's the skill's content, not governed 
   wording/typo fixes).
   · serves: general craft
   · enforced-by: prompt-only
-  · why: `constitution-upgrade`'s drift-check and this repo's own release ledger both
+  · why: `sync-operator`'s drift-check and this repo's own release ledger both
     rely on the version actually reflecting a behavior change.
 
 How these skills reach an operator vs. a product repo (symlink vs. package-managed copy)
-is governed by `constitution-upgrade/SKILL.md` and ADR-0001 — not restated here (F-II).
+is governed by `sync-operator/SKILL.md` and ADR-0001 — not restated here (F-II).
