@@ -2,15 +2,22 @@
 
 - **Constitution (L0/L1)**: `CONSTITUTION.md`
 - **Case Law (L3)**: `decisions/`
-- **Skills/Process/Templates (this repo's own tooling)**: `skills/`, `process/`, `templates/`
-  at the repo root are the **source of truth** — edit here, then release (version bump + tag).
+- **Statutes (L2)** — declared per folder, nearest the files they govern:
+  - [skills/AGENT.md](skills/AGENT.md) — how a `SKILL.md` is authored/versioned
+  - [templates/AGENT.md](templates/AGENT.md) — how a template file is authored
+  - [decisions/AGENT.md](decisions/AGENT.md) — how this repo's own case law is tracked
+  - [process/AGENT.md](process/AGENT.md) — how a process/ doc is authored
+  - [cli/AGENT.md](cli/AGENT.md) — TypeScript conventions for `constitution-cli`
+- `skills/`, `process/`, `templates/`, `decisions/`, `cli/` at the repo root are the
+  **source of truth** for this repo's own tooling — edit here, then release (version bump
+  + tag).
 
 ## Source vs. installed artifacts
 
 This repo dogfoods its own CLI: running `constitution install` here (as anywhere) writes
 compiled, agent-specific copies into `.claude/skills/`, `.agents/skills/`, and `.cursor/rules/`.
 
-- **Edit**: `skills/`, `process/`, `templates/` — these are git-tracked and versioned.
+- **Edit**: `skills/`, `process/`, `templates/`, `decisions/`, `cli/` — these are git-tracked and versioned.
 - **Never edit**: `.claude/`, `.agents/`, `.cursor/` — gitignored, generated, and overwritten on
   every install/upgrade. Treat them like a `dist/` folder. If content there looks stale or wrong,
   fix the source in `skills/` and re-run the CLI — don't hand-patch the copy.

@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: cross-cutting
   enforces: F-II
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Audit the constitution's structural integrity (L0–L4)
@@ -49,6 +49,7 @@ statutes (`derive-statutes`).
 **6. Governance map — the entry-point index resolves (discoverability):**
 - The product's **root `AGENT.md`** declares a **governance map** naming where L0/L1 live (the constitution doc), where L3 lives (the ADR directory), and the L2 convention. **No map at all** → one finding (the product should add one), not one-per-home.
 - Every location the map names **resolves** — the constitution doc, the ADR directory, and the declared L2 statute homes exist. A map entry pointing at nothing → `map-drift` (stale).
+- **This audit's own cross-check** (not compile-prompt's job — see Procedure step 1): an independent disk scan finds a `{AGENT,CLAUDE,AGENTS}.md` the map does **not** declare, excluding generated/installed-artifact dirs (`.claude/`, `.agents/`, `.cursor/`, `node_modules/`, `dist/`, `.git/`) → **map-gap** (an undeclared L2 home — invisible to compile-prompt and every skill that trusts the map, until this audit catches it).
 
 **7. Promotion / demotion signals (informational, not errors):**
 - A pile of ADRs all `serves`-ing one Article → **amendment candidate** (case law climbing to L1).
@@ -60,7 +61,12 @@ statutes (`derive-statutes`).
 
 1. **Build the graph.** Parse L0 (P-lines), L1 (Articles + fields), L2 (statutes + `serves`), L3
    (ADRs + `serves`/`supersedes`), the Preamble parties, the registry pin, the version + tag.
-   **Discover the L2 homes exclusively by reading the root `AGENT.md` governance map**. Parse it to find the declared location(s) for L2 statutes.
+   **Start from the root `AGENT.md` governance map** — this is what `compile-prompt` and every
+   other skill trust at day-to-day speed, with no scanning. **Then, only in this audit, cross-check
+   it against an independent scan** of the tree (e.g. `find . -iname 'AGENT.md' -o -iname
+   'CLAUDE.md' -o -iname 'AGENTS.md'`, excluding `.claude/`, `.agents/`, `.cursor/`,
+   `node_modules/`, `dist/`, `.git/`) to catch a home that exists on disk but isn't declared. This
+   scan is this skill's job alone — the periodic safety net, not a per-task cost every skill pays.
 2. **Run the checks** above. For each finding, record the exact location and what's broken.
 3. **Classify** each: `broken-ref` · `orphan` · `duplication` · `ungoverned` · `map-gap` ·
    `map-drift` · `field-gap` · `pin/version drift` · `promotion/demotion signal`.
@@ -94,4 +100,8 @@ SIGNALS
 - **Every finding cites an exact location** — `file:line` or an id. No verdict from memory.
 - **Distinguish a real break from a healthy signal** — a broken `serves` is an error; "3 ADRs on A1" is an amendment signal, not a bug.
 - **`serves: []` is valid** for a pure-infra ADR or a general-craft statute — not an orphan. An orphan is a *non-empty* `serves` that resolves to nothing.
-- **The map is the sole source of truth for L2 discovery.** Do not hardcode filenames. A missing map is **one** finding.
+- **The map is what every OTHER skill trusts for L2 discovery** — `compile-prompt` and day-to-day
+  work read the map only, never scanning the disk. **This skill alone also runs an independent
+  disk scan**, as the periodic safety net that catches an undeclared home before it goes silently
+  ungoverned. Do not hardcode filenames elsewhere — this scan lives here, once. A missing map is
+  **one** finding.

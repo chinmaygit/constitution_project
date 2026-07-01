@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.1   (self-hosted)
+framework: constitution@0.16.2   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,33 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.2] — 2026-07-01 — L2 homes declared per folder; audit-structure's map cross-check restored
+- **L2 discovery blocker (brainstorm items 1+2 on the framework's own backlog):** the map-only
+  design (`[0.16.0]`) traded away the old glob-fallback safety net; and the CLI (`cli/`) had no
+  declared L2 home at all. Both fixed without re-coupling day-to-day work to disk-scanning:
+  - **New nested `AGENT.md` files declare L2 for every folder that has its own authoring craft**
+    — `skills/AGENT.md`, `templates/AGENT.md`, `decisions/AGENT.md`, `process/AGENT.md`,
+    `cli/AGENT.md`. Each is harvested from conventions already observably true across that
+    folder's files (F-II — named, not invented), following the shape `process/statutes.md`
+    prescribes. `cli/AGENT.md` closes the CLI's L2 gap directly.
+  - **Root `AGENT.md`'s governance map now lists all five nested homes explicitly**, replacing
+    the single vague "skills/process/templates" bullet — satisfies `audit-structure` check 6
+    (every declared location must resolve).
+  - **`decisions/INDEX.md`** no longer duplicates its own authoring rules in prose (they'd drifted
+    into a near-restatement of `process/layers.md`'s L3 section) — trimmed to a pointer at
+    `decisions/AGENT.md` (F-II).
+  - **`audit-structure` gets back its independent disk-scan cross-check** (checks 6, Procedure
+    step 1, Hard rules; `1.2.0` → `1.3.0`) — but scoped correctly this time: `compile-prompt` and
+    every other skill still trust the map only, at full speed, no scanning. Only `audit-structure`,
+    the periodic safety net, also scans the tree and flags an undeclared home as `map-gap`. This
+    restores the pre-`[0.16.0]` safety property (an undeclared statute home can't go silently
+    invisible forever) without re-imposing its cost on routine work.
+- No new Article; below the firewall (L2 declarations + one audit skill's own procedure).
+  Ratifier: Chinmay.
+- Open, deliberately not touched here: `registry.md`'s stale DSAMind pin; the CLI's
+  under-representation at L1 (a promotion-candidate question, not yet enough case-law mileage);
+  the skills/ architecture rehaul itself (a separate, larger brainstorm).
 
 ### [0.16.1] — 2026-07-01 — audit-structure findings, reconciled
 - Ran `audit-structure` against this repo (self-hosted) and worked the findings:
