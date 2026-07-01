@@ -1,0 +1,17 @@
+feat: implement dynamic L2 discovery and interactive CLI installer
+
+1. Revert "Central Skills" Mandate
+   - Removed the framework's requirement for a central `skills/` directory. L2 statutes can now live wherever the consumer desires (e.g., `.claude/skills/`, `AGENT.md`).
+   - Dynamic discovery: `audit-structure` and `compile-prompt` skills now parse the root `AGENT.md` (Governance Map) to resolve the product's actual L2 statute homes instead of hardcoding globs.
+   - Updated all framework documentation (`process/layers.md`, `process/statutes.md`, etc.) to reflect dynamic map discovery.
+
+2. CLI Scaffolding Refactor (Hidden Footprint)
+   - The CLI no longer pollutes the consumer's root with `process/` and `templates/` folders. It safely installs them into a `.constitution/` namespace.
+   - The installer automatically configures `.gitignore` to hide the framework namespace.
+   - Generates a lightweight `AGENT.md` to serve as the project's Governance Map.
+
+3. Interactive CLI Installer
+   - Added `prompts` library for an interactive setup experience.
+   - Prompts for the `Ratifier` name (injected into `CONSTITUTION.md`).
+   - Prompts for target AI agents (Cursor, Claude, Antigravity, Copilot) to selectively compile skills and pointers only for the requested environments.
+   - Implements dynamic link rewriting during compilation so the agent skills correctly resolve the hidden `.constitution/` documentation paths.

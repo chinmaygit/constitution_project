@@ -8,4 +8,4 @@ supersede it with a forward link.
 
 | id | title | status | date |
 |----|-------|--------|------|
-| _none yet_ | | | |
+| 0001 | Allow package-managed installation of skills to satisfy F-II | proposed | 2026-07-01 |

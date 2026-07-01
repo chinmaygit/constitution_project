@@ -36,8 +36,7 @@ through L0→L3 and hands the actor exactly the law that governs it. Spec:
    above the firewall (F-IV): the ratifier's call, not the agent's.
 3. **Discover, don't assume (project-agnostic).** This skill compiles for *any* product and names
    none — every path and id below is a `<placeholder>`. Find every layer with the discovery protocol
-   in the Procedure (bootstrap from the root `CLAUDE.md` governance map, then **glob all
-   `CLAUDE.md` / `AGENTS.md`** for L2 homes). A path you were handed is a convenience; the glob is
+   in the Procedure (bootstrap from the root `AGENT.md` governance map to find the declared L2 homes). A path you were handed is a convenience; the map is
    the source of truth. Never hardcode or assume a path, and never trust that the files you were
    named are the complete set.
 
@@ -50,8 +49,7 @@ relevant**, safe over clever:
 - **L1** — include every `RATIFIED` Article whose `serves` or product surface touches the task.
   When unsure, **include**: a spurious invariant costs one line in the briefing; a missing one
   costs a violation in production.
-- **L2** — from the statute homes **discovered** in the Procedure (the glob of every
-  `CLAUDE.md` / `AGENTS.md`), include those whose statutes' `serves` back-links or surface touch the
+- **L2** — from the statute homes **discovered** in the Procedure (those declared in the map), include those whose statutes' `serves` back-links or surface touch the
   task. Discover the full set first, then match — never match against only the homes you were handed.
 - **L3** — include ADRs whose `serves` overlaps the selected L0/L1/L2 ids. Always cite the **live**
   ruling, never a superseded one (cite its successor).
@@ -64,15 +62,13 @@ pre-registered metric (invariant-violations-per-PR vs. briefing length) — not 
 
 1. **Read the task.** Restate the owner's intent in one line. If it is really several tasks,
    compile the smallest shippable one and say which slice you took.
-2. **Bootstrap from the product's entry point.** Read the product's **root `CLAUDE.md`** first — it
+2. **Bootstrap from the product's entry point.** Read the product's **root `AGENT.md`** first — it
    is the single entry point and should declare a **governance map**: where L0/L1 live (the
    constitution doc), where L3 lives (the ADR directory), and the L2 convention. Paths vary per
    product — **never assume one**; the map tells you. If there is no governance map, fall back to
    discovery (next step) and **record the missing map as FRICTION** (the product should add one).
-3. **Discover every L2 home deterministically — never rely on being named the files.** From the repo
-   root, **glob all `CLAUDE.md` and `AGENTS.md`** files (root *and* nested), excluding
-   `node_modules/`, `.git/`, and generated/vendored output. Read each; those carrying
-   `serves`-annotated statutes are L2 homes. This is the floor that prevents silently skipping a
+3. **Discover every L2 home deterministically — never rely on being named the files.** Read the governance map you found in step 2. Identify the declared location(s) for L2 statutes (e.g. `AGENT.md`, `CLAUDE.md`, or a specific directory). Parse those locations; those carrying
+   `serves`-annotated statutes are the L2 homes. This is the floor that prevents silently skipping a
    nested statute home several directories deep. A statute home found on disk but **absent from the
    root map** → FRICTION.
 4. **Load L0 / L1 / L3 from the declared locations.** L0 (Preamble P-lines) + L1 (Articles +

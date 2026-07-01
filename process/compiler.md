@@ -15,7 +15,7 @@ must pass. Those same assertions run independently in CI.
 ## Decided (v1) — the `compile-prompt` skill
 
 The compile step is implemented as the **`compile-prompt`** skill
-(`.claude/skills/compile-prompt/`). Two settled choices:
+(`skills/compile-prompt/`). Two settled choices:
 
 - **Compile-only handoff.** The skill emits the briefing artifact and stops; a *separate*
   actor session implements it. Keeping compile and build apart keeps the provenance trail
@@ -26,9 +26,9 @@ The compile step is implemented as the **`compile-prompt`** skill
   the signal the constitution must grow.
 - **Selection = strategy 2** (below): L0 always, all `RATIFIED` L1, plus task-matched L2/L3.
 - **Deterministic discovery.** The compiler never relies on being *told* which files hold L2. It
-  bootstraps from the product's root `CLAUDE.md` (the **governance map**: constitution path, ADR
-  dir, L2 convention) and **globs all `CLAUDE.md` / `AGENTS.md`** for statute homes — the glob is
-  the floor (never miss a nested home), the map is the index (navigable + audit-anchored). A
+  bootstraps from the product's root `AGENT.md` (the **governance map**: constitution path, ADR
+  dir, L2 convention) to dynamically discover statute homes — the map is
+  the source of truth, not a hardcoded glob. A
   statute home not reachable from the map is FRICTION. *(Surfaced by the first headless compile
   test, where a strict reader nearly missed a nested statute home.)*
 - **Negative invariants + no invented conventions.** The compiler tags not just the Articles a task

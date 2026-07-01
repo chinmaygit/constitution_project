@@ -1,6 +1,6 @@
 ---
 name: derive-statutes
-description: Derives the L2 Statutes each L1 Article needs to be enforceable in the product's actual stack — reusing existing statutes, proposing only the gaps, and surfacing Articles that have no operationalizing rule. Grounded in each Article's fitness signal and the live code, never invented. Use when a user wants to generate/derive the L2 ruleset from L1, check that every Article is operationalized, find under-enforced Articles, or scaffold CLAUDE.md/AGENTS.md rules from the constitution. Triggers - "generate L2 from L1", "derive the statutes for these articles", "which articles have no statutes", "what craft rules does this article need", "build the L2 ruleset". Do NOT use for - harvesting/naming existing rules as L2 (that is the bottom-up harvest in process/statutes.md), auditing L1 conformance against code (use audit-conformance), authoring L1 Articles (Step B), changing an Article's status/text (above the firewall), or inventing rules with no Article/L0 trace.
+description: Derives the L2 Statutes each L1 Article needs to be enforceable in the product's actual stack — reusing existing statutes, proposing only the gaps, and surfacing Articles that have no operationalizing rule. Grounded in each Article's fitness signal and the live code, never invented. Use when a user wants to generate/derive the L2 ruleset from L1, check that every Article is operationalized, find under-enforced Articles, or scaffold rules from the constitution. Triggers - "generate L2 from L1", "derive the statutes for these articles", "which articles have no statutes", "what craft rules does this article need", "build the L2 ruleset". Do NOT use for - harvesting/naming existing rules as L2 (that is the bottom-up harvest in process/statutes.md), auditing L1 conformance against code (use audit-conformance), authoring L1 Articles (Step B), changing an Article's status/text (above the firewall), or inventing rules with no Article/L0 trace.
 metadata:
   scope: project
   layer: L2
@@ -26,8 +26,7 @@ speculation. **Reuse an existing statute before proposing a new one** (F-II — 
 ## Procedure
 
 1. **Load the Articles.** Read each L1 Article: `principle`, `serves`, `fitness`, `conformance`.
-2. **Load the existing L2.** Read the product's `CLAUDE.md` / `AGENTS.md` (+ nested) statutes and
-   their `serves` back-links.
+2. **Load the existing L2.** Read the product's root `AGENT.md` governance map to find where L2 statutes live. Read those declared L2 homes and their `serves` back-links.
 3. **For each Article, trace down.** Ask: *in this stack, what operational rules must hold for the
    `fitness` signal to be true?* Derive candidates from the fitness, not from scratch —
    - the stack bindings it depends on (which singleton, which service, which column),
@@ -46,7 +45,7 @@ speculation. **Reuse an existing statute before proposing a new one** (F-II — 
    — it's an Article. Route it to the L1 flow (promotion), don't file it as L2.
 7. **Present, then (on confirm) write.** Output the per-Article statute map + the gap list + the
    proposed drafts. L2 needs no ratification, but it is a shared contract — get a human nod, then
-   write the drafts into the product's existing `CLAUDE.md` / `AGENTS.md` (named, not relocated),
+   write the drafts into the product's declared L2 statute homes (as named in the governance map),
    each annotated, and note prompt-only statutes as mechanization backlog.
 
 ## Output shape

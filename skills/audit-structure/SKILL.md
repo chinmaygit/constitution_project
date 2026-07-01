@@ -1,6 +1,6 @@
 ---
 name: audit-structure
-description: Audits the internal/referential integrity of the whole L0–L4 governance system — the constitution itself, not the code. Checks every cross-layer reference resolves (serves/amends/supersedes/party), every layer traces up (Articles→L0, statutes→Article/L0, ADRs→law), nothing is orphaned or duplicated across layers (F-II), the firewall and the status/conformance/enforcement fields are intact, the framework pin/version/ledger are consistent, and — the headline — flags any rule living OUTSIDE the layers (ungoverned); and verifies the product's **governance map** — the root-`CLAUDE.md` entry-point index — resolves and lists every discovered statute home (no silent nested home). Read-only: reports + proposes, never auto-fixes. Use when a user wants to audit/lint/health-check the constitution, find drift between layers, find orphaned or ungoverned rules, check that everything traces up, or verify the governance graph is connected. Triggers - "audit the constitution", "check for drift", "is the constitution consistent", "find orphaned/ungoverned rules", "anything outside the layers", "does everything trace up", "lint the governance", "audit the governance map", "is the index complete", "any nested CLAUDE.md missing from the map". Do NOT use for - auditing whether code satisfies L1 fitness (use audit-conformance), deriving missing statutes (use derive-statutes), or a consumer's own doc-bloat/staleness sweep (that's a project-level skill the consumer owns, not this framework audit).
+description: Audits the internal/referential integrity of the whole L0–L4 governance system — the constitution itself, not the code. Checks every cross-layer reference resolves (serves/amends/supersedes/party), every layer traces up (Articles→L0, statutes→Article/L0, ADRs→law), nothing is orphaned or duplicated across layers (F-II), the firewall and the status/conformance/enforcement fields are intact, the framework pin/version/ledger are consistent, and — the headline — flags any rule living OUTSIDE the layers (ungoverned); and verifies the product's **governance map** — the root `AGENT.md` entry-point index — resolves its declared L2 statute homes. Read-only: reports + proposes, never auto-fixes. Use when a user wants to audit/lint/health-check the constitution, find drift between layers, find orphaned or ungoverned rules, check that everything traces up, or verify the governance graph is connected. Triggers - "audit the constitution", "check for drift", "is the constitution consistent", "find orphaned/ungoverned rules", "anything outside the layers", "does everything trace up", "lint the governance", "audit the governance map", "is the index complete". Do NOT use for - auditing whether code satisfies L1 fitness (use audit-conformance), deriving missing statutes (use derive-statutes), or a consumer's own doc-bloat/staleness sweep (that's a project-level skill the consumer owns, not this framework audit).
 metadata:
   scope: project
   layer: cross-cutting
@@ -36,7 +36,7 @@ statutes (`derive-statutes`).
 - Every cross-link (`[[name]]`, `§ref`, relative file link) resolves to a real target.
 
 **3. One home — no duplication (F-II):**
-- No rule's text appears verbatim in two layer documents (an Article restated as a statute; the same rule in two `CLAUDE.md`/`AGENTS.md` files).
+- No rule's text appears verbatim in two layer documents (an Article restated as a statute; the same rule in two different files).
 
 **4. Field & firewall integrity:**
 - Every Article carries all required fields: `status`, `conformance`, `enforcement`, `party`, `serves`, `fitness`.
@@ -44,12 +44,11 @@ statutes (`derive-statutes`).
 - The instance's framework pin (`constitution@X`) matches `registry.md`; the header version matches the latest ledger entry and the latest tag.
 
 **5. Anything OUTSIDE the layers (the headline):**
-- A rule in `CLAUDE.md` / `AGENTS.md` that no layer claims — not tagged L2, no `serves`, not an Article, not an ADR. **Ungoverned rule** → either annotate it as a statute or delete it.
+- A rule in the declared L2 statute homes that no layer claims — not tagged L2, no `serves`, not an Article, not an ADR. **Ungoverned rule** → either annotate it as a statute or delete it.
 
 **6. Governance map — the entry-point index resolves (discoverability):**
-- The product's **root `CLAUDE.md`** declares a **governance map** naming where L0/L1 live (the constitution doc), where L3 lives (the ADR directory), and the L2 convention. **No map at all** → one finding (the product should add one), not one-per-home.
-- Every location the map names **resolves** — the constitution doc and the ADR directory exist. A map entry pointing at nothing → `map-drift` (stale).
-- Every **discovered** statute home — the glob of all `*/CLAUDE.md` + `AGENTS.md` carrying `serves`-tagged statutes — is **acknowledged in the map**. A home on disk but absent from the map → `map-gap` (a silent nested home — the exact failure the L4 compiler hit).
+- The product's **root `AGENT.md`** declares a **governance map** naming where L0/L1 live (the constitution doc), where L3 lives (the ADR directory), and the L2 convention. **No map at all** → one finding (the product should add one), not one-per-home.
+- Every location the map names **resolves** — the constitution doc, the ADR directory, and the declared L2 statute homes exist. A map entry pointing at nothing → `map-drift` (stale).
 
 **7. Promotion / demotion signals (informational, not errors):**
 - A pile of ADRs all `serves`-ing one Article → **amendment candidate** (case law climbing to L1).
@@ -61,8 +60,7 @@ statutes (`derive-statutes`).
 
 1. **Build the graph.** Parse L0 (P-lines), L1 (Articles + fields), L2 (statutes + `serves`), L3
    (ADRs + `serves`/`supersedes`), the Preamble parties, the registry pin, the version + tag.
-   **Discover the L2 homes by glob** (every `*/CLAUDE.md` + `AGENTS.md`, minus `node_modules`/
-   generated) and **parse the root `CLAUDE.md` governance map** — you need both to run check 6.
+   **Discover the L2 homes exclusively by reading the root `AGENT.md` governance map**. Parse it to find the declared location(s) for L2 statutes.
 2. **Run the checks** above. For each finding, record the exact location and what's broken.
 3. **Classify** each: `broken-ref` · `orphan` · `duplication` · `ungoverned` · `map-gap` ·
    `map-drift` · `field-gap` · `pin/version drift` · `promotion/demotion signal`.
@@ -82,7 +80,7 @@ ONE-HOME (0)              ✓
 UNGOVERNED (1)
   AGENTS.md "<rule>"       not tagged L2, no serves → claim or cut
 MAP (1)
-  <nested>/CLAUDE.md       statute home not listed in root governance map → map-gap
+  <nested>/AGENT.md       statute home declared in map but file not found → map-drift
 FIELD/FIREWALL (0)        ✓
 DRIFT (1)
   registry pin @0.4.0  vs  instance header @0.5.0 → reconcile
@@ -96,4 +94,4 @@ SIGNALS
 - **Every finding cites an exact location** — `file:line` or an id. No verdict from memory.
 - **Distinguish a real break from a healthy signal** — a broken `serves` is an error; "3 ADRs on A1" is an amendment signal, not a bug.
 - **`serves: []` is valid** for a pure-infra ADR or a general-craft statute — not an orphan. An orphan is a *non-empty* `serves` that resolves to nothing.
-- **The glob is the source of truth for L2 homes; the map is the index.** Verify the map against the discovered set, never the reverse. A missing map is **one** finding, not one-per-home.
+- **The map is the sole source of truth for L2 discovery.** Do not hardcode filenames. A missing map is **one** finding.

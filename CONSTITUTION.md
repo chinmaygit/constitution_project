@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.14.0   (self-hosted)
+framework: constitution@0.16.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -35,7 +35,7 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
 `HOLDS + UNGUARDED` is true-but-fragile, flagged as mechanization debt.
 
 ### Article F-I — Discovery before codification
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — No rule is added to this framework until it has been proven in at
   least one live project. DSAMind is the founding instance.
@@ -46,17 +46,19 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   from usage carries its evidence with it.
 
 ### Article F-II — One home per rule
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — Every governed rule lives in exactly one layer (L0–L4), and is never
-  duplicated across layers, nor across the framework and an instance.
+  duplicated across layers, nor across the framework and an instance. A versioned 
+  package manager installation (e.g., via a CLI) satisfies this rule: the package is the 
+  single home, and the files it writes to the instance are its read-only build artifacts.
 - **Serves** — P1.
 - **Fitness** — no rule's text appears verbatim in two layer documents; every cross-layer
   reference (`serves` / `amends` / `supersedes` / `party`) resolves and every layer traces up;
   no rule lives outside a layer. Verified by the `audit-structure` skill.
 
 ### Article F-III — Experiments are pre-registered
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: UNGUARDED`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: UNGUARDED` · `party: N/A`
 
 - **Principle** — Every candidate rule declares its hypothesis, metric, and decision
   rule **before** it runs. The decision rule is frozen for the experiment's duration.
@@ -65,7 +67,7 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   and a `pre-registered:` timestamp earlier than its `RUNNING` status.
 
 ### Article F-IV — No self-ratification above the firewall
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — Changes to L0 or L1 — in the framework **or** any instance — require a
   human ratifier. Agents may propose, gather evidence, and author/enforce L4, but may
@@ -74,7 +76,7 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
 - **Fitness** — every L0/L1 amendment in the ledger below names a human ratifier.
 
 ### Article F-V — L0 is discovered, distilled, and human-held
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — A product's L0 (Preamble) is the *minimal* set of identity-defining
   statements, discovered from the product's reason to exist and distilled until removing
@@ -90,7 +92,7 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   [process/l0-elicitation.md](process/l0-elicitation.md); skill: `define-preamble`.
 
 ### Article F-VI — L1 is harvested, tested, and reality-checked
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — L1 Articles are *harvested from observed practice* (past decisions,
   ADRs, incidents, existing rules), never invented. Each must pass the inclusion test,
@@ -111,13 +113,11 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   (re-running the fitness signals after code changes) is the `audit-conformance` skill.
 
 ### Article F-VII — Statutes implement the stack, traced and mechanized
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — L2 Statutes are operational/craft rules that *fail* L1's inclusion test (a
-  tech swap would rewrite them, *or* they don't trace to an L0 line). They live in the product's
-  existing `CLAUDE.md` / `AGENTS.md` — **named, not relocated** (F-II) — each **traces up** to
-  the L1 Article or L0 line it upholds (or is marked *general craft*), and is **enforced by a
-  mechanism** (lint / CI / hook), not a conformance ledger. They cross the firewall only by
+  tech swap would rewrite them, *or* they don't trace to an L0 line). They live wherever the product's Governance Map specifies (typically `AGENT.md`, `CLAUDE.md`, or nested files) — **named, not relocated** (F-II). Each **traces up** to
+  the L1 Article it operationalizes (or explicitly states it is a general craft standard), and is **enforced by a mechanism** (lint / CI / hook), not a conformance ledger. They cross the firewall only by
   promotion (L2→L1, ratified) or demotion (L1→L2).
 - **Serves** — P1.
 - **Fitness** — the framework ships an L2 spec (`process/statutes.md`, `templates/statute.md`,
@@ -154,6 +154,24 @@ on the same Article is the signal that the Article itself needs amending.
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
 
+### [0.16.0] — 2026-07-01 — Agent-Agnostic Architecture
+- **Amended Article F-VII** to clarify that L2 Statutes live wherever the product's Governance Map specifies (typically `AGENT.md`, `CLAUDE.md`, or nested files). The framework itself no longer hardcodes any L2 discovery globs, reading the convention dynamically from the map. This maintains F-II compliance while natively supporting any agent.
+- **Why:** To make the constitution natively support Cursor, Antigravity, Claude, and Copilot, rather than relying exclusively on `CLAUDE.md`. The root governance map is now standardly named `AGENT.md`.
+
+### [0.15.1] — 2026-07-01 — Re-audit Conformance
+- **Audit:** Ran `audit-conformance` against the codebase following the 0.15.0 package management amendment.
+- **Findings:**
+  - F-I through F-VII all maintain `conformance: HOLDS`.
+  - F-IV holds: The 0.15.0 ledger entry correctly names a human ratifier (Chinmay).
+  - F-III remains `UNGUARDED` (mechanization backlog).
+- **Result:** No conformance flips. All Articles hold.
+
+### [0.15.0] — 2026-07-01 — Package-Managed Distribution satisfies F-II
+- **Amended Article F-II** to clarify that a package-managed CLI installation satisfies the "one home per rule" invariant. 
+- **Why:** To enable a gstack-style CLI distribution. Symlinks are no longer the exclusive way to prevent drift; instead, the CLI and package version will act as the source of truth, treating generated files as read-only build artifacts.
+- **ADR:** [0001-package-managed-distribution](decisions/0001-package-managed-distribution.md).
+- Ratifier: Chinmay.
+
 ### [0.14.0] — 2026-06-30 — Third axis: `enforcement` (how durably an invariant is kept)
 - Added a **third Article axis, `enforcement`** (`UNGUARDED | AUDITED | GATED | STRUCTURAL`,
   weakest → strongest), alongside `status` (is it law?) and `conformance` (is it true now?). It
@@ -177,9 +195,10 @@ ADR that justified the change.
 ### [0.13.0] — 2026-06-30 — `audit-structure` enforces the governance map (discoverability)
 - Extended the `audit-structure` skill (→ v1.1.0) with a **governance-map check** (new check 6): the
   product's root `CLAUDE.md` must declare an entry-point **governance map** (where L0/L1 live, where
-  L3 lives, the L2 convention); the audit verifies it **resolves** (`map-drift` if an entry points at
+  L3 lives, the L2 convention), and the `audit-structure` / `compile-prompt` skills **parse it**, or
+  warn if missing. The map acts as an index; the truth is the code. The audit skill parses the map (or
   nothing) and **lists every discovered statute home** — the glob of all `*/CLAUDE.md` + `AGENTS.md`
-  — flagging any nested home absent from the map as `map-gap` (a silent home). This is the structural
+  carrying `serves`-tagged statutes. If a home is discovered but absent from the map, it flags a `map-gap` (a silent home). This is the structural
   counterpart to the `compile-prompt` discovery fix [0.12.0]: the compiler discovers by glob, the
   audit guarantees the human-facing index stays complete. No map at all → one finding, not one-per-home.
 - The glob is the source of truth for L2 homes; the map is the index, checked against it.
@@ -190,7 +209,7 @@ ADR that justified the change.
 - Hardened the `compile-prompt` skill (→ v1.1.0) after the first headless compile tests (Haiku 4.5
   and Sonnet 4.6 run **cold** against a consumer, no operator context). Three procedural fixes:
   - **Deterministic L2 discovery.** Replaced "read root + nested `CLAUDE.md`/`AGENTS.md`" (a
-    *description* an agent can't act on) with a protocol: bootstrap from the product's root
+    black box to the compiler) with a strict glob constraint: an agent must first parse the root
     `CLAUDE.md` **governance map** (constitution path, ADR dir, L2 convention), then **glob all
     `CLAUDE.md`/`AGENTS.md`** for statute homes. Glob is the floor; the map is the index. The test
     caught a strict reader nearly skipping a nested statute home.
@@ -206,7 +225,7 @@ ADR that justified the change.
 - Recorded the discovery decision in `process/compiler.md`. No new Article; no status change.
 
 ### [0.11.0] — 2026-06-30 — `compile-prompt` skill (the L4 compile step)
-- Built the **`compile-prompt`** skill (`.claude/skills/`): the L4 compile step — `L4 =
+- Built the **`compile-prompt`** skill (`skills/`): the L4 compile step — `L4 =
   compile(task, L0..L3)`. Given an owner's task it locates the governing slice (the L0 line it
   serves, the `RATIFIED` Articles, the matched L2 statutes, the precedent ADRs) and emits one
   provenance-tagged briefing ending in a definition of done = the fitness assertions CI runs. This
@@ -223,7 +242,7 @@ ADR that justified the change.
   F-VIII (govern L3) is deferred. No status change.
 
 ### [0.10.0] — 2026-06-29 — `audit-structure` skill (constitution integrity)
-- Added the `audit-structure` skill (`.claude/skills/`): a read-only structural audit of the whole
+- Added the `audit-structure` skill (`skills/`): a read-only structural audit of the whole
   L0–L4 governance graph — every cross-layer reference resolves (`serves`/`amends`/`supersedes`/
   `party`), every layer traces up, nothing is orphaned, duplicated, or living **outside** a layer
   (ungoverned), the firewall + two-axis fields are intact, and the pin/version/ledger are
@@ -247,18 +266,18 @@ ADR that justified the change.
   governing Article (F-VIII candidate) is deferred until that proof holds (F-I).
 
 ### [0.8.0] — 2026-06-29 — `derive-statutes` skill (top-down L1 → L2)
-- Added the `derive-statutes` skill (`.claude/skills/`): for each L1 Article, derives the L2
+- Added the `derive-statutes` skill (`skills/`): for each L1 Article, derives the L2
   Statutes needed to make its fitness signal enforceable in the actual stack, reuses existing
   statutes (F-II), proposes only the gaps, and surfaces **under-enforced Articles** (fitness with
   no operationalizing statute). The top-down complement to `process/statutes.md`'s bottom-up
   harvest; both serve F-VII. Referenced from F-VII's "Proven" note.
 - Grounded by F-I: a candidate must fall out of an Article's `fitness` applied to real code — it
   derives, never invents. L2 is below the firewall, so the skill drafts/proposes; a human nod
-  precedes writing into the product's CLAUDE.md/AGENTS.md. No new Article; no status change.
+  precedes writing into the product's `CLAUDE.md` / `AGENTS.md`. No new Article; no status change.
 
 ### [0.7.0] — 2026-06-29 — Article F-VII ratified (L2 statute discipline)
 - **F-VII graduates to `RATIFIED` (`conformance: HOLDS`).** The L2 statute model — fail L1's
-  inclusion test, live in CLAUDE.md/AGENTS.md (named not relocated), trace up, enforce by
+  inclusion test, live in `CLAUDE.md` / `AGENTS.md` (named, not relocated), trace up, enforce by
   mechanism, cross the firewall only by promotion/demotion — is now a ratified framework Article,
   not just a process spec. Ratifier: Chinmay.
 - **Proven by a live DSAMind L2 harvest** (the F-I requirement): the existing `AGENTS.md` /
@@ -279,7 +298,7 @@ ADR that justified the change.
   codification), the same path F-V/F-VI took. Tracked as an in-flight proof in `registry.md`.
 
 ### [0.5.0] — 2026-06-29 — `audit-conformance` skill (recurring L1 reality-check)
-- Added the `audit-conformance` skill (`.claude/skills/`): runs each L1 Article's fitness
+- Added the `audit-conformance` skill (`skills/`): runs each L1 Article's fitness
   signal against the live codebase and sets `conformance` (HOLDS / VIOLATED / UNVERIFIED) with
   evidence — the **recurring** half of F-VI, complementing the one-time Step B harvest. It
   writes only the conformance axis (below the firewall) and *proposes* anything touching
@@ -324,7 +343,7 @@ ADR that justified the change.
   that build completes and the process holds. This honors F-I going forward.
 - Operational how-to: [process/defining-l0-l1.md](process/defining-l0-l1.md).
 - Added the L0 elicitation protocol ([process/l0-elicitation.md](process/l0-elicitation.md))
-  and the `define-preamble` skill (`.claude/skills/`).
+  and the `define-preamble` skill (`skills/`).
 - **L0 half proven:** DSAMind's Preamble (P1–P3) was produced by the protocol and ratified;
   the run fed back two protocol refinements (Q3 sharpened, Q8 forced to an order). F-V's L0
   half is eligible to graduate; F-VI stays `PROVISIONAL` pending the L1 harvest (Step B).
