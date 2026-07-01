@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.5   (self-hosted)
+framework: constitution@0.16.6   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,27 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.16.6] — 2026-07-01 — New skill: `harvest-statutes` (the L2 harvest, operationalized)
+- Second of five new skills from the skills-rehaul brainstorm. Closes the last "referenced but
+  unbuilt" gap: `process/statutes.md`'s bottom-up harvest (name existing `AGENT.md`/`CLAUDE.md`
+  rules as L2, structure them) was pointed at by `derive-statutes`'s own "Do NOT use for" line
+  but had no skill of its own.
+- `skills/harvest-statutes/SKILL.md` (new, `1.0.0`): harvests from what already exists only
+  (never invents), filters through the same four-criteria L1 inclusion test `harvest-articles`
+  uses (opposite default — fails routes here, passes routes there), annotates
+  `rule · serves · enforced-by · why` per `templates/statute.md`, catches orphans (dead vs.
+  evidence of a missing Article) and duplicates (F-II), and — unlike `harvest-articles` — **may
+  write L2 directly**, since L2 sits below the firewall (F-IV only gates L0/L1).
+- **Deliberately scoped out ongoing L2 drift auditing** — `process/statutes.md`'s own
+  Maintenance section says the framework ships no such skill on purpose (L2 moves in weeks; a
+  periodic constitutional audit is the wrong cadence). That stays project-owned tooling (e.g.
+  DSAMind's own governance-sweep skill). This skill is the one-time-or-additive harvest only.
+- **F-I evidence already exists** here too: DSAMind's own L2 was harvested this way by hand
+  (ledger `[0.7.0]`) — 15 statutes annotated, an F-II duplicate consolidated. Codifying a proven
+  process, not a speculative one.
+- Cross-wired `derive-statutes`'s body text to name this skill alongside `process/statutes.md`.
+- No new Article; below the firewall. Ratifier: Chinmay.
 
 ### [0.16.5] — 2026-07-01 — New skill: `harvest-articles` (Step B, operationalized)
 - First of five new skills from the skills-rehaul brainstorm. Closes the gap flagged during

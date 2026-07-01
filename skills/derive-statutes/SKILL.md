@@ -5,15 +5,15 @@ metadata:
   scope: project
   layer: L2
   enforces: F-VII
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Derive L2 Statutes from L1 Articles (top-down)
 
-The complement to the L2 harvest ([process/statutes.md](../../process/statutes.md)). The
-harvest names *existing* rules as statutes (bottom-up); this derives the statutes each **Article**
-needs to be enforceable (top-down) and surfaces Articles that have none. Both serve Article
-**F-VII**.
+The complement to the L2 harvest ([process/statutes.md](../../process/statutes.md), operationalized
+by `harvest-statutes`). The harvest names *existing* rules as statutes (bottom-up); this derives
+the statutes each **Article** needs to be enforceable (top-down) and surfaces Articles that have
+none. Both serve Article **F-VII**.
 
 ## The grounding rule (read first)
 
