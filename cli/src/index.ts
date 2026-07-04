@@ -94,9 +94,28 @@ function requireHumanTty(action: string): void {
 
 // ---------------------------------------------------------------------------
 
-async function runInit() {
+async function runInit(args: string[]) {
   const targetDir = process.cwd();
   console.log(`\nInitializing Constitution Framework in ${targetDir}...\n`);
+
+  // Non-interactive path (CI, agents, scripted installs): all three provided.
+  const flagName = getFlag(args, 'name');
+  const flagRatifier = getFlag(args, 'ratifier');
+  const flagAgents = getFlag(args, 'agents');
+  if (flagName && flagRatifier && flagAgents !== undefined) {
+    const agents = flagAgents.split(',').map((s) => s.trim()).filter(Boolean);
+    try {
+      await scaffoldFramework(targetDir, flagName, flagRatifier);
+      await setupAgents(targetDir, agents);
+      ensureOps(targetDir);
+      console.log('\nScaffolded non-interactively. The ratifier still has human-only steps:');
+      console.log('define L0, ratify, then `constitution lock accept` in a terminal.');
+    } catch (error) {
+      console.error('Failed to initialize constitution:', error);
+      process.exit(1);
+    }
+    return;
+  }
 
   const response = await prompts([
     {
@@ -387,7 +406,7 @@ async function main() {
 
   switch (command) {
     case 'init':
-      await runInit();
+      await runInit(args);
       break;
     case 'audit':
       runAudit(args);

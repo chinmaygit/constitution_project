@@ -98,6 +98,18 @@ bin, the vendoring pipeline, and a GitHub Packages release path. Workstreams:
   byte-compared in the test).
 - Tone: stub-generator tests prove generate → cache-hit → stale-on-amend → refuse/prune.
 
+### Addendum — tarball install verified (same session, commit 2)
+- Added non-interactive `constitution init --name N --ratifier R --agents a,b` (CI/
+  scripted installs; interactive path unchanged).
+- Ran the [0.16.11] pre-publish standard: `npm pack` → installed the real
+  `chinmaygit-constitution-cli-0.17.0.tgz` into a scratch consumer via npm →
+  `constitution init` (non-interactive) wrote CONSTITUTION.md (placeholders correctly
+  substituted: name, ratifier, `constitution@0.17.0` pin), AGENTS.md map, vendored
+  templates/process, compiled `.claude/` skills, ops scaffold with its `.gitignore`.
+- In that fresh consumer, from the installed binary: `audit` → 0 errors, 1 honest
+  warning (LOCK-MISSING); `feature declare` + `compile --out` + `board` + `doctor` all
+  worked. The product loop is real for a brand-new team, end to end.
+
 ### Known-untested / deferred (next sessions pick up here)
 - **Tone generation with a real LLM**: `claude -p` exists here but nested invocation gets
   401 inside this session — engine degrades honestly (verified); real render quality
