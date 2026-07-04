@@ -18,6 +18,7 @@ import { renderUnit, checkTones, claudeGenerator, TONES, Tone } from './engine/t
 import { buildCompilePack, writeCompilePack } from './engine/compile';
 import { listProposals, readProposal, recordRuling } from './engine/proposals';
 import { runDoctor } from './engine/doctor';
+import { installHook } from './engine/hooks';
 import { Instance } from './engine/model';
 
 const VERSION: string = require('../package.json').version;
@@ -39,6 +40,7 @@ The firewall (F-IV, mechanized):
   proposals [show <id>]         The ratification queue (drafted below, ruled on above)
   ratify <id>                   HUMAN ONLY (interactive): rule on a queued proposal
   doctor                        Self-heal below the firewall; queue drafts above it
+  hooks install [--force]       Pre-commit gate: audit + firewall run before every commit
 
 Ops plane (delivery visibility — .constitution/, never the law):
   feature <verb> <slug|title>   declare|start|validate|ship|block|unblock|note [--refs F-II,ADR-0001]
@@ -435,6 +437,16 @@ async function main() {
     case 'doctor':
       runDoctorCmd();
       break;
+    case 'hooks': {
+      if (positionals(args)[0] !== 'install') fail('usage: constitution hooks install [--force]');
+      try {
+        const r = installHook(process.cwd(), hasFlag(args, 'force'));
+        console.log(`${r.action}: ${r.path} — audit + firewall now gate every commit here.`);
+      } catch (e) {
+        fail((e as Error).message);
+      }
+      break;
+    }
     case 'proposals':
       runProposals(args);
       break;

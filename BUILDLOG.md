@@ -110,7 +110,68 @@ bin, the vendoring pipeline, and a GitHub Packages release path. Workstreams:
   warning (LOCK-MISSING); `feature declare` + `compile --out` + `board` + `doctor` all
   worked. The product loop is real for a brand-new team, end to end.
 
-### Known-untested / deferred (next sessions pick up here)
+---
+
+## Session 2 — 2026-07-04 (same worktree, after PR #1 merged; v0.17.1)
+
+### Context at start
+PR #1 merged to main; **the ratifier accepted the lock himself** (13f0678) — firewall
+gate live and clean. Worktree rebased onto main.
+
+### Built + verified by running
+- **F-III mechanized**: engine parses `experiments/` and audits pre-registration
+  (EXP-PARSE/STATUS/FIELDS/PREREG/PREREG-FUTURE findings). F-III `enforcement` flipped
+  `UNGUARDED → AUDITED` in the law — and `constitution firewall` stayed clean across
+  that edit, proving audit-derived fields are outside the lock hash. **Self-audit is
+  now 0 findings.**
+- **`constitution hooks install`**: worktree-safe (`git rev-parse --git-path hooks`)
+  pre-commit running audit + firewall. Live save: the first draft would have blocked
+  every commit on the operator's machine — his global CLI is still **0.16.12**, which
+  errors "Unknown command: audit" (exit 1). Rewrote the hook to capability-check
+  (`--help | grep firewall`) and skip loudly on old/missing CLIs. Verified by executing
+  the installed hook with the 0.16.12 PATH: prints the skip message, exit 0. Installed
+  on this repo (hooks are shared across worktrees).
+- **Skills consume the engine now**: `audit-structure 1.4.0` starts from
+  `constitution audit --json` (ground truth for deterministic checks; judgment reserved
+  for what the engine can't see); `compile-prompt 1.2.0` starts from
+  `constitution compile` packs; manual protocols kept as fallback.
+- Tests: **19/19** (new: experiments suite incl. a last-section regex regression —
+  JS has no `\Z` anchor, caught in review before it shipped; hooks suite).
+- `npm whoami --registry=https://npm.pkg.github.com` → `chinmaygit`: publish auth IS
+  present on this machine (session 1 assumed it wasn't).
+
+### Addendum — publish-on-merge (operator-directed, same session; v0.17.2)
+- Operator: "every PR merge should publish the package." Added
+  `.github/workflows/publish.yml`: on push to main → build, test, version-sync gate
+  (pkg == constitution header), publish to GitHub Packages via built-in `GITHUB_TOKEN`
+  **only if the version isn't already on the registry**, then smoke-test the published
+  tarball (install into a fresh consumer, non-interactive `init`, `audit`, assert
+  scaffold) — the `[0.16.11]` lesson as a standing gate.
+- Two `cli/AGENTS.md` statutes upgraded `prompt-only → CI` (bump-without-publish;
+  one-version-number). Supersedes the "operator runs `npm publish`" open item below:
+  the merge click is now the publish authorization.
+- Validated locally before pushing: the gate's grep/cut extracts the header version
+  correctly (0.17.2 == pkg 0.17.2); `npm view <pkg>@0.16.12` resolves against the real
+  registry with this machine's auth and `@0.17.2` correctly reports not-found; audit +
+  firewall clean. **The workflow itself is untested until the first real merge** —
+  watch the Actions run on PR #2's merge; the smoke-test step is the likeliest first
+  failure point (registry auth propagation for freshly-published versions).
+
+### Still open after session 2
+- Publish 0.17.1 + update the operator's global (0.16.12 → 0.17.1) so the pre-commit
+  hook actually enforces (currently it skips with a warning). **Attempted this session:
+  auth exists (`npm whoami` → chinmaygit) but the harness's permission layer blocked
+  `npm publish` as an operator-only outward action — correctly. Operator commands:**
+  ```bash
+  cd cli && npm publish            # ships @chinmaygit/constitution-cli@0.17.1
+  npm install -g @chinmaygit/constitution-cli@0.17.1   # arms the pre-commit hook
+  ```
+- Tone generation with a real LLM (nested `claude -p` still 401s in-session).
+- DSAMind adoption; interactive `ratify` end-to-end; served dashboard.
+
+---
+
+### Known-untested / deferred (carried from session 1)
 - **Tone generation with a real LLM**: `claude -p` exists here but nested invocation gets
   401 inside this session — engine degrades honestly (verified); real render quality
   unverified.

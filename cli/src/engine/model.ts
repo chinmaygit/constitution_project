@@ -81,12 +81,27 @@ export interface GovernanceMap {
   statuteHomes: string[]; // linked files that actually contain statute bullets
 }
 
+export interface Experiment {
+  file: string; // relative to instance root
+  id: string; // e.g. "EXP-0001"
+  name: string;
+  status: string; // DRAFT | PRE-REGISTERED | RUNNING | MEASURED | GRADUATED | REJECTED | ITERATE
+  preRegistered: string; // YYYY-MM-DD or ''
+  ratifier: string;
+  candidate: string;
+  hypothesis: string;
+  metric: string;
+  decisionRule: string;
+  parseNotes: string[];
+}
+
 export interface Instance {
   root: string; // absolute path
   constitution: ConstitutionDoc;
   map?: GovernanceMap;
   statutes: Statute[];
   adrs: Adr[];
+  experiments: Experiment[];
 }
 
 // A governed unit = anything the lock hashes or tone renders: an L0 line,

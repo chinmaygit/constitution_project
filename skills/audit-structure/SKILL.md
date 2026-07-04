@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: cross-cutting
   enforces: F-II
-  version: "1.3.2"
+  version: "1.4.0"
 ---
 
 # Audit the constitution's structural integrity (L0–L4)
@@ -22,6 +22,27 @@ Read-only. It reports findings and proposes fixes; it never edits the constituti
 are above the firewall (F-IV). It does not check code-vs-fitness (`audit-conformance`) or derive
 statutes (`derive-statutes`). To actually close a finding this audit reports, use
 `reconcile-findings` — it consumes this skill's output and applies what's below the firewall.
+
+## Step 0 — run the deterministic engine first
+
+If the `constitution` CLI ≥ 0.17.0 is available (on PATH, or `node cli/dist/index.js`
+in the framework repo itself), start with:
+
+```bash
+constitution audit --json
+```
+
+That is the engine's deterministic subset of this audit — reference resolution, field
+legality, L0 size/coverage, ledger/version sync, statute annotations, ADR frontmatter
++ forward links, experiment pre-registration (F-III), and lock/firewall drift (F-IV)
+— already classified `above`/`below` the firewall by what the fix touches. **Treat its
+output as ground truth for those checks; do not re-derive them by hand.** Your added
+value is everything the engine cannot judge: semantic duplication (the same rule
+*paraphrased* in two homes — the engine only compares text), ungoverned rules hiding
+in prose, whether a `party:` tag matches the Preamble's named parties in meaning,
+INDEX-vs-files completeness, and whether a reference that *resolves* still *means*
+what the citing text claims. If the CLI is unavailable, run the full manual protocol
+below.
 
 ## The checks
 

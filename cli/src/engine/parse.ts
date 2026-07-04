@@ -12,6 +12,7 @@ import {
   Adr,
   Article,
   ConstitutionDoc,
+  Experiment,
   GovernanceMap,
   Instance,
   LedgerEntry,
@@ -341,6 +342,52 @@ export function parseAdr(root: string, file: string): Adr {
 }
 
 // ---------------------------------------------------------------------------
+// Experiments (candidate rules under measurement — F-III's subject matter)
+
+const PLACEHOLDER_SECTION = /^<[^>]*>$/;
+
+export function parseExperiment(root: string, file: string): Experiment {
+  const raw = fs.readFileSync(path.join(root, file), 'utf8');
+  const notes: string[] = [];
+
+  const heading = raw.match(/^# (EXP-\d+)\s*·\s*(.+)$/m);
+  if (!heading) notes.push('no `# EXP-<NNNN> · <name>` heading');
+
+  // Fenced field block: candidate / status / pre-registered / ratifier.
+  const fields: Record<string, string> = {};
+  const fence = raw.match(/```\n([\s\S]*?)```/);
+  if (fence) {
+    for (const line of fence[1].split('\n')) {
+      const m = line.match(/^([\w-]+)\s+(?:→\s+)?(.+?)(?:\s+#.*)?$/);
+      if (m) fields[m[1]] = m[2].trim();
+    }
+  } else {
+    notes.push('no fenced field block (candidate/status/pre-registered/ratifier)');
+  }
+
+  const section = (name: string): string => {
+    // (?=\n## |$) — up to the next section heading or end of file; JS has no \Z.
+    const m = raw.match(new RegExp(`^## ${name}[^\\n]*\\n([\\s\\S]*?)(?=\\n## |$)`, 'm'));
+    const text = normalize(m?.[1] ?? '');
+    return PLACEHOLDER_SECTION.test(text) ? '' : text;
+  };
+
+  return {
+    file,
+    id: heading?.[1] ?? '',
+    name: heading?.[2]?.trim() ?? '',
+    status: (fields['status'] ?? '').split(/[|\s]/)[0].trim(),
+    preRegistered: PLACEHOLDER_SECTION.test(fields['pre-registered'] ?? '') ? '' : (fields['pre-registered'] ?? ''),
+    ratifier: fields['ratifier'] ?? '',
+    candidate: fields['candidate'] ?? '',
+    hypothesis: section('Hypothesis'),
+    metric: section('Metric'),
+    decisionRule: section('Decision rule'),
+    parseNotes: notes,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Whole instance
 
 export function findConstitutionFile(root: string): string | null {
@@ -381,5 +428,13 @@ export function loadInstance(root: string): Instance {
     }
   }
 
-  return { root, constitution, map, statutes, adrs };
+  const experiments: Experiment[] = [];
+  const expDir = path.join(root, 'experiments');
+  if (fs.existsSync(expDir)) {
+    for (const f of fs.readdirSync(expDir).sort()) {
+      if (/^EXP-\d+.*\.md$/i.test(f)) experiments.push(parseExperiment(root, path.join('experiments', f)));
+    }
+  }
+
+  return { root, constitution, map, statutes, adrs, experiments };
 }
