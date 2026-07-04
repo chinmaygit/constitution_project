@@ -186,7 +186,85 @@ gate live and clean. Worktree rebased onto main.
   (live) dashboard beyond static HTML; multi-instance registry telemetry.
 
 ### Known-untested / deferred
-- Publishing 0.17.0 to GitHub Packages (needs operator's npm auth).
 - Tone generation quality (needs `claude` CLI at runtime; engine tested with a stub).
-- DSAMind adoption of the new engine (separate repo, separate session).
 - Multi-instance/registry telemetry, web dashboard beyond static HTML — later phases.
+
+---
+
+## Session 3 — 2026-07-04 (same worktree; DSAMind adoption; v0.17.2 published + operator's global updated)
+
+### Context at start
+Operator published 0.17.1/0.17.2 and updated their global CLI (pre-commit hook now
+enforces for real). Scope: point the engine at DSAMind (`~/Workspace/dsa_project`) — a
+real, independently-ratified constitution (11 Articles, its own Amendments Ledger back to
+[0.1.0]) — the first test of the engine against a document it wasn't hand-built against.
+
+### What happened — real bugs found by dogfooding, not hypothesized
+Running `constitution audit` against DSAMind's actual `CONSTITUTION.md` surfaced the
+engine's format assumptions were narrower than "the framework's own documents" — they
+were narrower than *this repo's own dogfood shape specifically*. Fixed four real parser/
+audit bugs in `cli/src/engine/{parse,audit}.ts` (tests added, `cli/test/engine.test.ts`):
+
+1. **P-line parser required bare `**P1.**`** — DSAMind titles its P-lines
+   (`**P1 — Fluency, not coverage.**`). Fixed to accept an optional `— Title` before the
+   closing `.**`, folding the title into the statement text (nothing discarded).
+2. **Article parser required exactly `### Article <id>`** — DSAMind groups Articles under
+   `### §A` domain sections, so Articles are one level deeper: `#### Article <id>`. Fixed
+   to accept `###`/`####`, and widened the bullet-block end-boundary to stop at either
+   level so one Article's bullets don't swallow the next.
+3. **Serves-list parser choked on parenthetical commentary** — DSAMind annotates each
+   served P-line inline (`P1 (fluency is measured...), P4 (create-value: ...)`); the old
+   split-on-comma fragmented *inside* the parens, and no fragment matched the exact
+   `^P\d+$` filter, so real Articles read as serving nothing (cascading into false
+   `ART-SERVES` / `ART-SERVES-DANGLING`/`L0-UNSERVED` findings). Fixed by stripping
+   `(...)` groups before splitting.
+4. **`ART-STATUS` rejected `SUPERSEDED — <date>`** — the exact shape `ratify-amendment`
+   itself is speced to produce for a superseded Article. Fixed to accept the dated form.
+5. **`LEDGER-SYNC` fired unconditionally** — it compared the header's `framework:
+   constitution@X` pin against the newest Amendments Ledger entry version, which is only
+   the same axis when `selfHosted` (this repo pins itself). A downstream consumer's ledger
+   tracks *its own* constitution version, independent of the framework spec version it
+   pins — DSAMind's ledger is at its own `[0.11.0]` while pinning `framework@0.16.12`,
+   legitimately. `doc.selfHosted` was already parsed but never read anywhere — wired the
+   existing field into the one check that needed it, rather than adding new plumbing.
+
+### Verified by running
+- `cd cli && npm test` — **21/21** (19 prior + 2 new: real-world format-variance parsing,
+  LEDGER-SYNC scoped to self-hosted only).
+- `npm run build` — clean; self-audit (`node cli/dist/index.js audit` on this repo) —
+  **0 findings**, unchanged by the fix (confirms nothing regressed on the format the
+  engine already handled).
+- Before the fix: `constitution audit` on DSAMind → 1 error (`LEDGER-SYNC`), 13 warnings,
+  most cascading false positives (`L0-EMPTY` even though DSAMind has a real 4-line
+  Preamble; 9× `ADR-SERVES-DANGLING` because zero Articles parsed at all).
+- After the fix, same repo → **16 errors, 6 warnings, all real**:
+  - `L0-SIZE` (F-V caps L0 at ≤3; DSAMind has 4 — P1–P3 Mission + P4 Mandate). **Not an
+    engine bug** — checked framework's own `Article F-V` fitness text
+    (`CONSTITUTION.md:89`, "L0 holds ≤3 statements") and it has no Mission/Mandate
+    carve-out, even though the framework's own ledger ([0.5.0]) later adopted the
+    Mission/Mandate split as a first-class L0 shape. This is a genuine above-firewall
+    open question for the ratifier — does F-V need an amendment for the two-part shape it
+    already adopted, or should the Mission+Mandate total stay ≤3? **Flagged, not
+    resolved** — no amendment drafted this session.
+  - 5× `ART-MECH-DEBT` (A4, B1, B2, C1, D2 = `HOLDS`+`UNGUARDED`) — **matches DSAMind's
+    own hand-audited "mechanization backlog" list in its Amendments Ledger exactly**, an
+    independent cross-check that the engine's derivation logic is sound.
+  - `L0-UNSERVED` for P2 — genuine: no Article's `Serves` cites P2 anywhere in the document
+    (checked by hand).
+  - 15× `LOCK-UNACCEPTED` — genuine: DSAMind's `constitution.lock.json` exists
+    (`acceptedBy: Chinmay`, timestamp today) but has `units: {}` — accepted before any
+    units existed, or accepted against a version the parser couldn't see yet. Needs a
+    fresh `constitution lock accept` now that parsing surfaces the real units.
+
+### Still open after session 3
+- **DSAMind's own `constitution lock accept`** — operator's act (F-IV), now meaningful
+  since parsing works. Also `npm install` in `dsa_project` (or a fresh publish pull) to
+  pick up the fixed engine — verification above used the worktree's local `dist/`, not
+  DSAMind's installed `node_modules` copy.
+- **The F-V / Mission-Mandate `L0-SIZE` question** — needs the ratifier's call: amend F-V's
+  fitness signal, or trim DSAMind's L0. Either path goes through `propose-amendment` +
+  `ratify-amendment`; not started.
+- DSAMind's own below-firewall findings (P2 unserved, mechanization backlog) are
+  candidates for `constitution doctor` / manual statute-writing in that repo, but that's
+  DSAMind's own governance work, not this framework's.
+- This session's fixes are uncommitted in this worktree — not yet published.

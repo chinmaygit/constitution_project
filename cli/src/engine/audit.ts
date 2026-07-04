@@ -54,7 +54,10 @@ export function audit(instance: Instance): Finding[] {
       f.push({ code: 'ART-DUP', severity: 'error', firewall: 'below', where, message: `Article ${a.id} appears twice (F-II: one home per rule)` });
     seen.add(a.id);
 
-    if (!ARTICLE_STATUS.includes(a.status))
+    // `SUPERSEDED — <date>` (the amendment lifecycle's own supersession shape,
+    // e.g. from `ratify-amendment`) carries a date suffix — still a valid status.
+    const statusOk = ARTICLE_STATUS.includes(a.status) || /^SUPERSEDED\s+—\s+.+$/.test(a.status);
+    if (!statusOk)
       f.push({ code: 'ART-STATUS', severity: 'error', firewall: 'above', where, message: `Article ${a.id}: status "${a.status}" is not ${ARTICLE_STATUS.join('|')}` });
     if (!CONFORMANCE.includes(a.conformance))
       f.push({ code: 'ART-CONF', severity: 'error', firewall: 'below', where, message: `Article ${a.id}: conformance "${a.conformance}" is not ${CONFORMANCE.join('|')}` });
@@ -80,8 +83,13 @@ export function audit(instance: Instance): Finding[] {
       f.push({ code: 'L0-UNSERVED', severity: 'warn', firewall: 'above', where: `${rel}:${p.line}`, message: `${p.id} is served by no Article — the vision line is unenforced` });
   }
 
-  // -- ledger -----------------------------------------------------------------
-  if (doc.ledger.length > 0 && doc.version && doc.ledger[0].version !== doc.version)
+  // -- ledger -------------------------------------------------------------------
+  // Only the framework's own self-hosted repo pins itself in the header — there
+  // the header version and the ledger's own version axis are the same number.
+  // A downstream consumer's header pins the *framework spec* it adopted, while
+  // its ledger tracks the *product's own* constitution version; those are two
+  // legitimately independent axes and must not be compared.
+  if (doc.selfHosted && doc.ledger.length > 0 && doc.version && doc.ledger[0].version !== doc.version)
     f.push({ code: 'LEDGER-SYNC', severity: 'error', firewall: 'below', where: `${rel}:${doc.ledger[0].line}`, message: `header pins ${doc.version} but the newest ledger entry is [${doc.ledger[0].version}] — one number for the whole repo` });
 
   // -- governance map -----------------------------------------------------------

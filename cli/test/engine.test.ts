@@ -50,6 +50,76 @@ describe('parse', () => {
   });
 });
 
+describe('parse: real-world format variance (found dogfooding against DSAMind)', () => {
+  it('parses titled P-lines, section-grouped #### Articles, Serves parentheticals, and dated SUPERSEDED status', () => {
+    const dir = makeInstanceDir({
+      constitution: () => `# Acme Constitution
+
+\`\`\`
+framework: constitution@1.2.3
+ratifier:  Ada Lovelace
+\`\`\`
+
+## L0 — Preamble (vision)
+
+**P1 — Fluency, not coverage.**
+Acme exists to make widgets trustworthy.
+
+**P2 — In service of the interview.**
+Widgets ship only when proven to work.
+
+## L1 — Articles
+
+### §A — Widget model
+_Serves P1, P2._
+
+#### Article A1 — Widgets are verified
+\`status: RATIFIED\` · \`conformance: HOLDS\` · \`enforcement: GATED\` · \`party: User\`
+
+- **Principle** — Every widget passes verification before it ships.
+- **Serves** — P1 (fluency is measured, not assumed), P2 (the interview is the point).
+- **Fitness** — CI runs the verify suite on every widget build.
+
+#### Article A2 — Legacy widget rule
+\`status: SUPERSEDED — 2026-07-02\` · \`conformance: HOLDS\` · \`enforcement: UNGUARDED\` · \`party: User\`
+
+- **Principle** — Widgets used to be hand-checked.
+- **Serves** — P2 (grow).
+- **Fitness** — n/a — superseded.
+
+---
+
+## Amendments Ledger
+
+### [1.2.3] — 2026-07-01 — founding ratification
+- Founding entry. Ratifier: Ada Lovelace.
+`,
+    });
+    const inst = loadInstance(dir);
+    expect(inst.constitution.preamble.map((p) => p.id)).toEqual(['P1', 'P2']);
+    expect(inst.constitution.preamble[0].text).toContain('Fluency, not coverage');
+    expect(inst.constitution.preamble[0].text).toContain('trustworthy');
+    expect(inst.constitution.articles.map((a) => a.id)).toEqual(['A1', 'A2']);
+    expect(inst.constitution.articles[0].serves).toEqual(['P1', 'P2']);
+    expect(inst.constitution.articles[1].serves).toEqual(['P2']);
+    expect(inst.constitution.articles[1].status).toBe('SUPERSEDED — 2026-07-02');
+
+    const findings = audit(inst);
+    expect(findings.map((f) => f.code)).not.toContain('L0-EMPTY');
+    expect(findings.map((f) => f.code)).not.toContain('ART-STATUS');
+    expect(findings.map((f) => f.code)).not.toContain('ART-SERVES');
+    expect(findings.map((f) => f.code)).not.toContain('PARSE');
+  });
+
+  it('does not apply LEDGER-SYNC to a non-self-hosted instance whose own ledger version differs from the framework pin', () => {
+    const dir = makeInstanceDir({
+      constitution: (s) => s.replace('### [1.2.3] — 2026-07-01', '### [0.5.0] — 2026-07-01'),
+    });
+    const findings = audit(loadInstance(dir));
+    expect(findings.map((f) => f.code)).not.toContain('LEDGER-SYNC');
+  });
+});
+
 describe('canonical hashing', () => {
   it('is stable under reflow but not under wording changes', () => {
     const a = 'The quick brown fox\njumps over the   lazy dog.';
