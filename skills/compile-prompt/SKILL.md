@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: L4
   enforces: process/compiler.md
-  version: "1.1.2"
+  version: "1.2.0"
 ---
 
 # Compile a task into the L4 actor briefing
@@ -22,6 +22,23 @@ It is the front door for day-to-day work: the owner states a task, the compiler 
 through L0→L3 and hands the actor exactly the law that governs it. Spec:
 [process/compiler.md](../../process/compiler.md). Template:
 [templates/compiled-prompt.md](../../templates/compiled-prompt.md).
+
+## Step 0 — get the compile pack from the engine
+
+If the `constitution` CLI ≥ 0.17.0 is available, do not gather the law by hand:
+
+```bash
+constitution compile "<the task>"          # pack to stdout
+constitution compile "<the task>" --out    # pack to .constitution/compiles/ + a 'compiled' ops event
+```
+
+The pack is the engine's guarantee that you are compiling over the **complete, current,
+canonical** law: every ratified L0/L1 unit verbatim with its hash, the full statute and
+ADR indexes, and the briefing contract. Your job is then pure judgment — *select* the
+governing slices, tighten them to the task, and derive the definition of done. The
+discovery protocol below remains the fallback when the CLI is unavailable, and the
+authority for anything the pack doesn't carry (e.g. reading a full ADR body the index
+only names).
 
 ## Grounding rules (read first)
 

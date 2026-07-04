@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.17.0   (self-hosted)
+framework: constitution@0.17.1   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -58,7 +58,7 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   no rule lives outside a layer. Verified by the `audit-structure` skill.
 
 ### Article F-III — Experiments are pre-registered
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: UNGUARDED` · `party: N/A`
+`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — Every candidate rule declares its hypothesis, metric, and decision
   rule **before** it runs. The decision rule is frozen for the experiment's duration.
@@ -156,6 +156,35 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.17.1] — 2026-07-04 — F-III mechanized; the firewall reaches the commit; skills consume the engine
+- **Overhaul session 2** (BUILDLOG.md updated). PR #1 (0.17.0) was merged and the ratifier
+  personally accepted the lock (`constitution.lock.json`, commit 13f0678) — `constitution
+  firewall` now runs clean against it; the F-IV gate is live in CI.
+- **F-III mechanized**: the engine now parses `experiments/` (per `templates/experiment.md`)
+  and audits pre-registration deterministically — any experiment at/past PRE-REGISTERED with
+  an empty/placeholder Hypothesis, Metric, or Decision rule, a missing/invalid/future
+  `pre-registered` date while RUNNING+, or an illegal status is an error (`EXP-*` findings).
+  Accordingly F-III's `enforcement` flips `UNGUARDED → AUDITED` — an audit-derived field,
+  below the firewall by design, and verified: `constitution firewall` stayed clean across the
+  edit (the lock hashes ratified substance only). The self-audit now reports **0 findings**.
+- **`constitution hooks install`**: a worktree-safe pre-commit hook running audit + firewall
+  locally — the gate moves from CI-only to commit-time. Idempotent (marker line), refuses to
+  clobber a foreign hook without `--force`, skips gracefully (with a loud message) when the
+  PATH CLI is missing or predates 0.17.0 — that last case was caught live: the operator's
+  global was still 0.16.12 and the first hook draft would have blocked every commit with
+  "Unknown command". Installed on this repo; verified both skip paths by executing the hook.
+- **Skills now consume the engine** instead of re-deriving structure from prose:
+  `audit-structure` (`1.3.2 → 1.4.0`) starts from `constitution audit --json` as ground truth
+  for the deterministic checks and spends its judgment only where the engine can't
+  (semantic duplication, ungoverned prose rules, meaning-level reference checks);
+  `compile-prompt` (`1.1.2 → 1.2.0`) starts from `constitution compile` packs (complete
+  canonical law, guaranteed current) and keeps the manual discovery protocol as fallback.
+- Engine suite now **19 vitest cases** (experiments parsing/auditing incl. a last-section
+  regex regression the review caught before it shipped; hook install/idempotence/refusal).
+- Below the firewall throughout: the only law-plane text edit is F-III's `enforcement`
+  field, which the constitution itself defines as set-by-audit. Authored autonomously;
+  entry pending operator review. `cli/package.json` → `0.17.1` via `constitution doctor`.
 
 ### [0.17.0] — 2026-07-04 — The governance engine: the CLI becomes the product's deterministic core
 - **Overhaul session 1** (see `BUILDLOG.md` + `docs/architecture.md` for the full record and

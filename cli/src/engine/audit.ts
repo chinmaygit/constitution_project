@@ -126,6 +126,26 @@ export function audit(instance: Instance): Finding[] {
       f.push({ code: 'ADR-NO-FORWARD-LINK', severity: 'error', firewall: 'below', where: adr.file, message: 'superseded but superseded_by is empty — L3 requires a forward link, never deletion' });
   }
 
+  // -- experiments (F-III: pre-registered before running) ------------------------
+  const EXP_STATUS = ['DRAFT', 'PRE-REGISTERED', 'RUNNING', 'MEASURED', 'GRADUATED', 'REJECTED', 'ITERATE'];
+  const PAST_DRAFT = EXP_STATUS.slice(1); // anything at or beyond PRE-REGISTERED
+  for (const exp of instance.experiments) {
+    for (const note of exp.parseNotes)
+      f.push({ code: 'EXP-PARSE', severity: 'warn', firewall: 'below', where: exp.file, message: note });
+    if (!EXP_STATUS.includes(exp.status))
+      f.push({ code: 'EXP-STATUS', severity: 'error', firewall: 'below', where: exp.file, message: `status "${exp.status}" is not ${EXP_STATUS.join('|')}` });
+    if (PAST_DRAFT.includes(exp.status)) {
+      for (const [label, value] of [['Hypothesis', exp.hypothesis], ['Metric', exp.metric], ['Decision rule', exp.decisionRule]] as const) {
+        if (!value)
+          f.push({ code: 'EXP-FIELDS', severity: 'error', firewall: 'below', where: exp.file, message: `${exp.status} but "${label}" is empty/placeholder — F-III freezes all three before running` });
+      }
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(exp.preRegistered))
+        f.push({ code: 'EXP-PREREG', severity: 'error', firewall: 'below', where: exp.file, message: `${exp.status} with no valid pre-registered date — running an unregistered experiment violates F-III` });
+      else if (exp.preRegistered > new Date().toISOString().slice(0, 10))
+        f.push({ code: 'EXP-PREREG-FUTURE', severity: 'error', firewall: 'below', where: exp.file, message: `pre-registered ${exp.preRegistered} is in the future` });
+    }
+  }
+
   // -- the firewall lock (F-IV) -------------------------------------------------
   const lock = readLock(instance.root);
   if (!lock) {
