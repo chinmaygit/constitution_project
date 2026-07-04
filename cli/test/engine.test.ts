@@ -11,6 +11,9 @@ import { renderUnit, checkTones, pruneStaleTones } from '../src/engine/tone';
 import { buildCompilePack } from '../src/engine/compile';
 import { queueProposal, listProposals, recordRuling, hasOpenProposalFor } from '../src/engine/proposals';
 import { runDoctor } from '../src/engine/doctor';
+import { scaffoldFramework } from '../src/scaffold';
+import { ensureOps } from '../src/engine/events';
+import * as os from 'os';
 
 describe('parse', () => {
   it('reads header, preamble, articles, statutes, adrs, ledger', () => {
@@ -117,6 +120,37 @@ _Serves P1, P2._
     });
     const findings = audit(loadInstance(dir));
     expect(findings.map((f) => f.code)).not.toContain('LEDGER-SYNC');
+  });
+});
+
+describe('scaffold: .gitignore does not shadow the ops-plane\'s own rules', () => {
+  it('ignores only the regenerable vendored copies, leaving events.jsonl/proposals trackable', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-scaffold-'));
+    await scaffoldFramework(dir, 'Acme', 'Ada');
+    ensureOps(dir);
+    const gitignore = fs.readFileSync(path.join(dir, '.gitignore'), 'utf8');
+    expect(gitignore).toContain('.constitution/templates/');
+    expect(gitignore).toContain('.constitution/process/');
+    expect(gitignore).not.toMatch(/^\.constitution\/\s*$/m);
+
+    // Simulate git's own ignore-matching: a blanket `.constitution/` entry
+    // would make this file unreachable regardless of the nested .gitignore.
+    const rules = gitignore.split('\n').filter(Boolean).filter((l) => !l.startsWith('#'));
+    const ignoredAsDir = rules.some((r) => r === '.constitution/' || r === '.constitution');
+    expect(ignoredAsDir).toBe(false);
+
+    const opsIgnore = fs.readFileSync(path.join(dir, '.constitution', '.gitignore'), 'utf8');
+    expect(opsIgnore).toContain('tone/');
+    expect(opsIgnore).toContain('compiles/');
+    expect(opsIgnore).not.toContain('events.jsonl');
+  });
+
+  it('re-running init on an existing governance map (case-insensitive heading) does not duplicate it', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-scaffold-'));
+    fs.writeFileSync(path.join(dir, 'AGENTS.md'), '## Governance map (entry point)\n\nCustom, hand-authored map.\n');
+    await scaffoldFramework(dir, 'Acme', 'Ada');
+    const content = fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf8');
+    expect(content).toBe('## Governance map (entry point)\n\nCustom, hand-authored map.\n');
   });
 });
 

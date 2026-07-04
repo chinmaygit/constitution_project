@@ -268,3 +268,69 @@ audit bugs in `cli/src/engine/{parse,audit}.ts` (tests added, `cli/test/engine.t
   candidates for `constitution doctor` / manual statute-writing in that repo, but that's
   DSAMind's own governance work, not this framework's.
 - This session's fixes are uncommitted in this worktree — not yet published.
+
+### Addendum — upgrading an existing consumer, found by trying it on DSAMind (same session)
+Operator asked how to bring an old consumer (DSAMind: scaffolded 2026-07-01, before this
+overhaul existed) up to date — compiled skills stuck at pre-engine versions
+(`audit-structure` 1.3.2, not the engine-consuming 1.4.0), no CI firewall gate, no
+pre-commit hook, `@chinmaygit/constitution-cli` present in `node_modules` but **not
+declared** in `package.json`/lockfile (an unreproducible local artifact — absent on any
+fresh clone or in CI). Investigated whether `constitution init` (re-run non-interactively)
+is a safe update mechanism, since `setupAgents` already unconditionally overwrites every
+compiled `SKILL.md` — and found two real bugs that would have made it unsafe:
+
+1. **`scaffold.ts`'s "does AGENTS.md already have a governance map" check was
+   case-sensitive** (`includes('Governance Map')`) while the engine's own detection
+   (`engine/parse.ts`) is case-insensitive (`/Governance Map/i`). DSAMind's actual heading
+   is `## Governance map (entry point)` (lowercase "map") — re-running `init` would have
+   silently appended a second, generic governance-map block on top of DSAMind's
+   already-customized one. Fixed to match the engine's own case-insensitive check.
+2. **`scaffold.ts` wrote a blanket `.constitution/` line to the consumer's root
+   `.gitignore`.** `engine/events.ts`'s `ensureOps` also writes its own nested
+   `.constitution/.gitignore` (`tone/`, `compiles/`, `board.html`) specifically so
+   `events.jsonl` and `proposals/` stay committed — "the delivery record and the
+   ratification queue are worth committing," per its own comment. Verified empirically
+   (a throwaway git repo) that a parent-directory ignore makes git never even look for a
+   nested un-ignore: the blanket rule silently swallowed `events.jsonl` and
+   `proposals/*.json` too, contradicting the ops-plane's explicit design and — for
+   DSAMind specifically, which already has `.constitution/process`/`templates` **committed**
+   from its original init — adding a rule that (harmlessly, since git doesn't retroactively
+   untrack) would have gone on to block any future ops-plane commits. Fixed: the ignore is
+   now scoped to just `.constitution/templates/` and `.constitution/process/` (the
+   regenerable vendored copies), leaving the ops subdirectories to the nested
+   `.gitignore`'s finer-grained rules.
+
+**Verified by running:** dry-run `init` against a full copy of DSAMind (scratch dir, not
+the real repo) — CONSTITUTION.md/AGENTS.md byte-identical before/after, only
+`audit-structure`/`compile-prompt` (the two skills that changed upstream) rewritten in
+`.claude/skills/` + `.agents/skills/` to 1.4.0/1.2.0, the other 9 untouched. Separately, a
+fresh-consumer dry run (`git init` + `constitution init` + `feature declare` + `git add -A`)
+confirms `.constitution/events.jsonl` is now stageable while `templates/`/`process/`/
+`tone/`/`compiles/`/`board.html` stay ignored. Two new tests
+(scaffold `.gitignore` scoping; case-insensitive governance-map re-init) — **25/25** total.
+
+**The upgrade runbook for an existing consumer** (DSAMind or any pre-overhaul repo),
+in order:
+1. `npm install --save-dev @chinmaygit/constitution-cli@latest` in the consumer repo
+   (DSAMind currently has it in `node_modules/` but undeclared — not reproducible on a
+   fresh clone or in CI).
+2. `constitution init --name <Name> --ratifier <Ratifier> --agents claude,antigravity`
+   (non-interactive, safe to re-run) — refreshes compiled skills only; CONSTITUTION.md/
+   AGENTS.md are left alone if already present.
+3. `constitution doctor` — self-heals below-firewall findings, queues above-firewall ones
+   as proposals.
+4. `constitution hooks install` — arms the pre-commit audit+firewall gate.
+5. Add a CI workflow calling `constitution audit` + `constitution firewall` (DSAMind has
+   `ci.yml`/`version-changelog.yml` but no governance gate yet — port
+   `.github/workflows/governance.yml` from this repo).
+6. **Operator-only, F-IV:** `constitution lock accept` — DSAMind's current
+   `constitution.lock.json` has `acceptedBy: Chinmay` but `units: {}` (accepted before
+   parsing worked), so every RATIFIED unit currently reads `LOCK-UNACCEPTED`.
+7. Bump DSAMind's `framework: constitution@0.16.12` header pin to the installed version
+   once steps 1–6 land — not done automatically; no L0/L1 *schema* changed between
+   0.16.12 and 0.17.2 (this overhaul added CLI tooling, not new Article fields), so the
+   bump is a formality once the tooling catches up, but it's still a header edit inside
+   the ratified document and should be a deliberate, reviewed step, not silent.
+Steps 2–5 are mechanical/below-firewall; 6–7 are the ratifier's own act. **Not yet run
+against the real `dsa_project` repo this session** — only against scratch copies, pending
+the operator's go-ahead to touch a live product repo.

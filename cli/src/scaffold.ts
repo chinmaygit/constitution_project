@@ -29,15 +29,23 @@ export async function scaffoldFramework(targetDir: string, projectName: string, 
     }
   }
 
-  // Update .gitignore
+  // Update .gitignore — only the regenerable vendored copies (re-written by
+  // every `init`/`doctor` from the installed package), never the whole
+  // `.constitution/` tree: `engine/events.ts`'s `ensureOps` writes its own
+  // nested `.constitution/.gitignore` that keeps `events.jsonl` and
+  // `proposals/` committed (the delivery record and ratification queue are
+  // meant to be tracked) while ignoring `tone/`/`compiles/`/`board.html`. A
+  // blanket `.constitution/` entry here would silently shadow that — once a
+  // parent directory is ignored, git won't look inside for a narrower rule.
   const gitignorePath = path.join(targetDir, '.gitignore');
+  const vendoredIgnore = '.constitution/templates/\n.constitution/process/\n';
   if (fs.existsSync(gitignorePath)) {
     const gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8');
-    if (!gitignoreContent.includes('.constitution/')) {
-      fs.appendFileSync(gitignorePath, '\n# Framework namespace\n.constitution/\n', 'utf-8');
+    if (!gitignoreContent.includes('.constitution/templates/')) {
+      fs.appendFileSync(gitignorePath, `\n# Framework namespace (vendored copies only; see .constitution/.gitignore for ops-plane rules)\n${vendoredIgnore}`, 'utf-8');
     }
   } else {
-    fs.writeFileSync(gitignorePath, '# Framework namespace\n.constitution/\n', 'utf-8');
+    fs.writeFileSync(gitignorePath, `# Framework namespace (vendored copies only; see .constitution/.gitignore for ops-plane rules)\n${vendoredIgnore}`, 'utf-8');
   }
 
   // Initialize CONSTITUTION.md from templates/constitution.md -- never hand-write the
@@ -76,7 +84,11 @@ export async function scaffoldFramework(targetDir: string, projectName: string, 
   } else {
     console.log('AGENTS.md already exists, safe-appending governance map block...');
     const existingContent = fs.readFileSync(agentsPath, 'utf-8');
-    if (!existingContent.includes('Governance Map')) {
+    // Case-insensitive, matching how the engine itself detects a governance map
+    // (engine/parse.ts) -- a consumer's own map ("## Governance map (entry
+    // point)") must count as present, or a re-run of `init` (the update path)
+    // would append a duplicate generic block onto an already-customized map.
+    if (!/Governance Map/i.test(existingContent)) {
       fs.appendFileSync(agentsPath, `\n${agentMapBlock}`, 'utf-8');
     } else {
       console.log('Governance map block already present in AGENTS.md, skipping append.');
