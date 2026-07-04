@@ -26,8 +26,9 @@ package-managed distribution mechanism, per
   `package.json` with no matching `npm publish` is a lie the registry can catch — don't
   bump without publishing, and don't publish without bumping past what's already live.
   · serves: general craft (documentation must not outrun reality)
-  · enforced-by: prompt-only (a mechanization candidate — a CI publish-on-tag workflow
-    would make this GATED instead of relying on the publisher's memory)
+  · enforced-by: CI (`.github/workflows/publish.yml` — every merge to main publishes
+    any not-yet-published version automatically, then smoke-tests the published
+    tarball by scaffolding a fresh consumer; a bump can no longer outrun a publish)
   · why: this statute existed to keep docs honest before publishing was real (see
     `CONSTITUTION.md` ledger — the decision that flipped it); now it keeps the published
     version and the repo's `package.json` from drifting apart instead.
@@ -38,8 +39,9 @@ package-managed distribution mechanism, per
   lands in the same change as a `cli/` publish updates both together; a bump to one
   without the other is the bug, not a valid state.
   · serves: F-II (one home for "what version is this")
-  · enforced-by: prompt-only (mechanization candidate — a CI check comparing the two
-    would make this GATED)
+  · enforced-by: CI (`.github/workflows/publish.yml` fails the publish job on any
+    mismatch between `cli/package.json` and the `CONSTITUTION.md` header; locally,
+    `constitution doctor` auto-syncs via `constitution.config.json`)
   · why: two independently-numbered versions for one repo is exactly the confusion a
     consumer hits first — "why does `constitution --version` say 1.0.0 when the spec
     ledger is at 0.16.x." One axis removes the question.

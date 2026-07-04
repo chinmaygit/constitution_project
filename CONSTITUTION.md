@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.17.1   (self-hosted)
+framework: constitution@0.17.2   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,24 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.17.2] — 2026-07-04 — Publish-on-merge: every merge to main ships the package (operator-directed)
+- Operator directive: "every PR merge should publish the package." New
+  `.github/workflows/publish.yml`: on push to main — build (vendor + strict tsc), test,
+  **gate** (fail if `cli/package.json` ≠ this header's version), **publish** to GitHub
+  Packages via the built-in `GITHUB_TOKEN` (`packages: write`) *only if that version isn't
+  already on the registry* (a merge with no bump publishes nothing and passes), then
+  **smoke-test the published tarball**: install it into a fresh consumer, run the
+  non-interactive `init` + `audit`, assert the scaffold exists — the `[0.16.11]` lesson
+  ("a clean tarball listing isn't proof the tool works") as a standing gate.
+- Two `cli/AGENTS.md` statutes upgraded `prompt-only → CI` accordingly: "don't bump
+  without publishing" and "one version number for the whole repo" — both now GATED by
+  the workflow rather than the publisher's memory.
+- This also closes session 2's "publish 0.17.1" open item by superseding it: the manual
+  `npm publish` the harness rightly blocked an agent from running is now a repo-owned CI
+  act that fires on the operator's own merge click — the merge *is* the authorization.
+- Below the firewall (workflow + L2 annotations + version bump). Authored on operator
+  instruction; entry pending review with the PR. `cli/package.json` → `0.17.2` via doctor.
 
 ### [0.17.1] — 2026-07-04 — F-III mechanized; the firewall reaches the commit; skills consume the engine
 - **Overhaul session 2** (BUILDLOG.md updated). PR #1 (0.17.0) was merged and the ratifier

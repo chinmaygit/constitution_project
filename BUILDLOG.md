@@ -140,6 +140,23 @@ gate live and clean. Worktree rebased onto main.
 - `npm whoami --registry=https://npm.pkg.github.com` → `chinmaygit`: publish auth IS
   present on this machine (session 1 assumed it wasn't).
 
+### Addendum — publish-on-merge (operator-directed, same session; v0.17.2)
+- Operator: "every PR merge should publish the package." Added
+  `.github/workflows/publish.yml`: on push to main → build, test, version-sync gate
+  (pkg == constitution header), publish to GitHub Packages via built-in `GITHUB_TOKEN`
+  **only if the version isn't already on the registry**, then smoke-test the published
+  tarball (install into a fresh consumer, non-interactive `init`, `audit`, assert
+  scaffold) — the `[0.16.11]` lesson as a standing gate.
+- Two `cli/AGENTS.md` statutes upgraded `prompt-only → CI` (bump-without-publish;
+  one-version-number). Supersedes the "operator runs `npm publish`" open item below:
+  the merge click is now the publish authorization.
+- Validated locally before pushing: the gate's grep/cut extracts the header version
+  correctly (0.17.2 == pkg 0.17.2); `npm view <pkg>@0.16.12` resolves against the real
+  registry with this machine's auth and `@0.17.2` correctly reports not-found; audit +
+  firewall clean. **The workflow itself is untested until the first real merge** —
+  watch the Actions run on PR #2's merge; the smoke-test step is the likeliest first
+  failure point (registry auth propagation for freshly-published versions).
+
 ### Still open after session 2
 - Publish 0.17.1 + update the operator's global (0.16.12 → 0.17.1) so the pre-commit
   hook actually enforces (currently it skips with a warning). **Attempted this session:
