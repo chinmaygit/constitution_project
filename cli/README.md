@@ -1,8 +1,14 @@
 # constitution-cli
 
-Scaffolds this framework into a product repo — package-managed distribution per
-[ADR-0001](../decisions/0001-package-managed-distribution.md). The files it writes into
-the target repo are read-only build artifacts, not hand-vendored copies. Engineering
+The framework's **engine and installer**. `constitution init` scaffolds the framework
+into a product repo — package-managed distribution per
+[ADR-0001](../decisions/0001-package-managed-distribution.md); the files it writes are
+read-only build artifacts, not hand-vendored copies. Beyond `init`, the binary is the
+deterministic governance engine: `audit`, `firewall`/`lock`, `compile`, `render`/`tones`,
+`feature`/`board`, `doctor`, `proposals`/`ratify` — run `constitution --help`, and see
+[../docs/quickstart.md](../docs/quickstart.md) for the workflow. Engine code lives in
+`src/engine/` (see [AGENTS.md](AGENTS.md) for its statutes, including determinism and
+the failing-first test rule); tests in `test/` run via `npm test`. Engineering
 conventions for this package's own code are in [AGENTS.md](AGENTS.md), not here.
 
 ## Status

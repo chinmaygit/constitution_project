@@ -1,7 +1,7 @@
 {
   "name": "@chinmaygit/constitution-cli",
-  "version": "0.16.12",
-  "description": "CLI to scaffold the constitution framework",
+  "version": "0.17.0",
+  "description": "The constitution governance engine: scaffold, audit, firewall-gate, compile, render, and track AI-native product development",
   "license": "MIT",
   "author": "Chinmay",
   "main": "dist/index.js",
@@ -30,6 +30,7 @@
     "vendor": "node scripts/vendor.js",
     "prebuild": "npm run vendor",
     "build": "tsc",
+    "test": "vitest run",
     "prepack": "npm run vendor",
     "start": "node dist/index.js"
   },
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/prompts": "^2.4.9",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.9"
   }
 }

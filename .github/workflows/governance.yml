@@ -1,0 +1,45 @@
+name: governance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        working-directory: cli
+        run: npm ci
+      - name: Build (strict tsc)
+        working-directory: cli
+        run: npm run build
+      - name: Engine tests
+        working-directory: cli
+        run: npm test
+
+  law:
+    runs-on: ubuntu-latest
+    needs: engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build engine
+        working-directory: cli
+        run: npm ci && npm run build
+      - name: Structural audit (L0–L4 graph)
+        run: node cli/dist/index.js audit
+      - name: Firewall gate (F-IV — ratified text vs. accepted lock)
+        run: |
+          if [ -f constitution.lock.json ]; then
+            node cli/dist/index.js firewall
+          else
+            echo "no constitution.lock.json yet — firewall gate skipped (audit already warns)."
+          fi

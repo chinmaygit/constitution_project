@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.16.12   (self-hosted)
+framework: constitution@0.17.0   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -156,6 +156,46 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.17.0] — 2026-07-04 — The governance engine: the CLI becomes the product's deterministic core
+- **Overhaul session 1** (see `BUILDLOG.md` + `docs/architecture.md` for the full record and
+  design). The CLI grows from installer to engine — everything below is deterministic code in
+  `cli/src/engine/`, tested (`cli/test/`, 14 vitest cases incl. a dogfood test that parses and
+  audits this very repo) and wired into CI (`.github/workflows/governance.yml`).
+- **Three-plane architecture made physical**: law plane (this file, statute homes, `decisions/`
+  — unchanged format, now machine-parsed), engine (the CLI), ops plane (`.constitution/` —
+  events, tone cache, proposal queue, compiles, board; volume lives there, never here).
+- **The firewall becomes a gate** (F-IV enforcement path AUDITED → GATED once adopted):
+  `constitution.lock.json` records canonical hashes of ratified L0/L1 units, written only by
+  `constitution lock accept` (interactive TTY + typed confirmation — refuses agents/pipes,
+  verified); `constitution firewall` fails CI on changed/added/removed ratified units.
+  **The lock is not yet accepted** — that is the ratifier's own act, pending.
+- **`constitution audit`** — deterministic structural audit (refs resolve, layers trace up,
+  fields legal, ledger/version sync, lock drift), findings classified by what the FIX touches
+  (above/below firewall). Ran clean on this repo: 0 errors, 2 honest warnings (F-III
+  mechanization debt; lock missing).
+- **`constitution doctor`** — self-healing below the firewall (prunes stale tone renders,
+  version-syncs `constitution.config.json` targets, repairs ops scaffold); above-firewall
+  findings are DRAFTED into `.constitution/proposals/` and wait for `constitution ratify`
+  (human-only, interactive) — never applied.
+- **Tone as a view** (`constitution render <unit> --tone plain|casual|formal`): one canonical
+  text ever; renders are derived artifacts cache-keyed by canonical hash + transform version,
+  stale by construction on amendment; `tones check` detects, doctor prunes. LLM generation via
+  `claude -p` (untested end-to-end in-session — no nested auth; stub-tested).
+- **Ops visibility** (`constitution feature <verb>`, `constitution board [--html]`): Kanban
+  over `.constitution/events.jsonl` (Declared → Compiled → Building → Validating → Shipped)
+  plus a governance-health strip; reads the law by id, stores nothing in it.
+- **`constitution compile "<task>" [--out]`** — emits the deterministic L4 compile pack (all
+  ratified canonical units + statute/ADR indexes + the briefing contract); judgment stays in
+  the `compile-prompt` skill, which now compiles over guaranteed-complete, current law.
+- Docs rewritten as a product (`README.md`, `docs/`); two new `cli/AGENTS.md` statutes
+  (engine determinism; failing-first engine tests). Statute parser fix along the way: bullets
+  whose bold rule closes before indented commentary were silently dropped (3 → 16 statutes
+  parsed here).
+- **Below the firewall throughout** — no Article text, status, or L0 line touched; the parser
+  targets the existing document shapes. Authored autonomously per the standing overhaul goal;
+  entry pending the operator's review. `cli/package.json` → `0.17.0` (sync statute holding).
+  Not yet published to GitHub Packages (operator's npm auth required).
 
 ### [0.16.12] — 2026-07-01 — `AGENT.md` → `AGENTS.md` (amends F-VII); scaffold reads real templates
 - **`AGENT.md` renamed to `AGENTS.md` everywhere** — singular was wrong. `AGENTS.md` (plural)

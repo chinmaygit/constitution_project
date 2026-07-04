@@ -63,6 +63,26 @@ package-managed distribution mechanism, per
     in an installed package. Caught by the first real install into a repo that wasn't this
     one (DSAMind) — exactly the live-practice discovery F-I asks for.
 
+- **`src/engine/` is deterministic — the only LLM call in the package is `tone.ts`'s
+  explicit, injectable generator.** Parse, audit, lock, events, board, compile-pack,
+  proposals, and doctor produce identical output for identical input; anything requiring
+  judgment (placing a task under the law, phrasing a tone render, harvesting rules)
+  belongs in a skill that *consumes* engine output, never inside the engine.
+  · serves: F-IV (a gate you can't reproduce is a gate you can't trust)
+  · enforced-by: CI (`npm test` — the vitest suite asserts engine behavior on fixtures
+    and on this very repo; tone tests inject a stub generator)
+  · why: the firewall gate and the audit are only as trustworthy as they are
+    reproducible — an LLM inside them would make "did ratified text change?" a matter
+    of opinion.
+
+- **Engine behavior changes ship with a failing-first test in `cli/test/`.** The suite
+  includes the self-hosted dogfood test (parses and audits this repo); if a change to
+  the law plane's *format* breaks parsing, that test is the tripwire.
+  · serves: general craft
+  · enforced-by: CI (`npm test` in `.github/workflows/governance.yml`)
+  · why: the engine reads legal documents; a silent parse regression doesn't crash — it
+    quietly under-audits, which is worse.
+
 - **`scaffold.ts` never hardcodes the shape of a file it writes into a consumer repo.**
   `CONSTITUTION.md` is generated from `templates/constitution.md`; `AGENTS.md`'s governance
   map block is generated from `templates/governance-map.md`. Placeholders (`<PROJECT_NAME>`,
