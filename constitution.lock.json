@@ -1,0 +1,40 @@
+{
+  "lockVersion": 1,
+  "constitutionVersion": "0.17.0",
+  "acceptedBy": "Chinmay",
+  "acceptedAt": "2026-07-04T14:53:15.414Z",
+  "units": {
+    "P1": {
+      "kind": "preamble",
+      "hash": "e59b29b6d4758dec12aac0e7bda05b35001a33522abd3a9fe10b79ed776c7e85"
+    },
+    "F-I": {
+      "kind": "article",
+      "hash": "283c8d69063d43a5a422ab92b9bc7ff300b5d32fb9bb6f2e93a17aa6839de6cd"
+    },
+    "F-II": {
+      "kind": "article",
+      "hash": "b18967b451f0665a6fcf17a94c799bcfeb043a3a1c88e79274860b5ed131e462"
+    },
+    "F-III": {
+      "kind": "article",
+      "hash": "4ab034ec43c0b0239f2c169d87509c50b04d61d35fba1dbe983b4a58f61bceb5"
+    },
+    "F-IV": {
+      "kind": "article",
+      "hash": "81d13b8669b32e5dcaef0bf83af74347a7b7a8a170ec4e0b2f93b323712832d5"
+    },
+    "F-V": {
+      "kind": "article",
+      "hash": "17e9a5bad158a4107a19ba0ca46cf33671f611c41b1285f1b041e3f6aa403b34"
+    },
+    "F-VI": {
+      "kind": "article",
+      "hash": "4ef745af41b9f71e5d4033fa52f33d39f3f02976a4d5013cc238d854861abbd3"
+    },
+    "F-VII": {
+      "kind": "article",
+      "hash": "c8223db55417c51c768051de757bf85b4ddf3fff615f66887d02b9da447e59ce"
+    }
+  }
+}
