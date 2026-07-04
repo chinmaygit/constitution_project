@@ -1,28 +1,20 @@
 # constitution
 
-A framework for governing software development in the AI era — where coding agents
-are not tools that read docs, but **first-class actors in the system that governs them**.
+**Governance for AI-native product development** — where coding agents are not tools
+that read docs, but first-class actors in the system that governs them. `constitution`
+takes a product's vision (L0), the durable invariants that enforce it (L1), the
+operational rules that implement those invariants (L2), and the dated decisions that
+interpret all of it (L3) — and compiles that stack, on demand, into the exact briefing
+an implementing agent runs for a given task (L4). The point of every layer: shrink the
+gap between what a human intended and what the agent actually shipped, and make that
+gap **checkable**.
 
-This repo defines *how to govern* a product's evolution. It does not contain any one
-product's rules. Those live in the products that adopt it.
-
-## The two-project model
-
-```
-constitution/  (this repo)        DSAMind  (the founding instance + live lab)
-  defines L0–L4, the amendment       adopts the templates + process,
-  + experiment lifecycles, the       pins a framework version, and
-  compiler, and the templates        DISCOVERS rules by running experiments
-        │                                         │
-        │  adopt + pin @version                   │
-        └────────────────────────►────────────────┘
-                                  ◄────────────────
-                  promote proven *governing mechanisms* back up
-                  (domain rules stay in the product)
+```bash
+npm install -g @chinmaygit/constitution-cli
+cd your-product && constitution init
 ```
 
-The framework grows **only** through evidence produced by live projects — that is its
-first article (`F-I`, discovery before codification). DSAMind is the founding instance.
+→ **[docs/quickstart.md](docs/quickstart.md)** for the ten-minute path.
 
 ## The layers (see `process/layers.md`)
 
@@ -34,36 +26,71 @@ first article (`F-I`, discovery before codification). DSAMind is the founding in
 | L3 | Case law — ADRs, decisions in context | per decision | author, accrues |
 | L4 | Compiled briefing handed to the implementing actor | every task | author + enforce |
 
-A firewall sits between L1 and L2: agents own everything below it and may only
-*petition* above it. Humans hold the sovereign pen on vision and invariants.
+A **firewall** sits between L1 and L2: agents own everything below it and may only
+*petition* above it. Humans hold the sovereign pen on vision and invariants — and the
+engine makes that a CI gate, not a hope: `constitution.lock.json` records the hash of
+every ratified unit as a human accepted it, and `constitution firewall` fails the
+build on any unaccepted drift. See [docs/firewall.md](docs/firewall.md).
+
+## The three planes (see [docs/architecture.md](docs/architecture.md))
+
+- **Law plane** — `CONSTITUTION.md`, statute homes, `decisions/`. Small, dense,
+  durable; nothing about scale ever accumulates here.
+- **Engine** — the `constitution` CLI: deterministic parse → audit → firewall gate →
+  L4 compile pack → tone render → doctor. LLM judgment stays in the skills that
+  consume engine output.
+- **Ops plane** — `.constitution/` in each instance: delivery events, the Kanban
+  board (`constitution board --html`), tone caches, the ratification queue. Volume
+  lives here, references the law by id, and is deletable without touching legality.
+  See [docs/ops.md](docs/ops.md).
+
+## Reading the law in your tone
+
+One canonical, ratified text per unit — ever. `constitution render F-II --tone plain`
+is a derived view, cache-keyed by the canonical hash, stale by construction the moment
+the law is amended. See [docs/tone.md](docs/tone.md).
+
+## Self-healing, split by the firewall
+
+`constitution doctor` fixes what it may (stale caches, version sync, scaffold gaps)
+and drafts what it may not: above-firewall findings become proposals in
+`.constitution/proposals/`, ruled on only by `constitution ratify` — interactive,
+human, typed confirmation.
+
+## The two-project model
+
+```
+constitution/  (this repo)        consumer products (DSAMind is the founding instance)
+  defines L0–L4, the lifecycles,     adopt via `constitution init`, pin a version,
+  the engine, and the templates      and DISCOVER rules by running experiments
+        │                                         │
+        └────────── adopt + pin @version ─────────┘
+                  ◄────────────────
+        promote proven *governing mechanisms* back up
+        (domain rules stay in the product)
+```
+
+The framework grows **only** through evidence produced by live projects (`F-I`,
+discovery before codification). Consumers and promoted mechanisms: [registry.md](registry.md).
 
 ## Self-hosting
 
-This repo is governed by its own framework. `CONSTITUTION.md` is an *instance* of the
-spec in `process/` and `templates/`, applied to the framework's own development.
-If the framework can't govern itself, it can't govern anything.
+This repo is governed by its own framework — `CONSTITUTION.md` here is an *instance*
+of the spec in `process/` + `templates/`, the CI in `.github/workflows/governance.yml`
+runs the engine's audit + firewall on it, and the engine's test suite parses this very
+repo as its dogfood fixture. If the framework can't govern itself, it can't govern
+anything.
 
 ## Repo map
 
-- `CONSTITUTION.md` — the framework's own L0–L1 (self-hosted) + amendments ledger
-- `process/` — the spec: layer definitions, amendment + experiment lifecycles, conflict resolution, the L4 compiler
-- `templates/` — copy-me templates: Article, Experiment, ADR, compiled prompt
-- `decisions/` — the framework's own ADRs (its L3 case law)
-- `skills/` — the operational skills (`define-preamble`, `harvest-articles`, `harvest-statutes`, `derive-statutes`, `audit-structure`, `audit-conformance`, `reconcile-findings`, `propose-amendment`, `ratify-amendment`, `compile-prompt`, `sync-operator`) — how day-to-day work actually happens
-- `cli/` — `constitution-cli`, the package-managed installer that scaffolds this framework into a product repo (see `cli/README.md`)
-- `registry.md` — which projects use the framework, and which mechanisms were promoted from where
+- `CONSTITUTION.md` — the framework's own L0–L1 + amendments ledger
+- `process/` — the spec: layers, amendment + experiment lifecycles, conflict resolution, the compiler
+- `templates/` — copy-me templates (Article, Statute, ADR, experiment, compiled prompt)
+- `decisions/` — the framework's own L3 case law
+- `skills/` — the LLM-judgment skills (`define-preamble`, `harvest-articles`, `compile-prompt`, …)
+- `cli/` — the engine + installer (`@chinmaygit/constitution-cli`; see `cli/README.md`)
+- `docs/` — architecture, quickstart, firewall, tone, ops
+- `registry.md` — consumers + promoted mechanisms · `BUILDLOG.md` — the overhaul's running log
 
-Each of `skills/`, `templates/`, `decisions/`, `process/`, and `cli/` declares its own L2
-authoring statutes in a nested `AGENTS.md` — see the root [AGENTS.md](AGENTS.md) governance map.
-
-## Consuming the framework (from a product repo)
-
-The framework installs via its CLI (`cli/`), per
-[ADR-0001](decisions/0001-package-managed-distribution.md) — never by hand-vendoring
-templates. See [`cli/README.md`](cli/README.md) for the exact steps (it's local-only
-today, not yet published to a registry).
-
-Pin the version you've adopted in your product's `CONSTITUTION.md` header
-(`framework: constitution@X.Y.Z`) and track it in [registry.md](registry.md). Bump the
-pin only once you've actually adopted the newer spec — never ahead of adoption (see
-`skills/sync-operator`).
+Each of `skills/`, `templates/`, `decisions/`, `process/`, `cli/` declares its own L2
+statutes in a nested `AGENTS.md` — see the root [AGENTS.md](AGENTS.md) governance map.
