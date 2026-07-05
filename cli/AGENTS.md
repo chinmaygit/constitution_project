@@ -21,10 +21,11 @@ package-managed distribution mechanism, per
     distribution-mechanism change (another ADR-0001-style ruling) doesn't require
     touching prompt UX and vice versa.
 
-- **Published to GitHub Packages as `@chinmaygit/constitution-cli`** (not public npm — the
-  scope is mandatory for GitHub's npm registry, not a naming choice). A version bump in
-  `package.json` with no matching `npm publish` is a lie the registry can catch — don't
-  bump without publishing, and don't publish without bumping past what's already live.
+- **Published to the public npm registry as `constitution-cli`** (moved off GitHub
+  Packages, which required a token to install even for a public package — a platform
+  limitation, not a visibility choice). A version bump in `package.json` with no
+  matching `npm publish` is a lie the registry can catch — don't bump without
+  publishing, and don't publish without bumping past what's already live.
   · serves: general craft (documentation must not outrun reality)
   · enforced-by: CI (`.github/workflows/publish.yml` — every merge to main publishes
     any not-yet-published version automatically, then smoke-tests the published

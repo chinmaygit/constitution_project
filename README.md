@@ -10,8 +10,8 @@ gap between what a human intended and what the agent actually shipped, and make 
 gap **checkable**.
 
 ```bash
-npm install -g @chinmaygit/constitution-cli
-cd your-product && constitution init
+npm install --save-dev constitution-cli
+cd your-product && npx constitution init
 ```
 
 → **[docs/quickstart.md](docs/quickstart.md)** for the ten-minute path.
@@ -88,7 +88,7 @@ anything.
 - `templates/` — copy-me templates (Article, Statute, ADR, experiment, compiled prompt)
 - `decisions/` — the framework's own L3 case law
 - `skills/` — the LLM-judgment skills (`define-preamble`, `harvest-articles`, `compile-prompt`, …)
-- `cli/` — the engine + installer (`@chinmaygit/constitution-cli`; see `cli/README.md`)
+- `cli/` — the engine + installer (`constitution-cli`; see `cli/README.md`)
 - `docs/` — architecture, quickstart, firewall, tone, ops
 - `registry.md` — consumers + promoted mechanisms · `BUILDLOG.md` — the overhaul's running log
 

@@ -1,5 +1,5 @@
 {
-  "name": "@chinmaygit/constitution-cli",
+  "name": "constitution-cli",
   "version": "0.17.5",
   "description": "The constitution governance engine: scaffold, audit, firewall-gate, compile, render, and track AI-native product development",
   "license": "MIT",
@@ -22,9 +22,6 @@
   "homepage": "https://github.com/chinmaygit/constitution_project/tree/main/cli#readme",
   "bugs": {
     "url": "https://github.com/chinmaygit/constitution_project/issues"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "vendor": "node scripts/vendor.js",

@@ -13,26 +13,16 @@ conventions for this package's own code are in [AGENTS.md](AGENTS.md), not here.
 
 ## Status
 
-Published to **GitHub Packages** as `@chinmaygit/constitution-cli` (repo:
+Published to the public **npm registry** as `constitution-cli` (repo:
 [chinmaygit/constitution_project](https://github.com/chinmaygit/constitution_project)).
-GitHub Packages requires a GitHub token (`read:packages` scope) to install — even for a
-public package, that's a GitHub platform limitation, not a visibility choice here.
+No token needed to install — GitHub Packages required one even for public packages
+(a platform limitation), which is why this moved to npmjs.org.
 
 ## Usage
 
-Add a `.npmrc` in the consuming repo (or `~/.npmrc` for a global install) pointing scoped
-installs at GitHub's registry:
-
-```
-@chinmaygit:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
-```
-
-Then, from the target product repo:
-
 ```bash
-npm install -g @chinmaygit/constitution-cli
-constitution init
+npm install --save-dev constitution-cli
+npx constitution init
 ```
 
 `constitution` with no command, `--help`, or an unrecognized command prints usage and does
