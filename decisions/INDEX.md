@@ -7,3 +7,4 @@ an ADR) are L2 statutes — see [AGENTS.md](AGENTS.md).
 |----|-------|--------|------|
 | 0001 | Allow package-managed installation of skills to satisfy F-II | accepted | 2026-07-01 |
 | 0002 | Three version numbers, three homes | accepted | 2026-07-05 |
+| 0003 | Tighten F-II's version-axis clause into three numbered, unambiguous axes | accepted | 2026-07-05 |

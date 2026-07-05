@@ -27,4 +27,13 @@ L2 statutes live wherever *its* governance map says (see `process/statutes.md`).
 source-vs-installed-artifact split above is specific to this repo, since it is both the
 framework *and* a CLI consumer of itself.
 
+**Ratifying an amendment in this repo's own `CONSTITUTION.md`** also bumps the header
+`framework: constitution@X.Y.Z (self-hosted)` pin to the same number as the new ledger
+entry — F-II requires the pin and the ledger to be one axis here, and nowhere else
+(ADR-0002; see `cli/AGENTS.md`'s `LEDGER-SYNC` statute for the mechanized check, and
+`skills/audit-structure`'s self-hosted-conditional check). This is repo-specific and
+does not belong in `skills/ratify-amendment/SKILL.md`, which is vendored into every
+consumer — no consumer is self-hosted, so that step would be dead weight in every
+installed copy.
+
 *This file serves as the entry-point index for the audit-structure and compile-prompt skills.*

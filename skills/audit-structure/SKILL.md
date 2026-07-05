@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: cross-cutting
   enforces: F-II
-  version: "1.4.0"
+  version: "1.4.1"
 ---
 
 # Audit the constitution's structural integrity (L0–L4)
@@ -63,7 +63,13 @@ below.
 **4. Field & firewall integrity:**
 - Every Article carries all required fields: `status`, `conformance`, `enforcement`, `party`, `serves`, `fitness`.
 - Every L0/L1 amendment in the ledger names a human ratifier (F-IV).
-- The instance's framework pin (`constitution@X`) matches `registry.md`; the header version matches the latest ledger entry and the latest tag.
+- The instance's framework pin (`constitution@X`) matches `registry.md`. **Only in the
+  framework's own self-hosted repo** (header marked `(self-hosted)`) does the header pin
+  also have to match the latest ledger entry and the latest tag (F-II) — in any other
+  instance the pin (the framework spec it adopted) and the ledger (its own product
+  version) are legitimately independent axes and must **not** be compared this way
+  (ADR-0002; see `cli/AGENTS.md`'s `LEDGER-SYNC` statute for the mechanized version of
+  this same check).
 
 **5. Anything OUTSIDE the layers (the headline):**
 - A rule in the declared L2 statute homes that no layer claims — not tagged L2, no `serves`, not an Article, not an ADR. **Ungoverned rule** → either annotate it as a statute or delete it.
