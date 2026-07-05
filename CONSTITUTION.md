@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.17.4   (self-hosted)
+framework: constitution@0.17.5   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -35,7 +35,7 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
 `HOLDS + UNGUARDED` is true-but-fragile, flagged as mechanization debt.
 
 ### Article F-I — Discovery before codification
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
+`status: RATIFIED` · `conformance: VIOLATED` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — No rule is added to this framework until it has been proven in at
   least one live project. DSAMind is the founding instance.
@@ -44,6 +44,12 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   the originating experiment + ADR in a consumer project.
 - **Why** — a framework written from imagination ossifies around guesses; one written
   from usage carries its evidence with it.
+- **Conformance note (2026-07-05 re-audit)** — VIOLATED. [registry.md](registry.md)'s two
+  promoted-mechanism rows (F-V/F-VI, F-VII) cite ledger version ranges and doc sections
+  only — neither names an experiment file nor an ADR id. No `experiments/` directory
+  exists anywhere, in this repo or DSAMind; no promotion has ever gone through F-III's
+  pre-registered path. Tracked debt, not fixed as part of this audit — see
+  `audit-conformance` run, same session as ADR-0003.
 
 ### Article F-II — One home per rule
 `status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
@@ -167,6 +173,21 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.17.5] — 2026-07-05 — Re-audit Conformance
+- **Audit:** Ran `audit-conformance` against all seven Articles, same session as ADR-0003.
+- **Findings:**
+  - **F-I flips `HOLDS` → `VIOLATED`.** `registry.md`'s two promoted-mechanism rows cite
+    ledger ranges and doc sections, not an experiment file + ADR id, as the fitness text
+    requires. No `experiments/` directory exists anywhere (this repo or DSAMind); no
+    promotion has ever used F-III's pre-registered path. Tracked debt — not remediated
+    here (human declined the fitness-amendment option this session; left as-is).
+  - F-II through F-VII all maintain `conformance: HOLDS`, `enforcement: AUDITED`.
+  - F-III holds only vacuously — zero experiment files exist to check against; the
+    mechanism has never actually been exercised.
+  - F-VI's own fitness ("no Article marked HOLDS while its fitness fails") was itself
+    unmet before this pass, because of F-I's stale label — fixed by the F-I flip above.
+- **Result:** One conformance flip (F-I). No `status` changes; nothing above the firewall.
 
 ### [0.17.4] — 2026-07-05 — Ratified by Chinmay: Article F-II's version-axis clause tightened (ADR-0003)
 - **Ratified by Chinmay, 2026-07-05**, per [ADR-0003](decisions/0003-tighten-version-axis-clause.md).

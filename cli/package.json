@@ -1,6 +1,6 @@
 {
   "name": "@chinmaygit/constitution-cli",
-  "version": "0.17.4",
+  "version": "0.17.5",
   "description": "The constitution governance engine: scaffold, audit, firewall-gate, compile, render, and track AI-native product development",
   "license": "MIT",
   "author": "Chinmay",
