@@ -85,10 +85,13 @@ function parsePreamble(lines: string[], notes: string[]): PreambleLine[] {
   const out: PreambleLine[] = [];
   let current: { id: string; text: string[]; line: number } | null = null;
   for (let i = start + 1; i < end; i++) {
-    const m = lines[i].match(/^\*\*(P\d+)\.\*\*\s*(.*)$/);
+    // `**P1.** text` or `**P1 — Title.** text` — the title (if any) is part of
+    // the statement, not separate content.
+    const m = lines[i].match(/^\*\*(P\d+)(?:\s+—\s+([^*]*))?\.\*\*\s*(.*)$/);
     if (m) {
       if (current) out.push(finishPreamble(current));
-      current = { id: m[1], text: [m[2]], line: i + 1 };
+      const title = m[2] ? `${m[2]}.` : '';
+      current = { id: m[1], text: [title, m[3]].filter(Boolean), line: i + 1 };
     } else if (current) {
       if (lines[i].trim() === '' || /^#|^---/.test(lines[i])) {
         out.push(finishPreamble(current));
@@ -110,7 +113,9 @@ function finishPreamble(c: { id: string; text: string[]; line: number }): Preamb
 function parseArticles(lines: string[], notes: string[]): Article[] {
   const out: Article[] = [];
   for (let i = 0; i < lines.length; i++) {
-    const m = lines[i].match(/^### Article\s+(\S+)\s+—\s+(.+)$/);
+    // `### Article A1 — Name` at top level, or `#### Article A1 — Name` when
+    // Articles are grouped under `### §<section>` domain headings.
+    const m = lines[i].match(/^#{3,4} Article\s+(\S+)\s+—\s+(.+)$/);
     if (!m) continue;
     const id = m[1];
     const name = m[2].trim();
@@ -132,16 +137,19 @@ function parseArticles(lines: string[], notes: string[]): Article[] {
     // Bullets until the next heading.
     let end = lines.length;
     for (let j = i + 1; j < lines.length; j++) {
-      if (/^#{2,3} /.test(lines[j]) || /^---\s*$/.test(lines[j])) {
+      if (/^#{2,4} /.test(lines[j]) || /^---\s*$/.test(lines[j])) {
         end = j;
         break;
       }
     }
     const bullets = parseBoldBullets(lines.slice(i + 1, end));
     const servesRaw = bullets['Serves'] ?? '';
+    // Strip parenthetical commentary first — "P1 (fluency is ..., the unit ...)"
+    // has its own commas that would otherwise fragment the split below.
     const serves = servesRaw
+      .replace(/\([^)]*\)/g, '')
       .split(/[,;]|\band\b/)
-      .map((s) => s.trim().replace(/\.$/, ''))
+      .map((s) => s.trim().replace(/\.$/, '').trim())
       .filter((s) => /^P\d+$/.test(s));
     if (servesRaw && serves.length === 0) notes.push(`Article ${id}: Serves ("${servesRaw}") names no P<N> id`);
 

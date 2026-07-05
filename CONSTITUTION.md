@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.17.2   (self-hosted)
+framework: constitution@0.17.3   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -52,10 +52,18 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   duplicated across layers, nor across the framework and an instance. A versioned 
   package manager installation (e.g., via a CLI) satisfies this rule: the package is the 
   single home, and the files it writes to the instance are its read-only build artifacts.
+  A version number is a governed fact too. Three exist, each with one home: the instance's
+  own Amendments Ledger version, the framework spec version it has adopted (the header
+  pin — a ratified claim, never bumped ahead of what's actually adopted), and the
+  framework tooling installed (the instance's own package manifest). These are never
+  compared to each other as if they were the same number — except in this framework's
+  own repo, where the pin and the ledger are the same number on purpose.
 - **Serves** — P1.
 - **Fitness** — no rule's text appears verbatim in two layer documents; every cross-layer
   reference (`serves` / `amends` / `supersedes` / `party`) resolves and every layer traces up;
-  no rule lives outside a layer. Verified by the `audit-structure` skill.
+  no rule lives outside a layer. No check treats the ledger version, the header pin, and the
+  installed tooling version as one axis, except for this framework's own self-hosted repo.
+  Verified by the `audit-structure` skill.
 
 ### Article F-III — Experiments are pre-registered
 `status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
@@ -156,6 +164,27 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.17.3] — 2026-07-05 — Ratified by Chinmay: Article F-II extended — three version numbers, three homes
+- **Ratified by Chinmay, 2026-07-05**, per [ADR-0002](decisions/0002-version-axis-separation.md).
+- Found auditing DSAMind (`dsa_project`): the engine's `LEDGER-SYNC` check compared a
+  consumer's adopted-spec header pin against its own Amendments Ledger version and flagged
+  a real, correct mismatch as an error. Those are two different, legitimately independent
+  numbers. Fixed in code the same day (`cli/src/engine/audit.ts`); this entry writes the
+  distinction into law so it isn't lost.
+- **Article F-II — Principle and Fitness extended** (`status: RATIFIED`, unchanged). Names
+  three version facts, each with exactly one home: an instance's own Amendments Ledger
+  version, the framework spec version it has adopted (the header pin — a ratified claim,
+  never bumped ahead of what's adopted), and the framework tooling installed (the instance's
+  own package manifest, e.g. `package.json`). Purely additive — nothing existing changed or
+  was superseded, no forward link needed.
+- Agreement-only — no pre-registered experiment. There was no catch-rate or friction
+  hypothesis to measure, just a fact to state clearly.
+- **Not part of this amendment**: whether skills should auto-check installed tooling is
+  current and auto-run migrations when it isn't. No mechanism exists yet to rule on; left
+  as open follow-up work (see ADR-0002's Consequences).
+- Above the firewall — F-II's `status` did not change (already `RATIFIED`); its Principle
+  and Fitness text did, transcribed per `ratify-amendment`.
 
 ### [0.17.2] — 2026-07-04 — Publish-on-merge: every merge to main ships the package (operator-directed)
 - Operator directive: "every PR merge should publish the package." New

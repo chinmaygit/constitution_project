@@ -1,8 +1,8 @@
 {
   "lockVersion": 1,
-  "constitutionVersion": "0.17.0",
+  "constitutionVersion": "0.17.3",
   "acceptedBy": "Chinmay",
-  "acceptedAt": "2026-07-04T14:53:15.414Z",
+  "acceptedAt": "2026-07-05T08:45:28.047Z",
   "units": {
     "P1": {
       "kind": "preamble",
@@ -14,7 +14,7 @@
     },
     "F-II": {
       "kind": "article",
-      "hash": "b18967b451f0665a6fcf17a94c799bcfeb043a3a1c88e79274860b5ed131e462"
+      "hash": "06ed10f12ad527f757a808764c7ee7f6fcc3432bfb06737a6180ad7a980334a5"
     },
     "F-III": {
       "kind": "article",

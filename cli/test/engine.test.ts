@@ -11,6 +11,9 @@ import { renderUnit, checkTones, pruneStaleTones } from '../src/engine/tone';
 import { buildCompilePack } from '../src/engine/compile';
 import { queueProposal, listProposals, recordRuling, hasOpenProposalFor } from '../src/engine/proposals';
 import { runDoctor } from '../src/engine/doctor';
+import { scaffoldFramework } from '../src/scaffold';
+import { ensureOps } from '../src/engine/events';
+import * as os from 'os';
 
 describe('parse', () => {
   it('reads header, preamble, articles, statutes, adrs, ledger', () => {
@@ -44,9 +47,110 @@ describe('parse', () => {
     ]);
     expect(inst.constitution.articles.every((a) => a.status === 'RATIFIED')).toBe(true);
     expect(inst.statutes.length).toBeGreaterThan(5);
-    expect(inst.adrs).toHaveLength(1);
+    expect(inst.adrs).toHaveLength(2);
     const findings = audit(inst);
     expect(findings.filter((f) => f.severity === 'error')).toEqual([]);
+  });
+});
+
+describe('parse: real-world format variance (found dogfooding against DSAMind)', () => {
+  it('parses titled P-lines, section-grouped #### Articles, Serves parentheticals, and dated SUPERSEDED status', () => {
+    const dir = makeInstanceDir({
+      constitution: () => `# Acme Constitution
+
+\`\`\`
+framework: constitution@1.2.3
+ratifier:  Ada Lovelace
+\`\`\`
+
+## L0 — Preamble (vision)
+
+**P1 — Fluency, not coverage.**
+Acme exists to make widgets trustworthy.
+
+**P2 — In service of the interview.**
+Widgets ship only when proven to work.
+
+## L1 — Articles
+
+### §A — Widget model
+_Serves P1, P2._
+
+#### Article A1 — Widgets are verified
+\`status: RATIFIED\` · \`conformance: HOLDS\` · \`enforcement: GATED\` · \`party: User\`
+
+- **Principle** — Every widget passes verification before it ships.
+- **Serves** — P1 (fluency is measured, not assumed), P2 (the interview is the point).
+- **Fitness** — CI runs the verify suite on every widget build.
+
+#### Article A2 — Legacy widget rule
+\`status: SUPERSEDED — 2026-07-02\` · \`conformance: HOLDS\` · \`enforcement: UNGUARDED\` · \`party: User\`
+
+- **Principle** — Widgets used to be hand-checked.
+- **Serves** — P2 (grow).
+- **Fitness** — n/a — superseded.
+
+---
+
+## Amendments Ledger
+
+### [1.2.3] — 2026-07-01 — founding ratification
+- Founding entry. Ratifier: Ada Lovelace.
+`,
+    });
+    const inst = loadInstance(dir);
+    expect(inst.constitution.preamble.map((p) => p.id)).toEqual(['P1', 'P2']);
+    expect(inst.constitution.preamble[0].text).toContain('Fluency, not coverage');
+    expect(inst.constitution.preamble[0].text).toContain('trustworthy');
+    expect(inst.constitution.articles.map((a) => a.id)).toEqual(['A1', 'A2']);
+    expect(inst.constitution.articles[0].serves).toEqual(['P1', 'P2']);
+    expect(inst.constitution.articles[1].serves).toEqual(['P2']);
+    expect(inst.constitution.articles[1].status).toBe('SUPERSEDED — 2026-07-02');
+
+    const findings = audit(inst);
+    expect(findings.map((f) => f.code)).not.toContain('L0-EMPTY');
+    expect(findings.map((f) => f.code)).not.toContain('ART-STATUS');
+    expect(findings.map((f) => f.code)).not.toContain('ART-SERVES');
+    expect(findings.map((f) => f.code)).not.toContain('PARSE');
+  });
+
+  it('does not apply LEDGER-SYNC to a non-self-hosted instance whose own ledger version differs from the framework pin', () => {
+    const dir = makeInstanceDir({
+      constitution: (s) => s.replace('### [1.2.3] — 2026-07-01', '### [0.5.0] — 2026-07-01'),
+    });
+    const findings = audit(loadInstance(dir));
+    expect(findings.map((f) => f.code)).not.toContain('LEDGER-SYNC');
+  });
+});
+
+describe('scaffold: .gitignore does not shadow the ops-plane\'s own rules', () => {
+  it('ignores only the regenerable vendored copies, leaving events.jsonl/proposals trackable', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-scaffold-'));
+    await scaffoldFramework(dir, 'Acme', 'Ada');
+    ensureOps(dir);
+    const gitignore = fs.readFileSync(path.join(dir, '.gitignore'), 'utf8');
+    expect(gitignore).toContain('.constitution/templates/');
+    expect(gitignore).toContain('.constitution/process/');
+    expect(gitignore).not.toMatch(/^\.constitution\/\s*$/m);
+
+    // Simulate git's own ignore-matching: a blanket `.constitution/` entry
+    // would make this file unreachable regardless of the nested .gitignore.
+    const rules = gitignore.split('\n').filter(Boolean).filter((l) => !l.startsWith('#'));
+    const ignoredAsDir = rules.some((r) => r === '.constitution/' || r === '.constitution');
+    expect(ignoredAsDir).toBe(false);
+
+    const opsIgnore = fs.readFileSync(path.join(dir, '.constitution', '.gitignore'), 'utf8');
+    expect(opsIgnore).toContain('tone/');
+    expect(opsIgnore).toContain('compiles/');
+    expect(opsIgnore).not.toContain('events.jsonl');
+  });
+
+  it('re-running init on an existing governance map (case-insensitive heading) does not duplicate it', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-scaffold-'));
+    fs.writeFileSync(path.join(dir, 'AGENTS.md'), '## Governance map (entry point)\n\nCustom, hand-authored map.\n');
+    await scaffoldFramework(dir, 'Acme', 'Ada');
+    const content = fs.readFileSync(path.join(dir, 'AGENTS.md'), 'utf8');
+    expect(content).toBe('## Governance map (entry point)\n\nCustom, hand-authored map.\n');
   });
 });
 
