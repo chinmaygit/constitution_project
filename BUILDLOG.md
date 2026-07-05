@@ -334,3 +334,51 @@ in order:
 Steps 2–5 are mechanical/below-firewall; 6–7 are the ratifier's own act. **Not yet run
 against the real `dsa_project` repo this session** — only against scratch copies, pending
 the operator's go-ahead to touch a live product repo.
+
+### Addendum — proposed amendment: three version axes, three homes (same session)
+
+Operator asked, given the LEDGER-SYNC fix's two-axis distinction: where should the
+*installed tooling* version live (they suggested `package.json`), and floated skills
+self-checking + auto-migrating tooling on every run — then explicitly invoked
+`/propose-amendment`. Ran that skill end to end; drafted, did **not** ratify:
+
+- **Ran the L1 inclusion test** on the candidate before drafting: general, traces to L0
+  (P1, via F-II), falsifiable, survives a tech swap — passes. Considered a brand-new
+  Article ("F-VIII") vs. extending F-II; chose **extending F-II** (already the "one home
+  per rule" Article, already amended once by ADR-0001 for the closely related
+  package-managed-distribution question) — flagged in the ADR's "Alternatives considered"
+  that if the ratifier disagrees this is a fitting extension rather than genuinely new
+  territory, the correct redirect is `harvest-articles`, not a bigger amendment here.
+- **decisions/0002-version-axis-separation.md** (`status: proposed`, `serves`/`amends:
+  [F-II]`, `trigger: certiorari`) — names the three axes and gives each one home: an
+  instance's own Amendments Ledger version; the adopted-spec `framework:` header pin
+  (ratified conformance claim, never auto-bumped past what's adopted); the installed
+  tooling version (consumer's own package manifest — confirming the operator's
+  `package.json` instinct, since that's already the natural, existing home for "what's
+  installed," no new field needed). Drafted F-II `Principle`/`Fitness` additions
+  (additive only — nothing superseded, no forward-link needed) plus `Why`/`Proven`
+  bullets citing this session's actual LEDGER-SYNC bug as the evidence. `decisions/
+  INDEX.md` updated in the same change per `decisions/AGENTS.md`'s own statute.
+  **CONSTITUTION.md itself was not touched** — the drafted text lives only in the ADR,
+  per the firewall; only `ratify-amendment` may write it into ratified law.
+- **Agreement-only, not measured** — explicit reason on record (per the skill's hard
+  rule against silently skipping the experiment path): this clarifies already-adopted
+  practice (`sync-operator`'s existing "never bump a consumer's pin past what it has
+  adopted") and is evidenced by a bug already found and fixed in code this session;
+  there's no catch-rate/friction hypothesis to pre-register.
+- **Explicitly split off, not ruled on**: the "skills self-check tooling + auto-migrate"
+  half of the operator's proposal. No mechanism exists yet to evaluate — open questions
+  recorded in the ADR's Consequences: what "check is current" means without a silent
+  network call on every skill invocation; whether `doctor` should only *report* tooling
+  drift (consistent with existing propose-don't-enact discipline) or actually run `npm
+  update` unattended (a supply-chain-trust question, separate from version-tracking); and
+  where per-version migration steps would live (a `migrations/` dir keyed by version
+  range, run from `constitution doctor`, is the natural extension of doctor's existing
+  `versionSync` mechanism — unbuilt). Once a concrete mechanism exists, *that's* a genuine
+  F-III pre-registration candidate; this ADR is not it.
+- Verified: `constitution audit` and `constitution firewall` both stay clean with the new
+  ADR present (L3, outside the lock) — confirms the proposal touched nothing above the
+  firewall.
+- **Open**: awaiting the ratifier's decision (`ratify-amendment`) — accept the F-II
+  extension as drafted, request changes, or redirect to `harvest-articles` if a standalone
+  Article is preferred after all.
