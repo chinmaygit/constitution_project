@@ -7,8 +7,10 @@ name: publish
 # bump without publishing" and "one version number for the whole repo" — both
 # formerly prompt-only, now GATED.
 #
-# Requires an NPM_TOKEN repo secret (npmjs.org automation token with publish
-# rights on @chinmaygit) — GitHub's own GITHUB_TOKEN can't publish to npmjs.org.
+# Auth is via npm Trusted Publishing (OIDC) — npmjs.org trusts this exact
+# repo + workflow file (chinmaygit/constitution_project, publish.yml) to mint
+# a short-lived publish token per run. No NPM_TOKEN secret; `id-token: write`
+# below is what lets the runner request that OIDC token from GitHub.
 
 on:
   push:
@@ -19,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
     defaults:
       run:
         working-directory: cli
@@ -29,6 +32,9 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+
+      - name: Update npm (trusted publishing needs npm CLI >= 11.5.1)
+        run: npm install -g npm@latest
 
       - name: Install
         run: npm ci
@@ -51,8 +57,6 @@ jobs:
           fi
 
       - name: Publish (skipped if this version is already on the registry)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           PKG=$(node -p "require('./package.json').name")
           V=$(node -p "require('./package.json').version")
@@ -60,7 +64,7 @@ jobs:
             echo "$PKG@$V already published — nothing to do."
             exit 0
           fi
-          npm publish
+          npm publish --provenance
           echo "published $PKG@$V"
 
       - name: Verify the published tarball actually scaffolds
@@ -69,7 +73,21 @@ jobs:
           V=$(node -p "require('./cli/package.json').version")
           mkdir -p /tmp/consumer && cd /tmp/consumer
           npm init -y >/dev/null
-          npm install "constitution-cli@$V"
+
+          # Fresh publishes can 404 for a short window before the registry's
+          # CDN catches up — retry with backoff instead of failing on the race.
+          for i in 1 2 3 4 5 6; do
+            if npm install "constitution-cli@$V"; then
+              break
+            fi
+            if [ "$i" -eq 6 ]; then
+              echo "::error::constitution-cli@$V still not installable after retries"
+              exit 1
+            fi
+            echo "not installable yet (attempt $i/6) — retrying in $((i * 10))s"
+            sleep $((i * 10))
+          done
+
           ./node_modules/.bin/constitution init --name CiSmoke --ratifier "CI Smoke" --agents claude
           ./node_modules/.bin/constitution audit
           test -f CONSTITUTION.md && test -d .constitution
