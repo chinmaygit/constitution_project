@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.17.3   (self-hosted)
+framework: constitution@0.17.5   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -35,7 +35,7 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
 `HOLDS + UNGUARDED` is true-but-fragile, flagged as mechanization debt.
 
 ### Article F-I — Discovery before codification
-`status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
+`status: RATIFIED` · `conformance: VIOLATED` · `enforcement: AUDITED` · `party: N/A`
 
 - **Principle** — No rule is added to this framework until it has been proven in at
   least one live project. DSAMind is the founding instance.
@@ -44,6 +44,12 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   the originating experiment + ADR in a consumer project.
 - **Why** — a framework written from imagination ossifies around guesses; one written
   from usage carries its evidence with it.
+- **Conformance note (2026-07-05 re-audit)** — VIOLATED. [registry.md](registry.md)'s two
+  promoted-mechanism rows (F-V/F-VI, F-VII) cite ledger version ranges and doc sections
+  only — neither names an experiment file nor an ADR id. No `experiments/` directory
+  exists anywhere, in this repo or DSAMind; no promotion has ever gone through F-III's
+  pre-registered path. Tracked debt, not fixed as part of this audit — see
+  `audit-conformance` run, same session as ADR-0003.
 
 ### Article F-II — One home per rule
 `status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
@@ -52,18 +58,21 @@ Ratification is agreement; conformance is reality; enforcement is reality's half
   duplicated across layers, nor across the framework and an instance. A versioned 
   package manager installation (e.g., via a CLI) satisfies this rule: the package is the 
   single home, and the files it writes to the instance are its read-only build artifacts.
-  A version number is a governed fact too. Three exist, each with one home: the instance's
-  own Amendments Ledger version, the framework spec version it has adopted (the header
-  pin — a ratified claim, never bumped ahead of what's actually adopted), and the
-  framework tooling installed (the instance's own package manifest). These are never
-  compared to each other as if they were the same number — except in this framework's
-  own repo, where the pin and the ledger are the same number on purpose.
+  A version number is a governed fact too, and three exist, each with exactly one home:
+  1. the instance's own Amendments Ledger version,
+  2. the framework spec version it has adopted (the header pin — a ratified claim, never
+     bumped ahead of what's actually adopted),
+  3. the framework tooling installed (the instance's own package manifest).
+
+  These three are never compared as one axis, with one exception: in the framework's own
+  self-hosted repo, axis 1 and axis 2 are the same number by design. Axis 3 is never folded
+  into that collapse, even here.
 - **Serves** — P1.
 - **Fitness** — no rule's text appears verbatim in two layer documents; every cross-layer
   reference (`serves` / `amends` / `supersedes` / `party`) resolves and every layer traces up;
-  no rule lives outside a layer. No check treats the ledger version, the header pin, and the
-  installed tooling version as one axis, except for this framework's own self-hosted repo.
-  Verified by the `audit-structure` skill.
+  no rule lives outside a layer. No check treats axis 1 and axis 2 as the same number for any
+  instance except the framework's own self-hosted repo; no check ever treats axis 3 as the
+  same number as either of the others, anywhere. Verified by the `audit-structure` skill.
 
 ### Article F-III — Experiments are pre-registered
 `status: RATIFIED` · `conformance: HOLDS` · `enforcement: AUDITED` · `party: N/A`
@@ -164,6 +173,50 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.17.5] — 2026-07-05 — Re-audit Conformance
+- **Audit:** Ran `audit-conformance` against all seven Articles, same session as ADR-0003.
+- **Findings:**
+  - **F-I flips `HOLDS` → `VIOLATED`.** `registry.md`'s two promoted-mechanism rows cite
+    ledger ranges and doc sections, not an experiment file + ADR id, as the fitness text
+    requires. No `experiments/` directory exists anywhere (this repo or DSAMind); no
+    promotion has ever used F-III's pre-registered path. Tracked debt — not remediated
+    here (human declined the fitness-amendment option this session; left as-is).
+  - F-II through F-VII all maintain `conformance: HOLDS`, `enforcement: AUDITED`.
+  - F-III holds only vacuously — zero experiment files exist to check against; the
+    mechanism has never actually been exercised.
+  - F-VI's own fitness ("no Article marked HOLDS while its fitness fails") was itself
+    unmet before this pass, because of F-I's stale label — fixed by the F-I flip above.
+- **Result:** One conformance flip (F-I). No `status` changes; nothing above the firewall.
+
+### [0.17.4] — 2026-07-05 — Ratified by Chinmay: Article F-II's version-axis clause tightened (ADR-0003)
+- **Ratified by Chinmay, 2026-07-05**, per [ADR-0003](decisions/0003-tighten-version-axis-clause.md).
+- `derive-statutes`, run against F-II this session, found `[0.17.3]`'s two added sentences
+  disagreed on scope: Principle's self-hosted exception named two axes (pin + ledger);
+  Fitness listed all three before the same "except," reading like it covered all three. That
+  ambiguity had already produced a wrong statute (`cli/AGENTS.md` claimed the tooling axis
+  collapses too, citing F-II) — fixed in the same session, pending this ADR.
+- **Article F-II — Principle and Fitness rewritten** (`status: RATIFIED`, unchanged), as a
+  numbered 3-axis list with the self-hosted exception scoped to axes 1+2 only in both
+  clauses. No behavior change — code and the statute already assumed this reading.
+- `[0.17.3]` **SUPERSEDED — 2026-07-05 → ADR-0003.** The two sentences it added to
+  Principle:
+  > A version number is a governed fact too. Three exist, each with one home: the
+  > instance's own Amendments Ledger version, the framework spec version it has adopted
+  > (the header pin — a ratified claim, never bumped ahead of what's actually adopted), and
+  > the framework tooling installed (the instance's own package manifest). These are never
+  > compared to each other as if they were the same number — except in this framework's own
+  > repo, where the pin and the ledger are the same number on purpose.
+
+  And the one sentence it added to Fitness:
+  > No check treats the ledger version, the header pin, and the installed tooling version
+  > as one axis, except for this framework's own self-hosted repo.
+- Agreement-only — no pre-registered experiment. Wording-only fix; the ambiguity itself was
+  the evidence.
+- Above the firewall — F-II's `status` did not change (already `RATIFIED`); its Principle
+  and Fitness text did, transcribed per `ratify-amendment`.
+- Self-hosted repo: header pin bumped to `0.17.4` alongside this ledger entry (F-II's own
+  pin↔ledger collapse, per this repo's root `AGENTS.md`).
 
 ### [0.17.3] — 2026-07-05 — Ratified by Chinmay: Article F-II extended — three version numbers, three homes
 - **Ratified by Chinmay, 2026-07-05**, per [ADR-0002](decisions/0002-version-axis-separation.md).

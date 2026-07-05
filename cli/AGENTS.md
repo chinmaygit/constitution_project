@@ -34,17 +34,34 @@ package-managed distribution mechanism, per
     version and the repo's `package.json` from drifting apart instead.
 
 - **`cli/package.json`'s `version` always equals this repo's `CONSTITUTION.md` header
-  version.** One number for the whole self-hosted repo — not a tool-version axis and a
-  spec-version axis drifting independently. Every `CONSTITUTION.md` version bump that
-  lands in the same change as a `cli/` publish updates both together; a bump to one
-  without the other is the bug, not a valid state.
-  · serves: F-II (one home for "what version is this")
+  version.** This is repo-specific practice, not an F-II requirement — F-II's ratified
+  text only blesses collapsing the header pin and the Amendments Ledger into one axis
+  here; it says nothing about the installed-tooling axis. Syncing the tooling version
+  too is a deliberate convenience this repo has chosen (mechanized by publish-on-merge),
+  not something the constitution mandates. A downstream consumer is not expected to do
+  this, and its own tooling version stays a genuinely independent third axis (F-II).
+  · serves: general craft (a repo-specific convenience, not an L1 mandate)
   · enforced-by: CI (`.github/workflows/publish.yml` fails the publish job on any
     mismatch between `cli/package.json` and the `CONSTITUTION.md` header; locally,
     `constitution doctor` auto-syncs via `constitution.config.json`)
   · why: two independently-numbered versions for one repo is exactly the confusion a
     consumer hits first — "why does `constitution --version` say 1.0.0 when the spec
-    ledger is at 0.16.x." One axis removes the question.
+    ledger is at 0.16.x." One axis removes the question *for this repo*, by choice, not
+    by rule.
+
+- **The self-hosted repo's `framework:` header pin and its newest Amendments Ledger
+  entry are the same axis and must match — this collapse is what F-II's ratified text
+  actually requires.** A downstream consumer's pin (the framework spec it adopted) and
+  its own ledger (its product's version) are legitimately independent and must never be
+  compared this way.
+  · serves: F-II (the pin↔ledger collapse, scoped to the self-hosted case only)
+  · enforced-by: CI (`.github/workflows/governance.yml` runs `constitution audit`,
+    which fails on `LEDGER-SYNC`) + hook (`constitution hooks install`'s pre-commit
+    gate runs the same check)
+  · why: this exact confusion is what ADR-0002 traces to — `LEDGER-SYNC`
+    (`src/engine/audit.ts:87-93`) used to fire unconditionally, wrongly comparing a
+    downstream consumer's adopted-spec pin against its own product ledger. The
+    `doc.selfHosted` scoping is the fix; see `decisions/0002-version-axis-separation.md`.
 
 - **`skills/`, `templates/`, `process/` are vendored into `cli/` at build time
   (`scripts/vendor.js`, run via `prebuild`/`prepack`) — never assume they exist as

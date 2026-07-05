@@ -5,7 +5,7 @@ metadata:
   scope: project
   layer: cross-cutting
   enforces: F-II
-  version: "1.4.0"
+  version: "1.4.2"
 ---
 
 # Audit the constitution's structural integrity (L0–L4)
@@ -63,7 +63,13 @@ below.
 **4. Field & firewall integrity:**
 - Every Article carries all required fields: `status`, `conformance`, `enforcement`, `party`, `serves`, `fitness`.
 - Every L0/L1 amendment in the ledger names a human ratifier (F-IV).
-- The instance's framework pin (`constitution@X`) matches `registry.md`; the header version matches the latest ledger entry and the latest tag.
+- The instance's framework pin (`constitution@X`) matches `registry.md`. **Only in the
+  framework's own self-hosted repo** (header marked `(self-hosted)`) does the header pin
+  also have to match the latest ledger entry and the latest tag (F-II) — in any other
+  instance the pin (the framework spec it adopted) and the ledger (its own product
+  version) are legitimately independent axes and must **not** be compared this way
+  (ADR-0002; see `cli/AGENTS.md`'s `LEDGER-SYNC` statute for the mechanized version of
+  this same check).
 
 **5. Anything OUTSIDE the layers (the headline):**
 - A rule in the declared L2 statute homes that no layer claims — not tagged L2, no `serves`, not an Article, not an ADR. **Ungoverned rule** → either annotate it as a statute or delete it.
@@ -87,8 +93,12 @@ below.
    other skill trust at day-to-day speed, with no scanning. **Then, only in this audit, cross-check
    it against an independent scan** of the tree (e.g. `find . -iname 'AGENTS.md' -o -iname
    'CLAUDE.md' -o -iname 'AGENTS.md'`, excluding `.claude/`, `.agents/`, `.cursor/`,
-   `node_modules/`, `dist/`, `.git/`) to catch a home that exists on disk but isn't declared. This
-   scan is this skill's job alone — the periodic safety net, not a per-task cost every skill pays.
+   `node_modules/`, `dist/`, `.git/`, **and anything `git check-ignore` reports** — a hardcoded
+   name list misses a repo's own generated/vendored copies under other names (e.g. this repo's
+   own `cli/skills/`, `cli/templates/`, `cli/process/` — gitignored build artifacts per
+   `cli/AGENTS.md`, not `dist/`-named but the same kind of thing)) to catch a home that exists on
+   disk but isn't declared. This scan is this skill's job alone — the periodic safety net, not a
+   per-task cost every skill pays.
 2. **Run the checks** above. For each finding, record the exact location and what's broken.
 3. **Classify** each: `broken-ref` · `orphan` · `duplication` · `ungoverned` · `map-gap` ·
    `map-drift` · `field-gap` · `pin/version drift` · `promotion/demotion signal`.
