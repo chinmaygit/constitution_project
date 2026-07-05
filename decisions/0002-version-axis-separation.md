@@ -1,7 +1,7 @@
 ---
 id: 0002
 title: Three version numbers, three homes
-status: proposed
+status: accepted
 date: 2026-07-05
 supersedes: []
 superseded_by: []

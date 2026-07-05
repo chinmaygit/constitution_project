@@ -47,7 +47,7 @@ describe('parse', () => {
     ]);
     expect(inst.constitution.articles.every((a) => a.status === 'RATIFIED')).toBe(true);
     expect(inst.statutes.length).toBeGreaterThan(5);
-    expect(inst.adrs).toHaveLength(1);
+    expect(inst.adrs).toHaveLength(2);
     const findings = audit(inst);
     expect(findings.filter((f) => f.severity === 'error')).toEqual([]);
   });
