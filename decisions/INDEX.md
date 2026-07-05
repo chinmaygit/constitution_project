@@ -6,4 +6,4 @@ an ADR) are L2 statutes — see [AGENTS.md](AGENTS.md).
 | id | title | status | date |
 |----|-------|--------|------|
 | 0001 | Allow package-managed installation of skills to satisfy F-II | accepted | 2026-07-01 |
-| 0002 | Three version axes, three homes — ledger, adopted-spec pin, installed tooling | proposed | 2026-07-05 |
+| 0002 | Three version numbers, three homes | proposed | 2026-07-05 |
