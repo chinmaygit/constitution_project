@@ -5,10 +5,16 @@ Ten minutes from install to a governed task loop.
 ## 1. Install and scaffold
 
 ```bash
-npm install -g @chinmaygit/constitution-cli   # GitHub Packages; see cli/README.md for registry setup
+npm install --save-dev constitution-cli
 cd your-product
-constitution init
+npx constitution init
 ```
+
+Installed locally, pinned in `package.json`/the lockfile, rather than global — keeps the
+engine version that scaffolded and audits a repo reproducible across machines and CI. The
+commands below are shown as bare `constitution ...` for brevity; run them as
+`npx constitution ...` (or add a `package.json` script) unless `./node_modules/.bin` is on
+your `PATH`.
 
 `init` writes the law-plane skeleton (`CONSTITUTION.md`, a Governance Map in
 `AGENTS.md`, `decisions/`), the spec + templates under `.constitution/`, compiled

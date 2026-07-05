@@ -1,10 +1,14 @@
 name: publish
 
-# Every merge to main publishes @chinmaygit/constitution-cli to GitHub Packages —
-# IF the version is new. A merge that doesn't bump cli/package.json (kept equal to
-# the CONSTITUTION.md header version by statute) publishes nothing and still passes.
-# This mechanizes two cli/AGENTS.md statutes: "don't bump without publishing" and
-# "one version number for the whole repo" — both formerly prompt-only, now GATED.
+# Every merge to main publishes constitution-cli to the public npm
+# registry — IF the version is new. A merge that doesn't bump cli/package.json
+# (kept equal to the CONSTITUTION.md header version by statute) publishes
+# nothing and still passes. This mechanizes two cli/AGENTS.md statutes: "don't
+# bump without publishing" and "one version number for the whole repo" — both
+# formerly prompt-only, now GATED.
+#
+# Requires an NPM_TOKEN repo secret (npmjs.org automation token with publish
+# rights on @chinmaygit) — GitHub's own GITHUB_TOKEN can't publish to npmjs.org.
 
 on:
   push:
@@ -15,7 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     defaults:
       run:
         working-directory: cli
@@ -25,8 +28,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://npm.pkg.github.com
-          scope: '@chinmaygit'
+          registry-url: https://registry.npmjs.org
 
       - name: Install
         run: npm ci
@@ -50,7 +52,7 @@ jobs:
 
       - name: Publish (skipped if this version is already on the registry)
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           PKG=$(node -p "require('./package.json').name")
           V=$(node -p "require('./package.json').version")
@@ -62,16 +64,12 @@ jobs:
           echo "published $PKG@$V"
 
       - name: Verify the published tarball actually scaffolds
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: .
         run: |
           V=$(node -p "require('./cli/package.json').version")
           mkdir -p /tmp/consumer && cd /tmp/consumer
           npm init -y >/dev/null
-          echo "@chinmaygit:registry=https://npm.pkg.github.com" > .npmrc
-          echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
-          npm install "@chinmaygit/constitution-cli@$V"
+          npm install "constitution-cli@$V"
           ./node_modules/.bin/constitution init --name CiSmoke --ratifier "CI Smoke" --agents claude
           ./node_modules/.bin/constitution audit
           test -f CONSTITUTION.md && test -d .constitution
