@@ -11,13 +11,17 @@
 - `skills/`, `process/`, `templates/`, `decisions/`, `cli/` at the repo root are the
   **source of truth** for this repo's own tooling — edit here, then release (version bump
   + tag).
+- `experiments/` — this repo's own pre-registered candidate rules under measurement
+  (`process/experiment-lifecycle.md` governs the shape and states; no separate `AGENTS.md`
+  yet — an experiment file follows `templates/experiment.md` directly, not a folder-local
+  statute).
 
 ## Source vs. installed artifacts
 
 This repo dogfoods its own CLI: running `constitution install` here (as anywhere) writes
 compiled, agent-specific copies into `.claude/skills/`, `.agents/skills/`, and `.cursor/rules/`.
 
-- **Edit**: `skills/`, `process/`, `templates/`, `decisions/`, `cli/` — these are git-tracked and versioned.
+- **Edit**: `skills/`, `process/`, `templates/`, `decisions/`, `experiments/`, `cli/` — these are git-tracked and versioned.
 - **Never edit**: `.claude/`, `.agents/`, `.cursor/` — gitignored, generated, and overwritten on
   every install/upgrade. Treat them like a `dist/` folder. If content there looks stale or wrong,
   fix the source in `skills/` and re-run the CLI — don't hand-patch the copy.

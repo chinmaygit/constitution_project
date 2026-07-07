@@ -32,3 +32,12 @@ interpreting one Article is the evidence that the Article itself should be amend
 
 ## Alternatives considered
 <each option and why it was rejected>
+
+<!--
+Write plain and short: one idea per sentence, no stacking a second qualifier onto a
+first. Length scales with the size of the change — a one-clause wording fix gets a few
+lines per section, not the same depth as a brand-new Article. An empty or one-line
+Consequences/Alternatives is fine when that's all there is to say; don't pad sections
+to fill the template's shape. `constitution audit` runs a WARN-ONLY check for sentence
+length and stacked qualifiers (EXP-0001) — it never blocks, but a warning is real signal.
+-->

@@ -201,10 +201,20 @@ function parseBoldBullets(lines: string[]): Record<string, string> {
 }
 
 function parseLedger(lines: string[]): LedgerEntry[] {
-  const out: LedgerEntry[] = [];
+  const headings: { version: string; date: string; title: string; line: number; index: number }[] = [];
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(/^### \[([\w.\-]+)\]\s+—\s+(\S+)\s+—\s+(.+)$/);
-    if (m) out.push({ version: m[1], date: m[2], title: m[3].trim(), line: i + 1 });
+    if (m) headings.push({ version: m[1], date: m[2], title: m[3].trim(), line: i + 1, index: i });
+  }
+  // Body runs from just after one heading to the next heading — or, for the
+  // LAST entry, to end of file. The Amendments Ledger is typically the last
+  // section in CONSTITUTION.md, so there is no trailing heading to stop at.
+  const out: LedgerEntry[] = [];
+  for (let k = 0; k < headings.length; k++) {
+    const start = headings[k].index + 1;
+    const end = k + 1 < headings.length ? headings[k + 1].index : lines.length;
+    const body = normalize(lines.slice(start, end).join('\n'));
+    out.push({ version: headings[k].version, date: headings[k].date, title: headings[k].title, body, line: headings[k].line });
   }
   return out;
 }
@@ -320,11 +330,13 @@ export function parseAdr(root: string, file: string): Adr {
   const notes: string[] = [];
   const fm: Record<string, string> = {};
   const fmMatch = raw.match(/^---\n([\s\S]*?)\n---/);
+  let body = raw;
   if (fmMatch) {
     for (const line of fmMatch[1].split('\n')) {
       const m = line.match(/^([\w_]+):\s*(.*)$/);
       if (m) fm[m[1]] = m[2].replace(/#.*$/, '').trim();
     }
+    body = raw.slice(fmMatch[0].length);
   } else {
     notes.push('no YAML frontmatter');
   }
@@ -340,6 +352,7 @@ export function parseAdr(root: string, file: string): Adr {
     title: fm['title'] ?? '',
     status: fm['status'] ?? '',
     date: fm['date'] ?? '',
+    body: normalize(body),
     supersedes: list(fm['supersedes']),
     supersededBy: list(fm['superseded_by']),
     serves: list(fm['serves']),
@@ -374,8 +387,14 @@ export function parseExperiment(root: string, file: string): Experiment {
   }
 
   const section = (name: string): string => {
-    // (?=\n## |$) — up to the next section heading or end of file; JS has no \Z.
-    const m = raw.match(new RegExp(`^## ${name}[^\\n]*\\n([\\s\\S]*?)(?=\\n## |$)`, 'm'));
+    // Up to the next section heading or true end of file. Deliberately NOT
+    // using the 'm' flag: with 'm', `$` matches end-of-LINE, not end-of-string,
+    // which silently truncated any multi-line section body to its first line
+    // (every existing fixture/test used single-line sections, so this went
+    // unnoticed until EXP-0001's real multi-paragraph Hypothesis/Metric/
+    // Decision rule sections exposed it). `(?:^|\n)` replaces the `^` anchor
+    // so a heading is still found either at file start or after a newline.
+    const m = raw.match(new RegExp(`(?:^|\\n)## ${name}[^\\n]*\\n([\\s\\S]*?)(?=\\n## |$)`));
     const text = normalize(m?.[1] ?? '');
     return PLACEHOLDER_SECTION.test(text) ? '' : text;
   };
