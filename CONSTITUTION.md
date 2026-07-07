@@ -1,7 +1,7 @@
 # The constitution framework — Constitution
 
 ```
-framework: constitution@0.17.5   (self-hosted)
+framework: constitution@0.17.6   (self-hosted)
 ratifier:  Chinmay
 ```
 
@@ -173,6 +173,18 @@ on the same Article is the signal that the Article itself needs amending.
 
 Superseded clauses are never deleted — they are kept here with a forward link and the
 ADR that justified the change.
+
+### [0.17.6] — 2026-07-06 — Governance prose clarity: WARN-ONLY checks (EXP-0001)
+- **What changed:** `constitution audit` gained three WARN-ONLY findings
+  (`PROSE-SENTENCE-LEN`, `PROSE-STACKED-QUALIFIER`, `LEDGER-LENGTH`) checking
+  Article/Statute/ADR prose and Ledger entry length. Never blocks; a pre-registered
+  F-III experiment (`experiments/EXP-0001-governance-prose-clarity.md`) governs
+  promotion.
+- **Why:** F-II's own text got denser with every amendment (ADR-0002, ADR-0003); this
+  framework's law should catch exactly this kind of drift on itself, not just on the
+  products it governs.
+- **ADR:** none — below the firewall throughout (new engine checks, a new experiment
+  file, template guidance; no Article text or status touched).
 
 ### [0.17.5] — 2026-07-05 — Re-audit Conformance
 - **Audit:** Ran `audit-conformance` against all seven Articles, same session as ADR-0003.

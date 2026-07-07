@@ -7,4 +7,11 @@ build/
 cli/test-run/
 
 # Framework namespace
-.constitution/
+# Excluding contents (not the directory itself, `.constitution/*`) so the
+# negation below can still reach inside it — git can't un-ignore a file whose
+# parent directory is itself excluded.
+.constitution/*
+# ...except the EXP-0001 baseline snapshot: this must be committed so the
+# WARN-ONLY window's false-positive-rate evidence is consistent across
+# commits and CI, not re-seeded from scratch on every fresh checkout.
+!.constitution/prose-baseline.json
