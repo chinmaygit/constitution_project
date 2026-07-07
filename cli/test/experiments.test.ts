@@ -102,4 +102,22 @@ describe('experiment section parsing edge case', () => {
     expect(inst.experiments[0].decisionRule).toContain('RATIFY if');
     expect(audit(inst).filter((f) => f.code.startsWith('EXP-'))).toEqual([]);
   });
+
+  it('captures a section spanning multiple physical lines, not just the first line', () => {
+    // Regression: the section regex used to run with the 'm' flag, which
+    // makes `$` match end-of-LINE rather than end-of-string — silently
+    // truncating any section body wrapped across multiple lines to just its
+    // first line. Every prior fixture happened to use single-line sections,
+    // so this went unnoticed until a real multi-paragraph experiment file
+    // (EXP-0001-governance-prose-clarity.md) exposed it.
+    const multiLine = GOOD_EXP.replace(
+      '## Hypothesis\nThe verify suite catches 90% of seeded widget defects.',
+      '## Hypothesis\nThe verify suite catches 90% of seeded widget defects,\nmeasured across a full release cycle,\nnot just a single sprint.'
+    );
+    const dir = withExperiment(multiLine);
+    const inst = loadInstance(dir);
+    expect(inst.experiments[0].hypothesis).toContain('90%');
+    expect(inst.experiments[0].hypothesis).toContain('full release cycle');
+    expect(inst.experiments[0].hypothesis).toContain('single sprint');
+  });
 });

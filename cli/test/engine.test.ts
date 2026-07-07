@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { describe, it, expect } from 'vitest';
-import { makeInstanceDir, MINI_CONSTITUTION } from './fixture';
+import { makeInstanceDir, MINI_CONSTITUTION, MINI_ADR } from './fixture';
 import { loadInstance, canonicalHash, parseConstitution } from '../src/engine/parse';
 import { audit } from '../src/engine/audit';
+import { stripInlineMarkup, countWords, sentenceLengths, hasStackedQualifier } from '../src/engine/prose';
 import { computeLock, diffLock, writeLock } from '../src/engine/lock';
 import { appendEvent, readEvents } from '../src/engine/events';
 import { foldBoard, renderBoardHtml } from '../src/engine/board';
@@ -244,6 +245,274 @@ describe('audit', () => {
     expect(f).toBeDefined();
     expect(f!.firewall).toBe('above');
     expect(f!.severity).toBe('error');
+  });
+});
+
+describe('prose.ts: text-analysis primitives (EXP-0001)', () => {
+  it('stripInlineMarkup drops code spans and keeps link text, not the URL', () => {
+    expect(stripInlineMarkup('')).toBe('');
+    expect(stripInlineMarkup('see `status: RATIFIED` here')).toBe('see  here');
+    expect(stripInlineMarkup('see [registry.md](registry.md) here')).toBe('see registry.md here');
+    expect(stripInlineMarkup('a `code span` and a [link](https://example.com/very/long/path) together')).toBe(
+      'a  and a link together'
+    );
+  });
+
+  it('countWords handles empty/whitespace and strips markup before counting', () => {
+    expect(countWords('')).toBe(0);
+    expect(countWords('   \n\t  ')).toBe(0);
+    expect(countWords('one two three')).toBe(3);
+    // a long URL must not inflate the count — it's stripped before counting
+    expect(countWords('see [it](https://example.com/a/b/c/d/e/f/g/h) now')).toBe(3);
+  });
+
+  it('sentenceLengths treats text with no terminal punctuation as one sentence', () => {
+    expect(sentenceLengths('')).toEqual([]);
+    expect(sentenceLengths('no ending punctuation here')).toEqual([4]);
+  });
+
+  it('sentenceLengths does not fragment a numbered list into meaningless pieces', () => {
+    const text =
+      'A version number is a governed fact, and three exist: 1. the ledger version, ' +
+      '2. the framework spec version, 3. the tooling version. Axis three is different.';
+    const lens = sentenceLengths(text);
+    // one long sentence covering the whole numbered list, then a short one
+    expect(lens.length).toBe(2);
+    expect(lens[0]).toBeGreaterThan(20);
+    expect(lens[1]).toBeLessThan(6);
+  });
+
+  it('hasStackedQualifier requires 2+ DISTINCT pattern types, not repeats of the same type', () => {
+    expect(hasStackedQualifier('a plain sentence with nothing unusual')).toBe(false);
+    expect(hasStackedQualifier('a clause set off — like this — on its own')).toBe(false); // 1 type only
+    expect(hasStackedQualifier('two separate — asides — used here — again')).toBe(false); // same type twice
+    expect(hasStackedQualifier('this holds — with one exception noted here')).toBe(true); // em-dash + "exception"
+    expect(hasStackedQualifier('unless scoped to a narrower case (see below)')).toBe(false); // 1 type only
+    expect(hasStackedQualifier('a rule (with a nested (inner) clause) — and an exception')).toBe(true); // nested paren + em-dash + exception
+  });
+});
+
+describe('audit: governance prose clarity (EXP-0001, WARN-ONLY)', () => {
+  it('never blocks — findings are always severity warn, firewall below', () => {
+    const dir = makeInstanceDir({
+      constitution: (s) =>
+        s.replace(
+          '- **Principle** — Every widget passes verification before it ships.',
+          '- **Principle** — Every widget passes verification before it ships, except — as a carved-out exception — legacy widgets grandfathered in before the rule existed, which is a separate case entirely and always will be.'
+        ),
+    });
+    const findings = audit(loadInstance(dir));
+    const prose = findings.filter((f) => f.code.startsWith('PROSE-'));
+    expect(prose.length).toBeGreaterThan(0);
+    for (const p of prose) {
+      expect(p.severity).toBe('warn');
+      expect(p.firewall).toBe('below');
+    }
+    // warn findings never flip the exit-determining error filter
+    expect(findings.filter((f) => f.severity === 'error')).toEqual([]);
+  });
+
+  it('checkProse fires independently on every field it is wired to, not just Article Principle', () => {
+    // Covers the remaining checkProse() call sites (Article Fitness/Why, Statute
+    // rule/Why, ADR body) — regression guard against a wrong-field reference
+    // (e.g. checking .enforcedBy instead of .why) that unit tests on prose.ts
+    // alone wouldn't catch, since that would still be a syntactically valid call.
+    const dense =
+      'This holds — with one exception noted here — because the rule was written before ' +
+      'the edge case existed and nobody has revisited it since the original decision, which ' +
+      'is itself now a separate problem entirely.';
+
+    const fitnessDir = makeInstanceDir({
+      constitution: (s) => s.replace('- **Fitness** — CI runs the verify suite on every widget build.', `- **Fitness** — ${dense}`),
+    });
+    const fitnessFindings = audit(loadInstance(fitnessDir)).filter((f) => f.code.startsWith('PROSE-'));
+    expect(fitnessFindings.some((f) => f.message.includes('A1 Fitness'))).toBe(true);
+
+    const whyDir = makeInstanceDir({
+      constitution: (s) => s.replace('- **Why** — unverified widgets break user trust.', `- **Why** — ${dense}`),
+    });
+    const whyFindings = audit(loadInstance(whyDir)).filter((f) => f.code.startsWith('PROSE-'));
+    expect(whyFindings.some((f) => f.message.includes('A1 Why'))).toBe(true);
+
+    const statuteRuleDir = makeInstanceDir({
+      map: (s) => s.replace('All widget checks run through the single verify entrypoint.', dense),
+    });
+    const statuteRuleFindings = audit(loadInstance(statuteRuleDir)).filter((f) => f.code.startsWith('PROSE-'));
+    expect(statuteRuleFindings.some((f) => f.message.startsWith('statute "'))).toBe(true);
+
+    const statuteWhyDir = makeInstanceDir({
+      map: (s) => s.replace('two entrypoints drift apart silently.', dense),
+    });
+    const statuteWhyFindings = audit(loadInstance(statuteWhyDir)).filter((f) => f.code.startsWith('PROSE-'));
+    expect(statuteWhyFindings.some((f) => f.message.includes('Why'))).toBe(true);
+
+    const adrDir = makeInstanceDir();
+    fs.writeFileSync(
+      path.join(adrDir, 'decisions', '0001-verify-pre-merge.md'),
+      MINI_ADR.replace('Pre-merge, always.', `Pre-merge, always. ${dense}`)
+    );
+    const adrFindings = audit(loadInstance(adrDir)).filter((f) => f.code.startsWith('PROSE-'));
+    expect(adrFindings.some((f) => f.message.includes('ADR 0001'))).toBe(true);
+  });
+
+  it('checkProse skips empty/undefined fields without producing findings', () => {
+    const dir = makeInstanceDir({
+      constitution: (s) => s.replace('- **Why** — unverified widgets break user trust.', '- **Why** — '),
+    });
+    const findings = audit(loadInstance(dir)).filter((f) => f.code.startsWith('PROSE-'));
+    expect(findings.some((f) => f.message.includes('A1 Why'))).toBe(false);
+  });
+
+  it('a non-last ledger entry stops its body at the next heading, not before or after', () => {
+    // The fixture's only prior ledger test covers the LAST-entry/EOF boundary
+    // (headings.length - 1). This covers the other branch of parseLedger's
+    // ternary: end = headings[k+1].index — an off-by-one here would silently
+    // bleed the next entry's heading (or its own last line) across the boundary.
+    const dir = makeInstanceDir({
+      constitution: (s) =>
+        s.replace(
+          '### [1.2.3] — 2026-07-01 — founding ratification\n- Founding entry. Ratifier: Ada Lovelace.',
+          '### [1.2.3] — 2026-07-01 — founding ratification\n- Founding entry line one.\n- Founding entry line two.\n\n' +
+            '### [1.3.0] — 2026-07-02 — second entry\n- Second entry text. Ratifier: Grace Hopper.'
+        ),
+    });
+    const inst = loadInstance(dir);
+    expect(inst.constitution.ledger.length).toBe(2);
+    expect(inst.constitution.ledger[0].body).toContain('line two');
+    expect(inst.constitution.ledger[0].body).not.toContain('Second entry text');
+    expect(inst.constitution.ledger[1].body).toContain('Grace Hopper');
+  });
+
+  it('parseAdr body falls back to the whole raw file when there is no YAML frontmatter', () => {
+    const dir = makeInstanceDir();
+    fs.writeFileSync(
+      path.join(dir, 'decisions', '0002-no-frontmatter.md'),
+      '## Question of law\nWhat happens with no frontmatter?\n\n## Ruling\nIt still parses.\n'
+    );
+    const inst = loadInstance(dir);
+    const adr = inst.adrs.find((a) => a.file.endsWith('0002-no-frontmatter.md'))!;
+    expect(adr.body).toContain('It still parses');
+    expect(adr.parseNotes).toContain('no YAML frontmatter');
+  });
+
+  it('a baseline file with valid JSON but a non-array keys field degrades to nothing-known', () => {
+    // Distinct from the "corrupt JSON" test above — this is syntactically
+    // valid JSON with the wrong shape, exercising the other branch of
+    // readProseBaseline's Array.isArray(parsed?.keys) check.
+    const dir = makeInstanceDir();
+    const opsDir = path.join(dir, '.constitution');
+    fs.mkdirSync(opsDir, { recursive: true });
+    fs.writeFileSync(path.join(opsDir, 'prose-baseline.json'), JSON.stringify({ keys: 'oops' }));
+    const findings = audit(loadInstance(dir)).filter((f) => f.code.startsWith('PROSE-') || f.code === 'LEDGER-LENGTH');
+    expect(findings.every((f) => f.baseline === false)).toBe(true);
+  });
+
+  it('flags a ledger entry over the word cap and leaves a short one alone', () => {
+    const longEntry = 'Session narrative. '.repeat(40); // ~120 words, pad to exceed 150
+    const dir = makeInstanceDir({
+      constitution: (s) =>
+        s.replace(
+          '### [1.2.3] — 2026-07-01 — founding ratification\n- Founding entry. Ratifier: Ada Lovelace.',
+          `### [1.2.3] — 2026-07-01 — founding ratification\n- ${longEntry}${longEntry}`
+        ),
+    });
+    const findings = audit(loadInstance(dir));
+    const ledgerFinding = findings.find((f) => f.code === 'LEDGER-LENGTH');
+    expect(ledgerFinding).toBeDefined();
+    expect(ledgerFinding!.message).toContain('[1.2.3]');
+
+    const shortDir = makeInstanceDir(); // unmodified fixture, short ledger entry
+    expect(audit(loadInstance(shortDir)).find((f) => f.code === 'LEDGER-LENGTH')).toBeUndefined();
+  });
+
+  it('the last ledger entry (no trailing heading) is still checked, not silently dropped', () => {
+    // MINI_CONSTITUTION's single ledger entry IS the last section in the file —
+    // this is the real EOF-boundary case (verified against CONSTITUTION.md itself).
+    const dir = makeInstanceDir();
+    const inst = loadInstance(dir);
+    expect(inst.constitution.ledger[0].body.length).toBeGreaterThan(0);
+    expect(inst.constitution.ledger[0].body).toContain('Ada Lovelace');
+  });
+
+  it('baseline-snapshot: self-initializes on first run, then isolates new findings from known ones', () => {
+    const dir = makeInstanceDir({
+      constitution: (s) =>
+        s.replace(
+          '- **Principle** — Every widget passes verification before it ships.',
+          '- **Principle** — Every widget passes verification before it ships, except — as a carved-out exception — legacy widgets grandfathered in before the rule existed, which is a separate case entirely and always will be.'
+        ),
+    });
+    const first = audit(loadInstance(dir));
+    const firstProse = first.filter((f) => f.code.startsWith('PROSE-'));
+    expect(firstProse.length).toBeGreaterThan(0);
+    expect(firstProse.every((f) => f.baseline === true)).toBe(true); // day-one: nothing is "new"
+    expect(fs.existsSync(path.join(dir, '.constitution', 'prose-baseline.json'))).toBe(true);
+
+    // Second run, nothing changed — still baseline (matches the snapshot).
+    const second = audit(loadInstance(dir)).filter((f) => f.code.startsWith('PROSE-'));
+    expect(second.every((f) => f.baseline === true)).toBe(true);
+
+    // Introduce a NEW dense field (A2's Principle) — only the new one is baseline:false.
+    fs.writeFileSync(
+      path.join(dir, 'CONSTITUTION.md'),
+      fs
+        .readFileSync(path.join(dir, 'CONSTITUTION.md'), 'utf8')
+        .replace(
+          '- **Principle** — Failures are always surfaced to the user.',
+          '- **Principle** — Failures are always surfaced to the user, except — in one narrow exception — during a graceful shutdown, which is a separate case entirely and always will be.'
+        )
+    );
+    const third = audit(loadInstance(dir)).filter((f) => f.code.startsWith('PROSE-'));
+    const newOnes = third.filter((f) => f.baseline === false);
+    const oldOnes = third.filter((f) => f.baseline === true);
+    expect(newOnes.length).toBeGreaterThan(0);
+    expect(oldOnes.length).toBeGreaterThan(0);
+  });
+
+  it('the written baseline has no duplicate keys, even when 2+ fields share a where', () => {
+    // Adversarial review finding: Principle and Fitness on the same Article
+    // line both key to the same `where`, and an undeduped write grew
+    // duplicate array entries every time the self-init branch ran.
+    const dir = makeInstanceDir({
+      constitution: (s) =>
+        s
+          .replace(
+            '- **Principle** — Every widget passes verification before it ships.',
+            '- **Principle** — Every widget passes verification before it ships, except — as a carved-out exception — legacy widgets grandfathered in before the rule existed, which is a separate case entirely and always will be.'
+          )
+          .replace(
+            '- **Fitness** — CI runs the verify suite on every widget build.',
+            '- **Fitness** — This holds — with one exception noted here — because the rule predates the edge case and nobody has revisited it since, which is itself now a separate problem entirely.'
+          ),
+    });
+    audit(loadInstance(dir));
+    const raw = JSON.parse(fs.readFileSync(path.join(dir, '.constitution', 'prose-baseline.json'), 'utf8'));
+    expect(raw.keys.length).toBe(new Set(raw.keys).size);
+  });
+
+  it('a missing or corrupt baseline file degrades gracefully instead of crashing', () => {
+    const dir = makeInstanceDir();
+    const opsDir = path.join(dir, '.constitution');
+    fs.mkdirSync(opsDir, { recursive: true });
+    fs.writeFileSync(path.join(opsDir, 'prose-baseline.json'), '{ not valid json');
+    expect(() => audit(loadInstance(dir))).not.toThrow();
+    const findings = audit(loadInstance(dir)).filter((f) => f.code.startsWith('PROSE-') || f.code === 'LEDGER-LENGTH');
+    // corrupt baseline degrades to "nothing known" — everything reads as not-yet-baselined
+    expect(findings.every((f) => f.baseline === false)).toBe(true);
+  });
+
+  it('the real F-II example: sentence-length fires on the actual known-bad text', () => {
+    // Regression guard against the exact case the WARN-ONLY experiment is
+    // calibrated on (see design doc + eng review). Uses the real repo, not the
+    // fixture, since this is the specific known-bad text the thresholds were
+    // chosen against.
+    const repoRoot = path.resolve(__dirname, '..', '..');
+    const inst = loadInstance(repoRoot);
+    const findings = audit(inst);
+    const f2 = findings.find((f) => f.code === 'PROSE-SENTENCE-LEN' && f.message.includes('F-II'));
+    expect(f2).toBeDefined();
+    const ledgerHit = findings.find((f) => f.code === 'LEDGER-LENGTH' && f.message.includes('[0.17.0]'));
+    expect(ledgerHit).toBeDefined();
   });
 });
 

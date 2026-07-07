@@ -8,6 +8,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Instance } from './model';
 import { diffLock, readLock } from './lock';
+import { opsDir } from './events';
+import { countWords, hasStackedQualifier, sentenceLengths } from './prose';
 
 export interface Finding {
   code: string;
@@ -15,6 +17,11 @@ export interface Finding {
   firewall: 'above' | 'below';
   where: string; // file[:line] or unit id
   message: string;
+  // Set only on PROSE-*/LEDGER-LENGTH findings (EXP-0001, WARN-ONLY candidate
+  // rule): true if this finding's (code, where) pair was already present in
+  // the baseline snapshot taken when the experiment started, false if it's
+  // new since then. Undefined for every other check.
+  baseline?: boolean;
 }
 
 const ARTICLE_STATUS = ['PROPOSED', 'RATIFIED', 'SUPERSEDED'];
@@ -23,6 +30,21 @@ const ENFORCEMENT = ['UNGUARDED', 'AUDITED', 'GATED', 'STRUCTURAL'];
 const ADR_STATUS = ['proposed', 'accepted', 'superseded'];
 const PLACEHOLDER_RE = /<[^>]+>|your name|todo|tbd|xxx/i;
 
+// EXP-0001 draft thresholds — tunable during the WARN-ONLY window, not final.
+// experiments/EXP-0001-governance-prose-clarity.md's Hypothesis section states
+// these same two numbers in prose; if you retune one here, update that file's
+// wording too (or the experiment's own record of what it tested goes stale).
+const SENTENCE_WORD_CEILING = 30;
+const LEDGER_WORD_CEILING = 150;
+const PROSE_BASELINE_FILE = 'prose-baseline.json';
+
+// NOT side-effect-free: on its first call in a given instance, this writes
+// .constitution/prose-baseline.json (see writeProseBaseline below) to seed
+// the EXP-0001 false-positive baseline. Every caller — the pre-commit hook,
+// `constitution audit --json` in CI, and every test that calls audit()
+// directly — triggers this on a fresh instance. A future dry-run mode or a
+// read-only caller needs to know this before assuming audit() never touches
+// disk.
 export function audit(instance: Instance): Finding[] {
   const f: Finding[] = [];
   const doc = instance.constitution;
@@ -154,6 +176,89 @@ export function audit(instance: Instance): Finding[] {
     }
   }
 
+  // -- governance prose clarity (EXP-0001, WARN-ONLY candidate rule) -----------
+  // Never blocks anything (severity is always 'warn') — this is evidence
+  // gathering for a pre-registered experiment (F-III), not yet a ratified
+  // rule. See experiments/0001-governance-prose-clarity.md.
+  const proseFindings: Finding[] = [];
+  const checkProse = (where: string, label: string, text: string) => {
+    if (!text) return;
+    const longSentences = sentenceLengths(text).filter((len) => len > SENTENCE_WORD_CEILING);
+    if (longSentences.length > 0) {
+      proseFindings.push({
+        code: 'PROSE-SENTENCE-LEN',
+        severity: 'warn',
+        firewall: 'below',
+        where,
+        message: `${label}: ${longSentences.length} sentence(s) over ${SENTENCE_WORD_CEILING} words (worst: ${Math.max(...longSentences)}) — candidate rule EXP-0001, not yet ratified`,
+      });
+    }
+    if (hasStackedQualifier(text)) {
+      proseFindings.push({
+        code: 'PROSE-STACKED-QUALIFIER',
+        severity: 'warn',
+        firewall: 'below',
+        where,
+        message: `${label}: stacks 2+ distinct qualifier patterns (em-dash aside / except-unless-scoped-to / nested parenthetical) — candidate rule EXP-0001, not yet ratified`,
+      });
+    }
+  };
+  for (const a of doc.articles) {
+    const where = `${rel}:${a.line}`;
+    checkProse(where, `Article ${a.id} Principle`, a.principle);
+    checkProse(where, `Article ${a.id} Fitness`, a.fitness);
+    checkProse(where, `Article ${a.id} Why`, a.why);
+  }
+  for (const s of instance.statutes) {
+    const where = `${s.home}:${s.line}`;
+    checkProse(where, `statute "${truncate(s.rule)}"`, s.rule);
+    checkProse(where, `statute "${truncate(s.rule)}" Why`, s.why);
+  }
+  for (const adr of instance.adrs) {
+    checkProse(adr.file, `ADR ${adr.id || adr.file}`, adr.body);
+  }
+  for (const entry of doc.ledger) {
+    const where = `${rel}:${entry.line}`;
+    const words = countWords(entry.body);
+    if (words > LEDGER_WORD_CEILING) {
+      proseFindings.push({
+        code: 'LEDGER-LENGTH',
+        severity: 'warn',
+        firewall: 'below',
+        where,
+        message: `ledger entry [${entry.version}] runs ${words} words (cap ${LEDGER_WORD_CEILING}) — narrative belongs in BUILDLOG.md, not the ledger (candidate rule EXP-0001)`,
+      });
+    }
+  }
+  // Baseline-snapshot: isolate pre-existing (already-known) findings from new
+  // ones, so the WARN-ONLY window's false-positive-rate metric isn't
+  // contaminated by the same known-dense text re-firing every commit — these
+  // checks run over whole documents, not a diff. Self-initializes on first
+  // run: if no baseline exists yet, today's findings ARE the baseline
+  // (nothing is "new" on day one). A missing/corrupt baseline file degrades
+  // to "nothing known" rather than crashing or silently re-seeding over data
+  // that might still be recoverable.
+  // Keyed by (code, where) — location, not field. Two dense fields on the same
+  // Article/Statute line (e.g. both Principle and Fitness) share one key, so a
+  // fixed Principle can still read as "known" via a still-bad Fitness at the
+  // same line. Acceptable for a WARN-ONLY evidence-gathering signal; tighten
+  // to a per-field key only if the WARN-ONLY window's data shows this
+  // coarseness is actually masking real false-positive-rate signal.
+  const keyOf = (fnd: Finding) => `${fnd.code}::${fnd.where}`;
+  const baseline = readProseBaseline(instance.root);
+  if (baseline === null) {
+    // Dedupe before writing — multiple fields (Principle + Fitness) on the
+    // same Article/Statute line produce the same (code, where) key, and an
+    // undeduped array would grow duplicate entries every time this branch
+    // ran (adversarial review finding: the committed baseline had 39 keys,
+    // only 35 unique). A Set is the correct on-disk shape for a key set.
+    writeProseBaseline(instance.root, [...new Set(proseFindings.map(keyOf))]);
+    for (const pf of proseFindings) pf.baseline = true;
+  } else {
+    for (const pf of proseFindings) pf.baseline = baseline.has(keyOf(pf));
+  }
+  f.push(...proseFindings);
+
   // -- the firewall lock (F-IV) -------------------------------------------------
   const lock = readLock(instance.root);
   if (!lock) {
@@ -175,6 +280,30 @@ function truncate(s: string, n = 60): string {
   return s.length > n ? s.slice(0, n - 1) + '…' : s;
 }
 
+// null = no baseline file exists yet (caller should seed one from today's
+// findings). A Set (possibly empty) = a baseline exists; empty specifically
+// covers a corrupt/malformed file — degrade to "nothing known" rather than
+// crash or silently overwrite whatever's there.
+function readProseBaseline(root: string): Set<string> | null {
+  const p = path.join(opsDir(root), PROSE_BASELINE_FILE);
+  if (!fs.existsSync(p)) return null;
+  try {
+    const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+    return new Set(Array.isArray(parsed?.keys) ? parsed.keys : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function writeProseBaseline(root: string, keys: string[]): void {
+  const dir = opsDir(root);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, PROSE_BASELINE_FILE),
+    JSON.stringify({ createdAt: new Date().toISOString(), keys }, null, 2) + '\n'
+  );
+}
+
 export function formatFindings(findings: Finding[]): string {
   if (findings.length === 0) return 'audit clean — 0 findings.';
   const lines: string[] = [];
@@ -182,7 +311,11 @@ export function formatFindings(findings: Finding[]): string {
   const warns = findings.filter((x) => x.severity === 'warn');
   for (const x of findings) {
     const fw = x.firewall === 'above' ? 'ABOVE-FIREWALL' : 'below';
-    lines.push(`${x.severity.toUpperCase().padEnd(5)} ${x.code.padEnd(24)} [${fw}] ${x.where} — ${x.message}`);
+    // baseline === false means new since the EXP-0001 snapshot was taken —
+    // surfaced here too, not just in --json, so a human running `constitution
+    // audit` can tell "known since day one" apart from "this commit's doing."
+    const tag = x.baseline === false ? ' [NEW]' : '';
+    lines.push(`${x.severity.toUpperCase().padEnd(5)} ${x.code.padEnd(24)} [${fw}] ${x.where} — ${x.message}${tag}`);
   }
   lines.push('');
   lines.push(`${errors.length} error(s), ${warns.length} warning(s). Above-firewall findings need the ratifier; the rest are fixable below (see \`constitution doctor\`).`);

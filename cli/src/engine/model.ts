@@ -35,6 +35,7 @@ export interface LedgerEntry {
   version: string;
   date: string;
   title: string;
+  body: string; // prose after the heading, to the next entry or end of file
   line: number;
 }
 
@@ -65,6 +66,7 @@ export interface Adr {
   title: string;
   status: string;
   date: string;
+  body: string; // prose after the YAML frontmatter fence, to end of file
   supersedes: string[];
   supersededBy: string[];
   serves: string[];
