@@ -85,8 +85,10 @@ anything.
 
 - `CONSTITUTION.md` — the framework's own L0–L1 + amendments ledger
 - `process/` — the spec: layers, amendment + experiment lifecycles, conflict resolution, the compiler
-- `templates/` — copy-me templates (Article, Statute, ADR, experiment, compiled prompt)
+- `templates/` — copy-me templates (Article, Statute, ADR, ledger entry, experiment, constitution, governance map, compiled prompt)
 - `decisions/` — the framework's own L3 case law
+- `experiments/` — this repo's own pre-registered, WARN-ONLY candidate rules under measurement
+  (see `process/experiment-lifecycle.md`); dogfooding the lifecycle on the framework itself
 - `skills/` — the LLM-judgment skills (`define-preamble`, `harvest-articles`, `compile-prompt`, …)
 - `cli/` — the engine + installer (`constitution-cli`; see `cli/README.md`)
 - `docs/` — architecture, quickstart, firewall, tone, ops
