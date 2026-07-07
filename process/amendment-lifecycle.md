@@ -34,6 +34,10 @@ A superseded rule is preserved in **three** places:
 So "what did this rule used to say, when did it change, and why" is always answerable: the
 ledger gives the what/when, the ADR gives the why.
 
+Ledger entry shape: [../templates/ledger-entry.md](../templates/ledger-entry.md) — a
+change-log record, not a narrative. Session narrative belongs in the product's own
+build log, if it keeps one, never in the ledger itself.
+
 ## Velocity by layer
 
 L0 ossifies on purpose; L4 churns freely. The tiered velocity is the mitigation for both
